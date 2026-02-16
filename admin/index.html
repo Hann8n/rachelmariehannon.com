@@ -10,12 +10,27 @@
   <!-- Include the script that builds the page and boots Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
+    // Initialize Netlify Identity
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
         if (!user) {
+          // Handle login
           window.netlifyIdentity.on("login", () => {
             document.location.href = "/admin/";
           });
+          
+          // Handle confirmation token if present
+          const hash = window.location.hash;
+          if (hash.includes('confirmation_token')) {
+            // The widget will handle the confirmation automatically
+            window.netlifyIdentity.on("confirm", () => {
+              // After confirmation, refresh to show logged in state
+              window.location.href = "/admin/";
+            });
+          }
+        } else {
+          // User is logged in, CMS should initialize
+          console.log("User logged in:", user.email);
         }
       });
     }

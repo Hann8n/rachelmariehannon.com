@@ -76,6 +76,37 @@
         </p>
     </footer>
 
+    <!-- Netlify Identity Widget - Handles email confirmation -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      // Handle Netlify Identity confirmation tokens
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          // Check if there's a confirmation token in the URL hash
+          const hash = window.location.hash;
+          if (hash.includes('confirmation_token')) {
+            // The widget will automatically process the token
+            // After confirmation, redirect to admin
+            window.netlifyIdentity.on("confirm", () => {
+              setTimeout(() => {
+                window.location.href = "/admin/";
+              }, 1000);
+            });
+          }
+        });
+        
+        // Also handle the confirm event immediately if token is present
+        const hash = window.location.hash;
+        if (hash.includes('confirmation_token')) {
+          window.netlifyIdentity.on("confirm", () => {
+            setTimeout(() => {
+              window.location.href = "/admin/";
+            }, 1000);
+          });
+        }
+      }
+    </script>
+    
     <!-- Supascribe Script -->
     <script src="https://js.supascribe.com/v1/loader/REHr7B5XuKculT59jyNDl4UUx6x1.js" async></script>
     
