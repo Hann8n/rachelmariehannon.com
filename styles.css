@@ -261,10 +261,66 @@ blockquote {
 /* Substack section */
 .section-substack .section-header {
     margin-bottom: 0.75rem;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 119, 49, 0.2);
+}
+
+.section-substack .section-header-content {
+    flex: 1;
 }
 
 .section-substack .section-header h2 {
     margin-bottom: 0.1rem;
+    color: #1a1a1a;
+}
+
+.substack-header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 6px 10px;
+    background-color: rgba(255, 119, 49, 0.1);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.18s ease, transform 0.18s ease;
+    flex-shrink: 0;
+    border: none;
+    margin-top: 0;
+    color: #FF7731;
+    border-bottom: 1px solid transparent;
+}
+
+.substack-header-link:hover {
+    background-color: rgba(255, 119, 49, 0.2);
+    transform: translateY(-1px);
+    color: #FF7731;
+    border-bottom-color: transparent;
+}
+
+.substack-header-link:hover .substack-header-link-text,
+.substack-header-link:hover svg {
+    color: #FF7731;
+    fill: #FF7731;
+}
+
+.substack-header-link svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    fill: #FF7731;
+    color: #FF7731;
+    flex-shrink: 0;
+}
+
+.substack-header-link-text {
+    font-size: 0.875rem;
+    color: #FF7731;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .section-tagline {
