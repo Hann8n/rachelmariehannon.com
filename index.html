@@ -126,52 +126,164 @@
     
     <!-- Content Loader -->
     <script>
-        // Load content from JSON file
+        // Section renderers - cleaner, more maintainable approach
+        const SectionRenderers = {
+            text: (section) => {
+                const parts = [];
+                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
+                if (section.content) parts.push(`<p class="lede">${escapeHtml(section.content)}</p>`);
+                if (section.paragraphs?.length) {
+                    section.paragraphs.forEach(p => p.text && parts.push(`<p>${escapeHtml(p.text)}</p>`));
+                }
+                return parts.join('');
+            },
+            
+            quote: (section) => {
+                const parts = [];
+                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                if (section.quote) {
+                    parts.push('<blockquote>');
+                    parts.push(`<span>"${escapeHtml(section.quote)}"</span>`);
+                    if (section.attribution) {
+                        parts.push(`<span class="quote-attribution">– ${escapeHtml(section.attribution)}</span>`);
+                    }
+                    parts.push('</blockquote>');
+                }
+                return parts.join('');
+            },
+            
+            list: (section) => {
+                const parts = [];
+                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
+                if (section.items?.length) {
+                    parts.push('<ul>');
+                    section.items.forEach(item => {
+                        parts.push('<li>');
+                        if (item.title) parts.push(`<strong>${escapeHtml(item.title)}</strong> `);
+                        if (item.description) parts.push(escapeHtml(item.description));
+                        parts.push('</li>');
+                    });
+                    parts.push('</ul>');
+                }
+                return parts.join('');
+            },
+            
+            'two-column': (section) => {
+                const parts = [];
+                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                parts.push('<div class="about-grid">');
+                
+                // Left column
+                if (section.left_column) {
+                    parts.push('<div class="about-block">');
+                    if (section.left_column.title) parts.push(`<h3>${escapeHtml(section.left_column.title)}</h3>`);
+                    if (section.left_column.items?.length) {
+                        parts.push('<ul>');
+                        section.left_column.items.forEach(item => {
+                            parts.push('<li>');
+                            if (item.title) parts.push(`<strong>${escapeHtml(item.title)}</strong> `);
+                            if (item.description) parts.push(escapeHtml(item.description));
+                            parts.push('</li>');
+                        });
+                        parts.push('</ul>');
+                    }
+                    parts.push('</div>');
+                }
+                
+                // Right column
+                if (section.right_column) {
+                    parts.push('<div class="about-block">');
+                    if (section.right_column.title) parts.push(`<h3>${escapeHtml(section.right_column.title)}</h3>`);
+                    if (section.right_column.content) {
+                        const formatted = escapeHtml(section.right_column.content)
+                            .replace(/\n\n/g, '</p><p>')
+                            .replace(/\n/g, '<br>');
+                        parts.push(`<div>${formatted}</div>`);
+                    }
+                    parts.push('</div>');
+                }
+                
+                parts.push('</div>');
+                return parts.join('');
+            },
+            
+            substack: (section) => {
+                const parts = [];
+                if (section.title || section.tagline) {
+                    parts.push('<div class="section-header">');
+                    if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
+                    parts.push('</div>');
+                }
+                if (section.description) parts.push(`<p>${escapeHtml(section.description)}</p>`);
+                if (section.embed_id) {
+                    parts.push('<div class="substack-feed-shell">');
+                    parts.push(`<div data-supascribe-embed-id="${escapeHtml(section.embed_id)}" data-supascribe-feed></div>`);
+                    parts.push('</div>');
+                }
+                if (section.button_text && section.button_url) {
+                    parts.push('<div class="substack-actions">');
+                    parts.push(`<a class="button primary-button" href="${escapeHtml(section.button_url)}" target="_blank" rel="noopener noreferrer">`);
+                    parts.push(`<span>${escapeHtml(section.button_text)}</span>`);
+                    parts.push('</a></div>');
+                }
+                return parts.join('');
+            }
+        };
+        
+        // Render a section
+        function renderSection(section) {
+            const renderer = SectionRenderers[section.type];
+            if (!renderer) return '<p>Unknown section type</p>';
+            
+            const content = renderer(section);
+            const idAttr = section.id ? `id="${section.id}"` : '';
+            const classAttr = `section section-${section.type}`;
+            
+            return `<section ${idAttr} class="${classAttr}">${content}</section>`;
+        }
+        
+        // HTML utilities
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function sanitizeHtml(text) {
+            // Allow safe HTML tags (em, strong, etc.) but escape the rest
+            if (!text) return '';
+            // Simple sanitization - allow common formatting tags
+            const allowedTags = ['em', 'strong', 'i', 'b', 'u', 'br'];
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            // Remove script tags and dangerous attributes
+            div.querySelectorAll('script, iframe, object, embed').forEach(el => el.remove());
+            return div.innerHTML;
+        }
+        
+        // Initialize page
         fetch('/content/site.json')
             .then(response => response.json())
             .then(data => {
-                // Update title (handle multiple elements with same data attribute)
-                const titleElements = document.querySelectorAll('[data-content="title"]');
-                titleElements.forEach(el => el.textContent = data.title);
-                document.title = data.title + ' – Rachel Marie Hannon';
-                
-                // Update subtitle
+                // Update header
+                document.querySelectorAll('[data-content="title"]').forEach(el => el.textContent = data.title);
+                document.title = `${data.title} – Rachel Marie Hannon`;
                 document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
-                
-                // Update author
                 document.querySelector('[data-content="author"]').textContent = data.author;
                 
-                // Update about section
-                document.querySelector('[data-content="about_lead"]').textContent = data.about_lead;
-                document.querySelector('[data-content="about_second"]').textContent = data.about_second;
-                
-                // Update comps list
-                const compsList = document.getElementById('comps-list');
-                compsList.innerHTML = data.comps.map(comp => 
-                    `<li><strong>${comp.title}</strong> ${comp.description}</li>`
-                ).join('');
-                
-                // Update review
-                const blockquote = document.querySelector('.about-block blockquote');
-                if (blockquote) {
-                    blockquote.innerHTML = `<span data-content="review_quote">"${data.review.quote}"</span><span class="quote-attribution">– <span data-content="review_attribution">${data.review.attribution}</span></span>`;
-                }
-                
-                // Update Substack section
-                document.querySelector('[data-content="substack_title"]').textContent = data.substack.title;
-                document.querySelector('[data-content="substack_tagline"]').textContent = data.substack.tagline;
-                document.querySelector('[data-content="substack_description"]').textContent = data.substack.description;
-                document.querySelector('[data-content="substack_button_text"]').textContent = data.substack.button_text;
-                document.querySelector('[data-content="substack_button_url"]').href = data.substack.button_url;
-                const embedEl = document.querySelector('[data-content="substack_embed_id"]');
-                if (embedEl) {
-                    embedEl.setAttribute('data-supascribe-embed-id', data.substack.embed_id);
+                // Render sections
+                const container = document.getElementById('sections-container');
+                if (data.sections?.length) {
+                    container.innerHTML = data.sections.map(renderSection).join('');
+                    // Reinitialize Supascribe after rendering
+                    if (window.supascribe?.init) window.supascribe.init();
                 }
             })
-            .catch(error => {
-                console.error('Error loading content:', error);
-                // Content will fall back to default HTML content
-            });
+            .catch(error => console.error('Error loading content:', error));
     </script>
 </body>
 </html>

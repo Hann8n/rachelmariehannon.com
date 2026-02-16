@@ -1,0 +1,126 @@
+# Pages CMS Configuration
+# Simple, user-friendly CMS for editing your website
+# Access at: https://app.pagescms.org/ (after connecting your GitHub repo)
+
+media: images
+
+content:
+  - name: site
+    label: Site Content
+    type: file
+    path: content/site.json
+    fields:
+      - name: title
+        label: Site Title
+        type: string
+      - name: subtitle
+        label: Subtitle
+        type: string
+      - name: author
+        label: Author Name
+        type: string
+      - name: sections
+        label: Page Sections
+        type: list
+        fields:
+          - name: type
+            label: Section Type
+            type: select
+            options:
+              - text
+              - quote
+              - list
+              - substack
+              - two-column
+          - name: title
+            label: Section Title
+            type: string
+            required: false
+          - name: tagline
+            label: Section Tagline
+            type: string
+            required: false
+          - name: id
+            label: Section ID (for navigation links)
+            type: string
+            required: false
+          # Text section fields
+          - name: content
+            label: Text Content
+            type: text
+            required: false
+          - name: paragraphs
+            label: Additional Paragraphs
+            type: list
+            fields:
+              - name: text
+                label: Paragraph
+                type: text
+          # Quote section fields
+          - name: quote
+            label: Quote Text
+            type: text
+            required: false
+          - name: attribution
+            label: Quote Attribution
+            type: string
+            required: false
+          # List section fields
+          - name: items
+            label: List Items
+            type: list
+            fields:
+              - name: title
+                label: Item Title
+                type: string
+              - name: description
+                label: Item Description
+                type: text
+          # Two-column section fields
+          - name: left_column
+            label: Left Column
+            type: object
+            fields:
+              - name: title
+                label: Title
+                type: string
+                required: false
+              - name: items
+                label: Items
+                type: list
+                fields:
+                  - name: title
+                    label: Item Title
+                    type: string
+                  - name: description
+                    label: Item Description
+                    type: text
+          - name: right_column
+            label: Right Column
+            type: object
+            fields:
+              - name: title
+                label: Title
+                type: string
+                required: false
+              - name: content
+                label: Content
+                type: text
+                required: false
+          # Substack section fields
+          - name: description
+            label: Description
+            type: text
+            required: false
+          - name: button_text
+            label: Button Text
+            type: string
+            required: false
+          - name: button_url
+            label: Button URL
+            type: string
+            required: false
+          - name: embed_id
+            label: Supascribe Embed ID
+            type: string
+            required: false

@@ -2,32 +2,52 @@
   "title": "I Might Be An Idiot",
   "subtitle": "Based on True Events",
   "author": "Rachel Marie Hannon",
-  "about_lead": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.",
-  "about_second": "When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title.",
-  "comps": [
+  "sections": [
     {
-      "title": "Holes",
-      "description": "by Louis Sachar – Light-hearted hero journey of juvenile delinquents doing manual labor in the desert."
+      "type": "text",
+      "id": "about",
+      "title": "About <em>I Might Be An Idiot</em>",
+      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.",
+      "paragraphs": [
+        {
+          "text": "When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title."
+        }
+      ]
     },
     {
-      "title": "Wild",
-      "description": "by Cheryl Strayed – Memoir of a woman who resolves conflict with a series of flashbacks."
+      "type": "two-column",
+      "id": "comps-review",
+      "left_column": {
+        "title": "Comps",
+        "items": [
+          {
+            "title": "Holes",
+            "description": "by Louis Sachar – Light-hearted hero journey of juvenile delinquents doing manual labor in the desert."
+          },
+          {
+            "title": "Wild",
+            "description": "by Cheryl Strayed – Memoir of a woman who resolves conflict with a series of flashbacks."
+          },
+          {
+            "title": "David Sedaris",
+            "description": "Inspiration for humor and family commentary from works like Me Talk Pretty One Day and Calypso."
+          }
+        ]
+      },
+      "right_column": {
+        "title": "Review",
+        "content": "\"I don't… well, I found it relatable.\"\n\n– Rachel Marie Hannon"
+      }
     },
     {
-      "title": "David Sedaris",
-      "description": "Inspiration for humor and family commentary from works like Me Talk Pretty One Day and Calypso."
+      "type": "substack",
+      "id": "substack",
+      "title": "Substack",
+      "tagline": "My life, according to me.",
+      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
+      "button_text": "Read more",
+      "button_url": "https://substack.com/@imightbeanidiot",
+      "embed_id": "588945971728"
     }
-  ],
-  "review": {
-    "quote": "I don't… well, I found it relatable.",
-    "attribution": "Rachel Marie Hannon"
-  },
-  "substack": {
-    "title": "Substack",
-    "tagline": "My life, according to me.",
-    "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
-    "button_text": "Read more",
-    "button_url": "https://substack.com/@imightbeanidiot",
-    "embed_id": "588945971728"
-  }
+  ]
 }

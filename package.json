@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Website for Rachel Marie Hannon",
   "scripts": {
-    "build": "echo 'No build step required - static site'"
+    "build": "echo 'No build step required - static site'",
+    "dev": "python3 -m http.server 8000 || python -m SimpleHTTPServer 8000 || npx serve ."
   },
   "keywords": [],
   "author": "",

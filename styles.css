@@ -128,7 +128,8 @@ main {
     transition: border-color 0.2s ease;
 }
 
-.section-about {
+.section-about,
+.section-text {
     border-left: 3px solid var(--color-peach-light);
 }
 
@@ -138,6 +139,18 @@ main {
 
 .section-inquiries {
     border-left: 3px solid var(--color-terracotta);
+}
+
+.section-quote {
+    border-left: 3px solid var(--color-peach-warm);
+}
+
+.section-list {
+    border-left: 3px solid var(--color-peach-light);
+}
+
+.section-two-column {
+    border-left: 3px solid var(--color-peach-light);
 }
 
 .section h2 {
@@ -174,9 +187,28 @@ main {
 }
 
 /* About section layout */
-.section-about {
+.section-about,
+.section-text {
     margin-top: 0;
     background-color: #fffefc;
+}
+
+.section-text ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.section-text li {
+    margin-bottom: 0.7rem;
+}
+
+.section-list ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.section-list li {
+    margin-bottom: 0.7rem;
 }
 
 .about-grid {

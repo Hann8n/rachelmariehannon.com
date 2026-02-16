@@ -1,39 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <title>Content Manager - Rachel Marie Hannon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .info-box {
+      background: #f7f9fc;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+    }
+    .info-box h2 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .info-box p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .button {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background: #5568d3;
+    }
+    .steps {
+      margin-top: 20px;
+    }
+    .steps ol {
+      margin-left: 20px;
+      color: #666;
+      line-height: 2;
+    }
+    .steps li {
+      margin-bottom: 8px;
+    }
+    .note {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #856404;
+    }
+  </style>
 </head>
 <body>
-  <!-- Include the script that builds the page and boots Decap CMS -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // Initialize Netlify Identity
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          // Handle login
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-          
-          // Handle confirmation token if present
-          const hash = window.location.hash;
-          if (hash.includes('confirmation_token')) {
-            // The widget will handle the confirmation automatically
-            window.netlifyIdentity.on("confirm", () => {
-              // After confirmation, refresh to show logged in state
-              window.location.href = "/admin/";
-            });
-          }
-        } else {
-          // User is logged in, CMS should initialize
-          console.log("User logged in:", user.email);
-        }
-      });
-    }
-  </script>
+  <div class="container">
+    <h1>📝 Content Manager</h1>
+    <p class="subtitle">Edit your website content easily</p>
+    
+    <div class="info-box">
+      <h2>✨ Using Pages CMS</h2>
+      <p>Your site now uses <strong>Pages CMS</strong> - a much simpler and cleaner interface for editing content!</p>
+      <p>No more confusing fields - just edit what you need.</p>
+    </div>
+
+    <div class="steps">
+      <h3 style="margin-bottom: 15px; color: #333;">Getting Started:</h3>
+      <ol>
+        <li>Go to <a href="https://app.pagescms.org/" target="_blank" style="color: #667eea;">app.pagescms.org</a></li>
+        <li>Sign in with your <strong>GitHub account</strong></li>
+        <li>Connect this repository</li>
+        <li>Start editing!</li>
+      </ol>
+    </div>
+
+    <a href="https://app.pagescms.org/" target="_blank" class="button">
+      🚀 Open Pages CMS
+    </a>
+
+    <div class="note">
+      <strong>Note:</strong> The first time you connect, Pages CMS will ask you to authorize access to your GitHub repository. This is safe and allows you to edit your content.
+    </div>
+  </div>
 </body>
 </html>
