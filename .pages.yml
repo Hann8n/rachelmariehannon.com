@@ -74,11 +74,12 @@ content:
             required: true
             description: Choose what kind of section this is
             options:
-              - text
-              - quote
-              - list
-              - substack
-              - two-column
+              values:
+                - text
+                - quote
+                - list
+                - substack
+                - two-column
           
           - name: title
             label: Section Title
