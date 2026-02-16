@@ -10,58 +10,42 @@ content:
       - { name: title, label: Site Title, type: string, required: true }
       - { name: subtitle, label: Subtitle, type: string, required: true }
       - { name: author, label: Author Name, type: string, required: true }
-      
+
       - name: sections
         label: Page Sections
-        type: object
+        type: block
         list: true
-        summary: "{{type}} - {{title}}"
-        fields:
-          - name: type
-            label: Section Type
-            type: select
-            required: true
-            options:
-              values:
-                - text
-                - quote
-                - list
-                - substack
-                - two-column
-          
-          - { name: title, label: Title, type: string }
-          - { name: tagline, label: Tagline, type: string }
-          - { name: id, label: ID, type: string }
-          
-          # Text section
-          - { name: content, label: Text Content, type: text }
-          
-          - name: paragraphs
-            label: Additional Paragraphs
-            type: object
-            list: true
-            fields:
-              - { name: text, label: Text, type: text, required: true }
-          
-          # Quote section
-          - { name: quote, label: Quote, type: text }
-          - { name: attribution, label: Attribution, type: string }
-          
-          # List section
-          - name: items
-            label: Items
-            type: object
-            list: true
-            fields:
-              - { name: title, label: Title, type: string, required: true }
-              - { name: description, label: Description, type: text, required: true }
-          
-          # Two-column section
-          - name: left_column
-            label: Left Column
-            type: object
+        blockKey: type
+        blocks:
+          - name: text
+            label: About / text block
             fields:
               - { name: title, label: Title, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links (e.g. about)." }
+              - { name: content, label: Main paragraph, type: text }
+              - name: paragraphs
+                label: Extra paragraphs
+                type: object
+                list: true
+                fields:
+                  - { name: text, label: Paragraph, type: text, required: true }
+
+          - name: quote
+            label: Quote
+            fields:
+              - { name: title, label: Title, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links." }
+              - { name: quote, label: Quote, type: text }
+              - { name: attribution, label: Attribution, type: string }
+
+          - name: list
+            label: Simple list
+            fields:
+              - { name: title, label: Title, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links." }
               - name: items
                 label: Items
                 type: object
@@ -69,16 +53,37 @@ content:
                 fields:
                   - { name: title, label: Title, type: string, required: true }
                   - { name: description, label: Description, type: text, required: true }
-          
-          - name: right_column
-            label: Right Column
-            type: object
+
+          - name: two-column
+            label: Two columns (e.g. Comps & Review)
+            fields:
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links (e.g. comps-review)." }
+              - name: left_column
+                label: Left column
+                type: object
+                fields:
+                  - { name: title, label: Column title, type: string }
+                  - name: items
+                    label: Items
+                    type: object
+                    list: true
+                    fields:
+                      - { name: title, label: Title, type: string, required: true }
+                      - { name: description, label: Description, type: text, required: true }
+              - name: right_column
+                label: Right column
+                type: object
+                fields:
+                  - { name: title, label: Column title, type: string }
+                  - { name: content, label: Content, type: text }
+
+          - name: substack
+            label: Substack
             fields:
               - { name: title, label: Title, type: string }
-              - { name: content, label: Content, type: text }
-          
-          # Substack section
-          - { name: description, label: Description, type: text }
-          - { name: button_text, label: Button Text, type: string }
-          - { name: button_url, label: Button URL, type: string }
-          - { name: embed_id, label: Embed ID, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links." }
+              - { name: description, label: Intro text, type: text }
+              - { name: button_text, label: Button text, type: string }
+              - { name: button_url, label: Button URL, type: string }
+              - { name: embed_id, label: Embed ID, type: string, description: "From your Substack/Supascribe embed. Only change if you replace the feed." }

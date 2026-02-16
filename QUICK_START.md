@@ -22,13 +22,9 @@
 
 1. Scroll to **"Page Sections"**
 2. Click the **"+"** button
-3. Choose a **Section Type**:
-   - **text** = Paragraphs of text
-   - **quote** = A quote with attribution
-   - **list** = A list of items
-   - **two-column** = Side-by-side content
-   - **substack** = Substack embed
-4. Fill in the fields (only fill what you need!)
+3. Choose a **Section Type** (e.g. "About / text block", "Substack", "Two columns"):
+   - You’ll only see the fields for that section — no long list of unrelated options.
+4. Fill in the fields shown (only what you need!)
 5. Click **"Save"**
 
 ### Reordering Sections
