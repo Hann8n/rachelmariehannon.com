@@ -15,6 +15,7 @@ content:
         label: Page Sections
         type: object
         list: true
+        summary: "{{type}} - {{title}}"
         fields:
           - name: type
             label: Section Type
