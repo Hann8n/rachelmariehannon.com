@@ -95,4 +95,4 @@ content:
               - { name: description, label: Intro text, type: text }
               - { name: button_text, label: Button text, type: string }
               - { name: button_url, label: Button URL, type: string }
-              - { name: embed_id, label: Embed ID, type: string, description: "From your Substack/Supascribe embed. Only change if you replace the feed." }
+              - { name: embed_id, label: Embed ID, type: string, description: "Unused — feed is free and built from your Substack RSS using the Button URL." }

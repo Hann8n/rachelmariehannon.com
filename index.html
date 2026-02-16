@@ -62,16 +62,11 @@
                 you can read and subscribe to the Substack:
             </p>
 
-            <!-- Feed embed code -->
+            <!-- Free feed: recent posts from Substack RSS -->
             <div class="substack-feed-shell">
-                <div data-supascribe-embed-id="588945971728" data-content="substack_embed_id" data-supascribe-feed data-attr="data-supascribe-embed-id"></div>
+                <div class="substack-feed-list" data-substack-feed data-substack-url="https://substack.com/@imightbeanidiot"></div>
             </div>
 
-            <div class="substack-actions">
-                <a class="button primary-button" data-content="substack_button_url" href="https://substack.com/@imightbeanidiot" target="_blank" rel="noopener noreferrer">
-                    <span data-content="substack_button_text">Read more</span>
-                </a>
-            </div>
         </section>
     </main>
 
@@ -127,9 +122,179 @@
       })();
     </script>
     
-    <!-- Supascribe Script -->
-    <script src="https://js.supascribe.com/v1/loader/REHr7B5XuKculT59jyNDl4UUx6x1.js" async></script>
-    
+    <!-- Free Substack feed via RSS (no Supascribe) -->
+    <script>
+        (function() {
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            function substackUrlToRss(url) {
+                if (!url) return null;
+                try {
+                    const u = new URL(url);
+                    if (u.hostname === 'substack.com' && u.pathname.startsWith('/@')) {
+                        const handle = u.pathname.replace(/^\/@/, '').replace(/\/.*$/, '');
+                        return 'https://' + handle + '.substack.com/feed';
+                    }
+                    if (u.hostname.endsWith('.substack.com')) {
+                        return u.origin + '/feed';
+                    }
+                } catch (_) {}
+                return null;
+            }
+            function stripHtml(html) {
+                if (!html) return '';
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                return div.textContent || div.innerText || '';
+            }
+            function calculateReadTime(content) {
+                if (!content) return '';
+                const text = stripHtml(content);
+                const wordCount = text.split(/\s+/).filter(function(word) { return word.length > 0; }).length;
+                const readTime = Math.ceil(wordCount / 200);
+                return readTime > 0 ? readTime + ' min read' : '';
+            }
+            function renderFeedItem(item) {
+                const link = item.link || '#';
+                const title = item.title || 'Post';
+                const rawDescription = item.description || '';
+                const cleanDescription = stripHtml(rawDescription).trim();
+                const imageUrl = item.enclosure && item.enclosure.link ? item.enclosure.link : '';
+                const readTime = calculateReadTime(item.content || item.description);
+                const author = item.author || '';
+                const categories = item.categories || [];
+                let date = '';
+                if (item.pubDate) {
+                    try {
+                        const pubDate = new Date(item.pubDate);
+                        const now = new Date();
+                        const diffMs = now - pubDate;
+                        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                        
+                        if (diffMinutes < 1) {
+                            date = 'Just now';
+                        } else if (diffMinutes < 60) {
+                            date = diffMinutes === 1 ? '1 minute ago' : diffMinutes + ' minutes ago';
+                        } else if (diffHours < 24) {
+                            date = diffHours === 1 ? '1 hour ago' : diffHours + ' hours ago';
+                        } else if (diffDays < 7) {
+                            date = diffDays === 1 ? '1 day ago' : diffDays + ' days ago';
+                        } else {
+                            date = pubDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                        }
+                    } catch (_) {}
+                }
+                let imageHtml = '';
+                if (imageUrl) {
+                    imageHtml = '<div class="substack-feed-card-image"><img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(title) + '" loading="lazy"></div>';
+                }
+                const metaInfo = [];
+                if (date) metaInfo.push(date);
+                if (readTime) metaInfo.push(readTime);
+                const metaText = metaInfo.join(' • ');
+                
+                let tagsHtml = '';
+                if (categories && categories.length > 0) {
+                    const tags = categories.slice(0, 3).map(function(cat) {
+                        return '<span class="substack-feed-card-tag">' + escapeHtml(cat) + '</span>';
+                    }).join('');
+                    tagsHtml = '<div class="substack-feed-card-tags">' + tags + '</div>';
+                }
+                
+                return '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer" class="substack-feed-card">' +
+                    '<div class="substack-feed-card-content">' +
+                    '<h3 class="substack-feed-card-title">' + escapeHtml(title) + '</h3>' +
+                    (cleanDescription ? '<p class="substack-feed-card-description">' + escapeHtml(cleanDescription.substring(0, 120)) + (cleanDescription.length > 120 ? '…' : '') + '</p>' : '') +
+                    tagsHtml +
+                    (metaText ? '<span class="substack-feed-card-meta">' + escapeHtml(metaText) + '</span>' : '') +
+                    '</div>' +
+                    imageHtml +
+                    '</a>';
+            }
+            function loadSubstackFeeds() {
+                document.querySelectorAll('[data-substack-feed]').forEach(function (el) {
+                    const url = el.getAttribute('data-substack-url');
+                    const rssUrl = substackUrlToRss(url);
+                    if (!rssUrl) {
+                        el.innerHTML = '';
+                        return;
+                    }
+                    el.innerHTML = '<p class="substack-feed-loading">Loading…</p>';
+                    const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+                    fetch(apiUrl)
+                        .then(function (r) {
+                            if (!r.ok) {
+                                throw new Error('HTTP ' + r.status);
+                            }
+                            return r.json();
+                        })
+                        .then(function (data) {
+                            if (data.status !== 'ok' || !data.items || !data.items.length) {
+                                el.innerHTML = '<p class="substack-feed-error">No posts available.</p>';
+                                return;
+                            }
+                            const allItems = data.items;
+                            const initialCount = 4;
+                            let displayedCount = initialCount;
+                            
+                            const container = document.createElement('div');
+                            container.className = 'substack-feed-cards';
+                            container.innerHTML = allItems.slice(0, displayedCount).map(renderFeedItem).join('');
+                            
+                            const loadMoreBtn = document.createElement('button');
+                            loadMoreBtn.className = 'button primary-button substack-load-more';
+                            loadMoreBtn.textContent = 'Load more';
+                            loadMoreBtn.type = 'button';
+                            loadMoreBtn.style.marginTop = '1rem';
+                            loadMoreBtn.style.display = 'block';
+                            loadMoreBtn.style.marginLeft = 'auto';
+                            loadMoreBtn.style.marginRight = 'auto';
+                            
+                            if (displayedCount >= allItems.length) {
+                                loadMoreBtn.style.display = 'none';
+                            }
+                            
+                            loadMoreBtn.addEventListener('click', function() {
+                                const nextBatch = allItems.slice(displayedCount, displayedCount + 4);
+                                if (nextBatch.length > 0) {
+                                    nextBatch.forEach(function(item) {
+                                        container.insertAdjacentHTML('beforeend', renderFeedItem(item));
+                                    });
+                                    displayedCount += nextBatch.length;
+                                    if (displayedCount >= allItems.length) {
+                                        loadMoreBtn.style.display = 'none';
+                                    }
+                                }
+                            });
+                            
+                            el.innerHTML = '';
+                            el.appendChild(container);
+                            el.appendChild(loadMoreBtn);
+                        })
+                        .catch(function (err) {
+                            console.error('Substack feed error:', err);
+                            el.innerHTML = '<p class="substack-feed-error">Unable to load feed. <a href="' + escapeHtml(rssUrl.replace('/feed', '')) + '" target="_blank" rel="noopener noreferrer">Visit Substack</a></p>';
+                        });
+                });
+            }
+            window.loadSubstackFeeds = loadSubstackFeeds;
+            function initFeeds() {
+                loadSubstackFeeds();
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initFeeds);
+            } else {
+                setTimeout(initFeeds, 100);
+            }
+        })();
+    </script>
+
     <!-- Content Loader -->
     <script>
         // Social platform icons — full SVG per platform (correct viewBox each)
@@ -236,16 +401,10 @@
                     parts.push('</div>');
                 }
                 if (section.description) parts.push(`<p>${escapeHtml(section.description)}</p>`);
-                if (section.embed_id) {
+                if (section.button_url) {
                     parts.push('<div class="substack-feed-shell">');
-                    parts.push(`<div data-supascribe-embed-id="${escapeHtml(section.embed_id)}" data-supascribe-feed></div>`);
+                    parts.push(`<div class="substack-feed-list" data-substack-feed data-substack-url="${escapeHtml(section.button_url)}"></div>`);
                     parts.push('</div>');
-                }
-                if (section.button_text && section.button_url) {
-                    parts.push('<div class="substack-actions">');
-                    parts.push(`<a class="button primary-button" href="${escapeHtml(section.button_url)}" target="_blank" rel="noopener noreferrer">`);
-                    parts.push(`<span>${escapeHtml(section.button_text)}</span>`);
-                    parts.push('</a></div>');
                 }
                 return parts.join('');
             }
@@ -308,10 +467,11 @@
                 
                 // Render sections
                 const container = document.getElementById('sections-container');
-                if (data.sections?.length) {
+                if (container && data.sections?.length) {
                     container.innerHTML = data.sections.map(renderSection).join('');
-                    // Reinitialize Supascribe after rendering
-                    if (window.supascribe?.init) window.supascribe.init();
+                    setTimeout(function() {
+                        window.loadSubstackFeeds && window.loadSubstackFeeds();
+                    }, 50);
                 }
             })
             .catch(error => console.error('Error loading content:', error));
