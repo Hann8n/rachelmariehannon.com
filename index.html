@@ -53,14 +53,14 @@
 
         <section id="substack" class="section section-substack">
             <div class="section-header">
-                <div class="section-header-content">
+                <div class="section-header-top">
                     <h2 data-content="substack_title">Substack</h2>
-                    <p class="section-tagline" data-content="substack_tagline">My life, according to me.</p>
+                    <a href="https://substack.com/@imightbeanidiot" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#FF7731" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>
+                        <span class="substack-header-link-text">Open on Substack</span>
+                    </a>
                 </div>
-                <a href="https://substack.com/@imightbeanidiot" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#FF7731" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>
-                    <span class="substack-header-link-text">Open on Substack</span>
-                </a>
+                <p class="section-tagline" data-content="substack_tagline">My life, according to me.</p>
             </div>
 
             <!-- Free feed: recent posts from Substack RSS -->
@@ -397,15 +397,15 @@
                 const parts = [];
                 if (section.title || section.tagline) {
                     parts.push('<div class="section-header">');
-                    parts.push('<div class="section-header-content">');
+                    parts.push('<div class="section-header-top">');
                     if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                    parts.push('</div>');
                     const substackUrl = section.button_url || 'https://substack.com/@imightbeanidiot';
                     parts.push(`<a href="${escapeHtml(substackUrl)}" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">`);
                     parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#FF7731" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>');
                     parts.push('<span class="substack-header-link-text">Open on Substack</span>');
                     parts.push('</a>');
+                    parts.push('</div>');
+                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
                     parts.push('</div>');
                 }
                 if (section.button_url) {

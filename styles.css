@@ -261,21 +261,27 @@ blockquote {
 /* Substack section */
 .section-substack .section-header {
     margin-bottom: 0.75rem;
-    position: relative;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(255, 119, 49, 0.2);
 }
 
-.section-substack .section-header-content {
-    flex: 1;
+.section-substack .section-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .section-substack .section-header h2 {
-    margin-bottom: 0.1rem;
+    margin: 0;
     color: #1a1a1a;
+}
+
+.section-substack .section-tagline {
+    margin: 0;
 }
 
 .substack-header-link {
