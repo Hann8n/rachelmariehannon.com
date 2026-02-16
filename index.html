@@ -211,9 +211,9 @@
                 return '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer" class="substack-feed-card">' +
                     '<div class="substack-feed-card-content">' +
                     '<h3 class="substack-feed-card-title">' + escapeHtml(title) + '</h3>' +
+                    (metaText ? '<span class="substack-feed-card-meta">' + escapeHtml(metaText) + '</span>' : '') +
                     (cleanDescription ? '<p class="substack-feed-card-description">' + escapeHtml(cleanDescription.substring(0, 120)) + (cleanDescription.length > 120 ? '…' : '') + '</p>' : '') +
                     tagsHtml +
-                    (metaText ? '<span class="substack-feed-card-meta">' + escapeHtml(metaText) + '</span>' : '') +
                     '</div>' +
                     imageHtml +
                     '</a>';
