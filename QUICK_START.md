@@ -28,24 +28,57 @@
    - **list** = A list of items
    - **two-column** = Side-by-side content
    - **substack** = Substack embed
-4. Fill in the fields
+4. Fill in the fields (only fill what you need!)
 5. Click **"Save"**
 
 ### Reordering Sections
 
 - Drag sections up/down using the **⋮⋮** handle on the left
+- Sections show as "type - title" so you can easily identify them
 
 ### Deleting Sections
 
-- Click the **🗑️** trash icon
+- Click the **🗑️** trash icon on any section
+
+### Editing Sections
+
+- Click on any section to expand and edit it
+- Each section shows helpful descriptions under each field
+- Only fill in fields relevant to that section type
 
 ## 💡 Tips
 
-- **Only fill fields you need** - Empty fields are fine
-- **Changes save automatically** to GitHub
-- **Mobile-friendly** - Edit from your phone
-- **Visual preview** - See your content as you edit
+- **Read the descriptions** - Each field has helpful text explaining what it's for
+- **Only fill fields you need** - Empty fields are fine and won't break anything
+- **Changes save to GitHub** - Your site will update automatically
+- **Mobile-friendly** - Edit from your phone or tablet
+- **Visual preview** - See your content as you edit it
+- **Sections are collapsible** - Click to expand/collapse for easier navigation
+
+## 📋 Section Types Explained
+
+### Text Section
+- **Main Text Content**: Your main paragraph
+- **Additional Paragraphs**: Add more paragraphs if needed
+
+### Quote Section
+- **Quote Text**: The quote itself
+- **Quote Attribution**: Who said it (e.g., "– Rachel Marie Hannon")
+
+### List Section
+- **List Items**: Add items with a title and description
+
+### Two-Column Section
+- **Left Column**: Usually for lists
+- **Right Column**: Usually for text content
+
+### Substack Section
+- **Description**: Text above the embed
+- **Button Text**: Text on the button
+- **Button URL**: Where the button links (must start with http:// or https://)
+- **Supascribe Embed ID**: Your embed ID
 
 ## ❓ Need Help?
 
-Check `PAGES_CMS_SETUP.md` for more detailed instructions.
+- Check `PAGES_CMS_SETUP.md` for more detailed instructions
+- Pages CMS Docs: https://pagescms.org/docs/

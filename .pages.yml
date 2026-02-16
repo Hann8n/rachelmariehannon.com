@@ -1,126 +1,200 @@
 # Pages CMS Configuration
-# Simple, user-friendly CMS for editing your website
-# Access at: https://app.pagescms.org/ (after connecting your GitHub repo)
+# Optimized for ease of use and clarity
+# Access at: https://app.pagescms.org/
 
 media: images
+
+# Reusable components for cleaner configuration
+components:
+  # Paragraph component for text sections
+  paragraph:
+    label: Paragraph
+    type: object
+    fields:
+      - name: text
+        label: Text
+        type: text
+        required: true
+  
+  # List item component
+  list_item:
+    label: List Item
+    type: object
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Description
+        type: text
+        required: true
 
 content:
   - name: site
     label: Site Content
     type: file
     path: content/site.json
+    format: json
     fields:
+      # Basic site information
       - name: title
         label: Site Title
         type: string
+        required: true
+        description: The main title of your website
+      
       - name: subtitle
         label: Subtitle
         type: string
+        required: true
+        description: A short tagline or subtitle
+      
       - name: author
         label: Author Name
         type: string
+        required: true
+        description: Your name as the author
+      
+      # Page sections - the main content
       - name: sections
         label: Page Sections
-        type: list
+        type: object
+        list: true
+        description: Add, edit, and reorder sections on your page
+        list:
+          collapsible:
+            collapsed: false
+            summary: "{type} - {title}"
         fields:
+          # Section identification
           - name: type
             label: Section Type
             type: select
+            required: true
+            description: Choose what kind of section this is
             options:
               - text
               - quote
               - list
               - substack
               - two-column
+          
           - name: title
             label: Section Title
             type: string
             required: false
+            description: Optional: Main heading for this section. You can use HTML like <em>italics</em>
+          
           - name: tagline
             label: Section Tagline
             type: string
             required: false
+            description: Optional: A subheading or tagline
+          
           - name: id
-            label: Section ID (for navigation links)
+            label: Section ID
             type: string
             required: false
+            description: Optional: Used for anchor links (e.g., 'about', 'contact')
+          
           # Text section fields
           - name: content
-            label: Text Content
+            label: Main Text Content
             type: text
             required: false
+            description: For 'text' sections: Your main paragraph
+          
           - name: paragraphs
             label: Additional Paragraphs
-            type: list
-            fields:
-              - name: text
-                label: Paragraph
-                type: text
+            type: object
+            list: true
+            required: false
+            description: For 'text' sections: Add more paragraphs
+            component: paragraph
+          
           # Quote section fields
           - name: quote
             label: Quote Text
             type: text
             required: false
+            description: For 'quote' sections: The quote text
+          
           - name: attribution
             label: Quote Attribution
             type: string
             required: false
+            description: For 'quote' sections: Who said this (e.g., '– Rachel Marie Hannon')
+          
           # List section fields
           - name: items
             label: List Items
-            type: list
-            fields:
-              - name: title
-                label: Item Title
-                type: string
-              - name: description
-                label: Item Description
-                type: text
+            type: object
+            list: true
+            required: false
+            description: For 'list' sections: Add items to your list
+            component: list_item
+          
           # Two-column section fields
           - name: left_column
             label: Left Column
             type: object
+            required: false
+            description: For 'two-column' sections: Content for the left side
             fields:
               - name: title
                 label: Title
                 type: string
                 required: false
+              
               - name: items
                 label: Items
-                type: list
-                fields:
-                  - name: title
-                    label: Item Title
-                    type: string
-                  - name: description
-                    label: Item Description
-                    type: text
+                type: object
+                list: true
+                required: false
+                component: list_item
+          
           - name: right_column
             label: Right Column
             type: object
+            required: false
+            description: For 'two-column' sections: Content for the right side
             fields:
               - name: title
                 label: Title
                 type: string
                 required: false
+              
               - name: content
                 label: Content
                 type: text
                 required: false
+                description: Text content (line breaks are preserved)
+          
           # Substack section fields
           - name: description
             label: Description
             type: text
             required: false
+            description: For 'substack' sections: Description text above the embed
+          
           - name: button_text
             label: Button Text
             type: string
             required: false
+            description: For 'substack' sections: Text on the button
+          
           - name: button_url
             label: Button URL
             type: string
             required: false
+            description: For 'substack' sections: Where the button links to
+            pattern:
+              regex: '^https?://.+'
+              message: 'Please enter a valid URL starting with http:// or https://'
+          
           - name: embed_id
             label: Supascribe Embed ID
             type: string
             required: false
+            description: For 'substack' sections: Your Supascribe embed ID
