@@ -1,5 +1,9 @@
 media: images
 
+settings:
+  content:
+    merge: true
+
 content:
   - name: site
     label: Site Content

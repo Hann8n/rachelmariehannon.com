@@ -9,8 +9,16 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="/fonts/lora-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/librebaskerville-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+@font-face{font-family:"Lora";font-style:normal;font-weight:400 600;font-display:optional;src:url("/fonts/lora-normal-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Lora";font-style:italic;font-weight:400;font-display:optional;src:url("/fonts/lora-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Libre Baskerville";font-style:normal;font-weight:400 700;font-display:optional;src:url("/fonts/librebaskerville-normal-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Libre Baskerville";font-style:italic;font-weight:400;font-display:optional;src:url("/fonts/librebaskerville-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+    </style>
+    <link rel="preload" href="/styles.css" as="style">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header class="site-header" id="top">
@@ -22,54 +30,9 @@
     </header>
     
     <main>
-        <section id="about" class="section section-about">
-            <h2>About <em data-content="title">I Might Be An Idiot</em></h2>
-            <p class="lede" data-content="about_lead">
-                <em>I Might Be An Idiot</em> follows my determined search for popularity as I maintain trails in Arizona
-                following a suspension from my private arts Pennsylvania college.
-            </p>
-            <p data-content="about_second">
-                When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title.
-            </p>
-
-            <div class="about-grid">
-                <div class="about-block">
-                    <h3>Comps</h3>
-                    <ul id="comps-list">
-                        <li><strong>Holes</strong> by Louis Sachar – Light-hearted hero journey of juvenile delinquents doing manual labor in the desert.</li>
-                        <li><strong>Wild</strong> by Cheryl Strayed – Memoir of a woman who resolves conflict with a series of flashbacks.</li>
-                        <li><strong>David Sedaris</strong> – Inspiration for humor and family commentary from works like <em>Me Talk Pretty One Day</em> and <em>Calypso</em>.</li>
-                    </ul>
-                </div>
-
-                <div class="about-block">
-                    <h3>Review</h3>
-                    <blockquote>
-                        "I don't… well, I found it relatable."
-                        <span class="quote-attribution">– Rachel Marie Hannon</span>
-                    </blockquote>
-                </div>
-            </div>
-        </section>
-
-        <section id="substack" class="section section-substack">
-            <div class="section-header">
-                <div class="section-header-top">
-                    <h2 data-content="substack_title">Substack</h2>
-                    <a href="https://substack.com/@imightbeanidiot" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#FF7731" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>
-                        <span class="substack-header-link-text">Open on Substack</span>
-                    </a>
-                </div>
-                <p class="section-tagline" data-content="substack_tagline">My life, according to me.</p>
-            </div>
-
-            <!-- Free feed: recent posts from Substack RSS -->
-            <div class="substack-feed-shell">
-                <div class="substack-feed-list" data-substack-feed data-substack-url="https://substack.com/@imightbeanidiot"></div>
-            </div>
-
-        </section>
+        <div id="sections-container" aria-live="polite">
+            <p class="section-loading">Loading…</p>
+        </div>
     </main>
 
     <footer class="site-footer">
@@ -357,7 +320,7 @@
                     if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
                     const substackUrl = section.button_url || 'https://substack.com/@imightbeanidiot';
                     parts.push(`<a href="${escapeHtml(substackUrl)}" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">`);
-                    parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#FF7731" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>');
+                    parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>');
                     parts.push('<span class="substack-header-link-text">Open on Substack</span>');
                     parts.push('</a>');
                     parts.push('</div>');
@@ -406,15 +369,24 @@
         }
         
         // Initialize page
+        const container = document.getElementById('sections-container');
         fetch('/content/site.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Content unavailable');
+                return response.json();
+            })
             .then(data => {
                 // Update header
-                document.querySelectorAll('[data-content="title"]').forEach(el => el.textContent = data.title);
-                document.title = `${data.title} – Rachel Marie Hannon`;
-                document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
-                document.querySelector('[data-content="author"]').textContent = data.author;
+                if (data.title) {
+                    document.querySelectorAll('[data-content="title"]').forEach(el => el.textContent = data.title);
+                    document.title = data.title + ' – Rachel Marie Hannon';
+                }
+                if (data.subtitle) document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
+                if (data.author) document.querySelector('[data-content="author"]').textContent = data.author;
                 
+                // Footer year
+                var yearEl = document.getElementById('year');
+                if (yearEl) yearEl.textContent = new Date().getFullYear();
                 // Render footer socials (with icons)
                 const socialsEl = document.getElementById('footer-socials');
                 if (socialsEl && data.socials?.length) {
@@ -429,15 +401,23 @@
                 }
                 
                 // Render sections
-                const container = document.getElementById('sections-container');
-                if (container && data.sections?.length) {
-                    container.innerHTML = data.sections.map(renderSection).join('');
-                    setTimeout(function() {
-                        window.loadSubstackFeeds && window.loadSubstackFeeds();
-                    }, 50);
+                if (container) {
+                    if (data.sections && data.sections.length) {
+                        container.innerHTML = data.sections.map(renderSection).join('');
+                        setTimeout(function() {
+                            window.loadSubstackFeeds && window.loadSubstackFeeds();
+                        }, 50);
+                    } else {
+                        container.innerHTML = '';
+                    }
                 }
             })
-            .catch(error => console.error('Error loading content:', error));
+            .catch(function(err) {
+                console.error('Error loading content:', err);
+                if (container) {
+                    container.innerHTML = '<p class="section-loading section-error">Content could not be loaded. Please try again later.</p>';
+                }
+            });
     </script>
 </body>
 </html>
