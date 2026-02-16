@@ -80,31 +80,45 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script>
       // Handle Netlify Identity confirmation tokens
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          // Check if there's a confirmation token in the URL hash
-          const hash = window.location.hash;
-          if (hash.includes('confirmation_token')) {
-            // The widget will automatically process the token
-            // After confirmation, redirect to admin
-            window.netlifyIdentity.on("confirm", () => {
+      // This must run immediately, before the widget initializes
+      (function() {
+        if (window.netlifyIdentity) {
+          // Set up handlers before init
+          window.netlifyIdentity.on("confirm", (user) => {
+            console.log("Account confirmed:", user);
+            // Redirect to admin after successful confirmation
+            setTimeout(() => {
+              window.location.href = "/admin/";
+            }, 500);
+          });
+          
+          window.netlifyIdentity.on("error", (err) => {
+            console.error("Identity error:", err);
+            // If confirmation fails, redirect to admin to try logging in
+            if (err.message && err.message.includes("verifying")) {
+              alert("Confirmation token may be expired. Redirecting to login page...");
               setTimeout(() => {
                 window.location.href = "/admin/";
               }, 1000);
-            });
-          }
-        });
-        
-        // Also handle the confirm event immediately if token is present
-        const hash = window.location.hash;
-        if (hash.includes('confirmation_token')) {
-          window.netlifyIdentity.on("confirm", () => {
-            setTimeout(() => {
+            }
+          });
+          
+          // Initialize the widget
+          window.netlifyIdentity.on("init", (user) => {
+            console.log("Identity initialized, user:", user);
+            
+            // If there's a confirmation token in the URL, the widget will process it
+            const hash = window.location.hash;
+            if (hash.includes('confirmation_token') && !user) {
+              // Token is being processed, wait for confirm event
+              console.log("Confirmation token detected in URL");
+            } else if (user) {
+              // Already logged in, redirect to admin
               window.location.href = "/admin/";
-            }, 1000);
+            }
           });
         }
-      }
+      })();
     </script>
     
     <!-- Supascribe Script -->
