@@ -11,6 +11,15 @@ content:
       - { name: subtitle, label: Subtitle, type: string, required: true }
       - { name: author, label: Author Name, type: string, required: true }
 
+      - name: socials
+        label: Footer Social Links
+        type: object
+        list: true
+        description: Social media links shown in the footer.
+        fields:
+          - { name: platform, label: Platform, type: string, required: true, description: "e.g. LinkedIn, Instagram, Facebook, Bluesky" }
+          - { name: url, label: URL, type: string, required: true, description: "Full URL to your profile" }
+
       - name: sections
         label: Page Sections
         type: block

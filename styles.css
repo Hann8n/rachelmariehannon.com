@@ -354,6 +354,27 @@ blockquote {
 
 .footer-links {
     margin-left: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    vertical-align: middle;
+}
+
+.footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2em;
+    border-radius: 4px;
+    transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.footer-social-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.footer-social-link svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Responsive design */
