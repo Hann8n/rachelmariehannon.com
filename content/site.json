@@ -5,8 +5,8 @@
   "sections": [
     {
       "type": "text",
-      "id": "about",
       "title": "About <em>I Might Be An Idiot</em>",
+      "id": "about",
       "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.",
       "paragraphs": [
         {
@@ -41,9 +41,9 @@
     },
     {
       "type": "substack",
-      "id": "substack",
       "title": "Substack",
       "tagline": "My life, according to me.",
+      "id": "substack",
       "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
       "button_text": "Read more",
       "button_url": "https://substack.com/@imightbeanidiot",
