@@ -32,28 +32,32 @@ content:
           - { name: tagline, label: Section Tagline, type: string }
           - { name: id, label: Section ID, type: string }
           
-          - { name: content, label: Main Text Content, type: text }
+          # TEXT SECTION - Fill these only for 'text' type sections
+          - { name: content, label: Main Text Content (for 'text' sections), type: text }
           
           - name: paragraphs
-            label: Additional Paragraphs
+            label: Additional Paragraphs (for 'text' sections)
             type: object
             list: true
             fields:
               - { name: text, label: Paragraph Text, type: text, required: true }
           
-          - { name: quote, label: Quote Text, type: text }
-          - { name: attribution, label: Quote Attribution, type: string }
+          # QUOTE SECTION - Fill these only for 'quote' type sections
+          - { name: quote, label: Quote Text (for 'quote' sections), type: text }
+          - { name: attribution, label: Quote Attribution (for 'quote' sections), type: string }
           
+          # LIST SECTION - Fill these only for 'list' type sections
           - name: items
-            label: List Items
+            label: List Items (for 'list' sections)
             type: object
             list: true
             fields:
               - { name: title, label: Item Title, type: string, required: true }
               - { name: description, label: Item Description, type: text, required: true }
           
+          # TWO-COLUMN SECTION - Fill these only for 'two-column' type sections
           - name: left_column
-            label: Left Column
+            label: Left Column (for 'two-column' sections)
             type: object
             fields:
               - { name: title, label: Title, type: string }
@@ -66,13 +70,14 @@ content:
                   - { name: description, label: Item Description, type: text, required: true }
           
           - name: right_column
-            label: Right Column
+            label: Right Column (for 'two-column' sections)
             type: object
             fields:
               - { name: title, label: Title, type: string }
               - { name: content, label: Content, type: text }
           
-          - { name: description, label: Description, type: text }
-          - { name: button_text, label: Button Text, type: string }
-          - { name: button_url, label: Button URL, type: string }
-          - { name: embed_id, label: Supascribe Embed ID, type: string }
+          # SUBSTACK SECTION - Fill these only for 'substack' type sections
+          - { name: description, label: Description (for 'substack' sections), type: text }
+          - { name: button_text, label: Button Text (for 'substack' sections), type: string }
+          - { name: button_url, label: Button URL (for 'substack' sections), type: string }
+          - { name: embed_id, label: Supascribe Embed ID (for 'substack' sections), type: string }
