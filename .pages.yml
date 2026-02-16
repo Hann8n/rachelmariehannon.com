@@ -1,34 +1,8 @@
 # Pages CMS Configuration
-# Optimized for ease of use and clarity
+# Clean, simple configuration following Pages CMS best practices
 # Access at: https://app.pagescms.org/
 
 media: images
-
-# Reusable components for cleaner configuration
-components:
-  # Paragraph component for text sections
-  paragraph:
-    label: Paragraph
-    type: object
-    fields:
-      - name: text
-        label: Text
-        type: text
-        required: true
-  
-  # List item component
-  list_item:
-    label: List Item
-    type: object
-    fields:
-      - name: title
-        label: Title
-        type: string
-        required: true
-      - name: description
-        label: Description
-        type: text
-        required: true
 
 content:
   - name: site
@@ -65,7 +39,7 @@ content:
         list:
           collapsible:
             collapsed: false
-            summary: "{type} - {title}"
+            summary: "{fields.type} - {fields.title}"
         fields:
           # Section identification
           - name: type
@@ -112,7 +86,11 @@ content:
             list: true
             required: false
             description: For 'text' sections: Add more paragraphs
-            component: paragraph
+            fields:
+              - name: text
+                label: Paragraph Text
+                type: text
+                required: true
           
           # Quote section fields
           - name: quote
@@ -134,7 +112,15 @@ content:
             list: true
             required: false
             description: For 'list' sections: Add items to your list
-            component: list_item
+            fields:
+              - name: title
+                label: Item Title
+                type: string
+                required: true
+              - name: description
+                label: Item Description
+                type: text
+                required: true
           
           # Two-column section fields
           - name: left_column
@@ -153,7 +139,15 @@ content:
                 type: object
                 list: true
                 required: false
-                component: list_item
+                fields:
+                  - name: title
+                    label: Item Title
+                    type: string
+                    required: true
+                  - name: description
+                    label: Item Description
+                    type: text
+                    required: true
           
           - name: right_column
             label: Right Column
