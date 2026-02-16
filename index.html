@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Might Be An Idiot – Rachel Marie Hannon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header" id="top">
+        <div class="site-title-block">
+            <h1 data-content="title">I Might Be An Idiot</h1>
+            <p class="subtitle" data-content="subtitle">Based on True Events</p>
+            <p class="byline">A memoir by <span data-content="author">Rachel Marie Hannon</span></p>
+        </div>
+    </header>
+    
+    <main>
+        <section id="about" class="section section-about">
+            <h2>About <em data-content="title">I Might Be An Idiot</em></h2>
+            <p class="lede" data-content="about_lead">
+                <em>I Might Be An Idiot</em> follows my determined search for popularity as I maintain trails in Arizona
+                following a suspension from my private arts Pennsylvania college.
+            </p>
+            <p data-content="about_second">
+                When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title.
+            </p>
+
+            <div class="about-grid">
+                <div class="about-block">
+                    <h3>Comps</h3>
+                    <ul id="comps-list">
+                        <li><strong>Holes</strong> by Louis Sachar – Light-hearted hero journey of juvenile delinquents doing manual labor in the desert.</li>
+                        <li><strong>Wild</strong> by Cheryl Strayed – Memoir of a woman who resolves conflict with a series of flashbacks.</li>
+                        <li><strong>David Sedaris</strong> – Inspiration for humor and family commentary from works like <em>Me Talk Pretty One Day</em> and <em>Calypso</em>.</li>
+                    </ul>
+                </div>
+
+                <div class="about-block">
+                    <h3>Review</h3>
+                    <blockquote>
+                        “I don’t… well, I found it relatable.”
+                        <span class="quote-attribution">– Rachel Marie Hannon</span>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section id="substack" class="section section-substack">
+            <div class="section-header">
+                <h2 data-content="substack_title">Substack</h2>
+                <p class="section-tagline" data-content="substack_tagline">My life, according to me.</p>
+            </div>
+
+            <p data-content="substack_description">
+                For samples from <em>I Might Be An Idiot</em>, behind-the-scenes stories, and new writing,
+                you can read and subscribe to the Substack:
+            </p>
+
+            <!-- Feed embed code -->
+            <div class="substack-feed-shell">
+                <div data-supascribe-embed-id="588945971728" data-content="substack_embed_id" data-supascribe-feed data-attr="data-supascribe-embed-id"></div>
+            </div>
+
+            <div class="substack-actions">
+                <a class="button primary-button" data-content="substack_button_url" href="https://substack.com/@imightbeanidiot" target="_blank" rel="noopener noreferrer">
+                    <span data-content="substack_button_text">Read more</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>
+            &copy; <span id="year">2026</span> Rachel Marie Hannon.
+        </p>
+    </footer>
+
+    <!-- Supascribe Script -->
+    <script src="https://js.supascribe.com/v1/loader/REHr7B5XuKculT59jyNDl4UUx6x1.js" async></script>
+    
+    <!-- Content Loader -->
+    <script>
+        // Load content from JSON file
+        fetch('/content/site.json')
+            .then(response => response.json())
+            .then(data => {
+                // Update title (handle multiple elements with same data attribute)
+                const titleElements = document.querySelectorAll('[data-content="title"]');
+                titleElements.forEach(el => el.textContent = data.title);
+                document.title = data.title + ' – Rachel Marie Hannon';
+                
+                // Update subtitle
+                document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
+                
+                // Update author
+                document.querySelector('[data-content="author"]').textContent = data.author;
+                
+                // Update about section
+                document.querySelector('[data-content="about_lead"]').textContent = data.about_lead;
+                document.querySelector('[data-content="about_second"]').textContent = data.about_second;
+                
+                // Update comps list
+                const compsList = document.getElementById('comps-list');
+                compsList.innerHTML = data.comps.map(comp => 
+                    `<li><strong>${comp.title}</strong> ${comp.description}</li>`
+                ).join('');
+                
+                // Update review
+                const blockquote = document.querySelector('.about-block blockquote');
+                if (blockquote) {
+                    blockquote.innerHTML = `<span data-content="review_quote">"${data.review.quote}"</span><span class="quote-attribution">– <span data-content="review_attribution">${data.review.attribution}</span></span>`;
+                }
+                
+                // Update Substack section
+                document.querySelector('[data-content="substack_title"]').textContent = data.substack.title;
+                document.querySelector('[data-content="substack_tagline"]').textContent = data.substack.tagline;
+                document.querySelector('[data-content="substack_description"]').textContent = data.substack.description;
+                document.querySelector('[data-content="substack_button_text"]').textContent = data.substack.button_text;
+                document.querySelector('[data-content="substack_button_url"]').href = data.substack.button_url;
+                const embedEl = document.querySelector('[data-content="substack_embed_id"]');
+                if (embedEl) {
+                    embedEl.setAttribute('data-supascribe-embed-id', data.substack.embed_id);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading content:', error);
+                // Content will fall back to default HTML content
+            });
+    </script>
+</body>
+</html>

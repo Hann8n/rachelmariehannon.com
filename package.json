@@ -1,0 +1,11 @@
+{
+  "name": "rachelmariehannon-com",
+  "version": "1.0.0",
+  "description": "Website for Rachel Marie Hannon",
+  "scripts": {
+    "build": "echo 'No build step required - static site'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
