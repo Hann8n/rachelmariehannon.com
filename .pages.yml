@@ -28,36 +28,36 @@ content:
                 - substack
                 - two-column
           
-          - { name: title, label: Section Title, type: string }
-          - { name: tagline, label: Section Tagline, type: string }
-          - { name: id, label: Section ID, type: string }
+          - { name: title, label: Title, type: string }
+          - { name: tagline, label: Tagline, type: string }
+          - { name: id, label: ID, type: string }
           
-          # TEXT SECTION - Fill these only for 'text' type sections
-          - { name: content, label: Main Text Content (for 'text' sections), type: text }
+          # Text section
+          - { name: content, label: Text Content, type: text }
           
           - name: paragraphs
-            label: Additional Paragraphs (for 'text' sections)
+            label: Additional Paragraphs
             type: object
             list: true
             fields:
-              - { name: text, label: Paragraph Text, type: text, required: true }
+              - { name: text, label: Text, type: text, required: true }
           
-          # QUOTE SECTION - Fill these only for 'quote' type sections
-          - { name: quote, label: Quote Text (for 'quote' sections), type: text }
-          - { name: attribution, label: Quote Attribution (for 'quote' sections), type: string }
+          # Quote section
+          - { name: quote, label: Quote, type: text }
+          - { name: attribution, label: Attribution, type: string }
           
-          # LIST SECTION - Fill these only for 'list' type sections
+          # List section
           - name: items
-            label: List Items (for 'list' sections)
+            label: Items
             type: object
             list: true
             fields:
-              - { name: title, label: Item Title, type: string, required: true }
-              - { name: description, label: Item Description, type: text, required: true }
+              - { name: title, label: Title, type: string, required: true }
+              - { name: description, label: Description, type: text, required: true }
           
-          # TWO-COLUMN SECTION - Fill these only for 'two-column' type sections
+          # Two-column section
           - name: left_column
-            label: Left Column (for 'two-column' sections)
+            label: Left Column
             type: object
             fields:
               - { name: title, label: Title, type: string }
@@ -66,18 +66,18 @@ content:
                 type: object
                 list: true
                 fields:
-                  - { name: title, label: Item Title, type: string, required: true }
-                  - { name: description, label: Item Description, type: text, required: true }
+                  - { name: title, label: Title, type: string, required: true }
+                  - { name: description, label: Description, type: text, required: true }
           
           - name: right_column
-            label: Right Column (for 'two-column' sections)
+            label: Right Column
             type: object
             fields:
               - { name: title, label: Title, type: string }
               - { name: content, label: Content, type: text }
           
-          # SUBSTACK SECTION - Fill these only for 'substack' type sections
-          - { name: description, label: Description (for 'substack' sections), type: text }
-          - { name: button_text, label: Button Text (for 'substack' sections), type: string }
-          - { name: button_url, label: Button URL (for 'substack' sections), type: string }
-          - { name: embed_id, label: Supascribe Embed ID (for 'substack' sections), type: string }
+          # Substack section
+          - { name: description, label: Description, type: text }
+          - { name: button_text, label: Button Text, type: string }
+          - { name: button_url, label: Button URL, type: string }
+          - { name: embed_id, label: Embed ID, type: string }
