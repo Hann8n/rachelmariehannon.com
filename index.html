@@ -56,7 +56,7 @@
 
     <footer class="site-footer">
         <p>
-            &copy; <span id="year">2026</span> Rachel Marie Hannon.
+            &copy; <span id="year"></span> Rachel Marie Hannon.
             <span id="footer-socials" class="footer-links"></span>
         </p>
     </footer>
@@ -414,6 +414,12 @@
             return div.innerHTML;
         }
         
+        // Set copyright year to current year (runs immediately)
+        (function() {
+            var yearEl = document.getElementById('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+        })();
+
         // Initialize page
         const container = document.getElementById('sections-container');
         fetch('/content/site.json')
@@ -430,9 +436,6 @@
                 if (data.subtitle) document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
                 if (data.author) document.querySelector('[data-content="author"]').textContent = data.author;
                 
-                // Footer year
-                var yearEl = document.getElementById('year');
-                if (yearEl) yearEl.textContent = new Date().getFullYear();
                 // Render footer socials (with icons)
                 const socialsEl = document.getElementById('footer-socials');
                 if (socialsEl && data.socials?.length) {
