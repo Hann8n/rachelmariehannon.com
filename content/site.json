@@ -33,11 +33,6 @@
       ]
     },
     {
-      "type": "text",
-      "title": "Bio",
-      "content": "Rachel Marie Hannon started writing the day after her first kiss. Slightly less cute than it sounded, she didn't have anyone to talk to. She genuinely thought she was a whore. In college, Rachel made sure she had a class each semester where she could write about trees and her feelings. Now that Rachel is in her thirties, I Might Be An Idiot feels like a really natural extension of the work she began back then. \n\nWorking remotely and living with her parents, I feel really blessed to have this time to write about love. Thank you all for being a part of that journey."
-    },
-    {
       "type": "two-column",
       "id": "comps-review",
       "left_column": {
@@ -61,6 +56,11 @@
         "title": "Review",
         "content": "\"I don't… well, I found it relatable.\"\n\n– Rachel Marie Hannon"
       }
+    },
+    {
+      "type": "text",
+      "title": "Bio",
+      "content": "Rachel Marie Hannon started writing the day after her first kiss. Slightly less cute than it sounded, she didn't have anyone to talk to. She genuinely thought she was a whore. In college, Rachel made sure she had a class each semester where she could write about trees and her feelings. Now that Rachel is in her thirties, I Might Be An Idiot feels like a really natural extension of the work she began back then. \n\nWorking remotely and living with her parents, I feel really blessed to have this time to write about love. Thank you for being a part of that journey."
     },
     {
       "type": "substack",
