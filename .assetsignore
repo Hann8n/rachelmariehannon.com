@@ -1,0 +1,19 @@
+# Dependencies and dev
+node_modules/
+
+# Git and IDE
+.git/
+.cursor/
+.vscode/
+
+# Env and logs
+.env
+.env.*
+*.log
+
+# OS
+.DS_Store
+
+# Optional: uncomment to exclude docs from deployment
+# README.md
+# *.md
