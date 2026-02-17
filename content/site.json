@@ -21,7 +21,7 @@
       "type": "text",
       "title": "About",
       "id": "about",
-      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.",
+      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.\n",
       "paragraphs": [
         {
           "text": "When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title."
@@ -31,6 +31,7 @@
     {
       "type": "substack",
       "title": "Articles",
+      "tagline": "The story behind the story",
       "id": "substack",
       "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
       "button_text": "Read more",
