@@ -646,9 +646,38 @@ blockquote {
 }
 
 /* Projects & Inquiries */
-.section-projects p,
-.section-inquiries p {
+.section-projects p {
     max-width: 38rem;
+}
+
+/* Inquiries layout – title + button row, description below */
+.inquiries-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.inquiries-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.inquiries-header h2 {
+    margin: 0;
+}
+
+.inquiries-description {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--color-text-soft);
+}
+
+/* Mail icon sits low in its path – nudge up to align with Substack icon */
+.section-inquiries .substack-header-link svg {
+    transform: translateY(-1px);
 }
 
 /* Footer */

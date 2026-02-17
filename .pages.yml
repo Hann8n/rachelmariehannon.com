@@ -100,3 +100,13 @@ content:
               - { name: button_text, label: Button text, type: string }
               - { name: button_url, label: Button URL, type: string }
               - { name: embed_id, label: Embed ID, type: string, description: "Unused — feed is free and built from your Substack RSS using the Button URL." }
+
+          - name: inquiries
+            label: Inquiries
+            fields:
+              - { name: title, label: Title, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links (e.g. inquiries)." }
+              - { name: description, label: Intro text, type: text, description: "Short message above the email link." }
+              - { name: button_text, label: Button text, type: string, description: "e.g. Contact, Email me" }
+              - { name: email, label: Email address, type: string, required: true, description: "Contact email (not shown; used for mailto link)" }
