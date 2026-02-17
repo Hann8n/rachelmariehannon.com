@@ -137,6 +137,9 @@
                     imageHtml +
                     '</a>';
             }
+            var loadingHtml = '<div class="substack-feed-loading" aria-busy="true" aria-label="Loading feed"></div>';
+            window.SUBSTACK_SKELETON_HTML = loadingHtml;
+
             function loadSubstackFeeds() {
                 document.querySelectorAll('[data-substack-feed]').forEach(function (el) {
                     const url = el.getAttribute('data-substack-url');
@@ -145,7 +148,9 @@
                         el.innerHTML = '';
                         return;
                     }
-                    el.innerHTML = '<p class="substack-feed-loading">Loading…</p>';
+                    if (!el.querySelector('.substack-feed-loading')) {
+                        el.innerHTML = loadingHtml;
+                    }
                     const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
                     fetch(apiUrl)
                         .then(function (r) {
@@ -329,7 +334,8 @@
                 }
                 if (section.button_url) {
                     parts.push('<div class="substack-feed-shell">');
-                    parts.push(`<div class="substack-feed-list" data-substack-feed data-substack-url="${escapeHtml(section.button_url)}"></div>`);
+                    const skeleton = (typeof window !== 'undefined' && window.SUBSTACK_SKELETON_HTML) ? window.SUBSTACK_SKELETON_HTML : '';
+                    parts.push(`<div class="substack-feed-list" data-substack-feed data-substack-url="${escapeHtml(section.button_url)}">${skeleton}</div>`);
                     parts.push('</div>');
                 }
                 return parts.join('');

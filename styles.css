@@ -616,11 +616,14 @@ blockquote {
     line-height: 1.4;
 }
 
-.substack-feed-list .substack-feed-loading,
 .substack-feed-list .substack-feed-error {
     color: var(--color-text);
     font-size: var(--text-small);
     margin: var(--space-sm) 0;
+}
+
+.substack-feed-list .substack-feed-loading {
+    min-height: 28rem;
 }
 
 .substack-feed-list .substack-feed-error a {
