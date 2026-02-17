@@ -31,9 +31,8 @@
     {
       "type": "substack",
       "title": "Articles",
-      "tagline": "The story behind the story",
+      "tagline": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
       "id": "substack",
-      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
       "button_text": "Read more",
       "button_url": "https://substack.com/@imightbeanidiot",
       "embed_id": "588945971728"
