@@ -29,6 +29,15 @@
       ]
     },
     {
+      "type": "substack",
+      "title": "Articles",
+      "id": "substack",
+      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
+      "button_text": "Read more",
+      "button_url": "https://substack.com/@imightbeanidiot",
+      "embed_id": "588945971728"
+    },
+    {
       "type": "two-column",
       "id": "comps-review",
       "left_column": {
@@ -52,15 +61,6 @@
         "title": "Review",
         "content": "\"I don't… well, I found it relatable.\"\n\n– Rachel Marie Hannon"
       }
-    },
-    {
-      "type": "substack",
-      "title": "Articles",
-      "id": "substack",
-      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
-      "button_text": "Read more",
-      "button_url": "https://substack.com/@imightbeanidiot",
-      "embed_id": "588945971728"
     }
   ]
 }
