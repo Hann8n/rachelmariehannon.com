@@ -9,158 +9,110 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="manifest" href="/favicon/site.webmanifest">
+  <link rel="preload" href="/fonts/lora-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/librebaskerville-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #fafafa;
-      color: #1a1a1a;
-      line-height: 1.6;
-      padding: 2.5rem 1.5rem;
+@font-face{font-family:"Lora";font-style:normal;font-weight:400 600;font-display:optional;src:url("/fonts/lora-normal-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Lora";font-style:italic;font-weight:400;font-display:optional;src:url("/fonts/lora-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Libre Baskerville";font-style:normal;font-weight:400 700;font-display:optional;src:url("/fonts/librebaskerville-normal-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Libre Baskerville";font-style:italic;font-weight:400;font-display:optional;src:url("/fonts/librebaskerville-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+  </style>
+  <link rel="preload" href="/styles.css" as="style">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Admin page – uses design tokens from styles.css */
+    .admin-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       min-height: 100vh;
     }
-    .container {
-      max-width: 780px;
+    .admin-page main {
+      max-width: 720px;
       margin: 0 auto;
+      width: 100%;
     }
-    h1 {
-      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
-      font-size: 2rem;
+    .admin-page .admin-hero {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+    .admin-page .admin-hero h1 {
+      font-size: clamp(var(--text-h1), 5vw, var(--text-display));
       font-weight: 400;
-      margin-bottom: 0.5rem;
-      color: #1a1a1a;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-sm);
+      line-height: var(--leading-tight);
     }
-    .subtitle {
-      font-size: 0.85rem;
-      color: #1a1a1a;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-weight: 400;
-      margin-bottom: 2rem;
+    .admin-page .admin-hero .subtitle {
+      margin-bottom: var(--space-xl);
     }
-    .section {
-      background-color: #fff;
-      border: 1px solid #1a1a1a;
-      border-left: 3px solid #5DB1A3;
-      padding: 2rem 2.25rem;
-      margin-bottom: 1.75rem;
+    .admin-page .button-wrapper {
+      text-align: center;
+      margin: var(--space-xl) 0;
     }
-    .section h2 {
-      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
-      font-size: 1.4rem;
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.01em;
-      color: #1a1a1a;
-    }
-    .section p {
-      margin-bottom: 0.75rem;
-      color: #1a1a1a;
-    }
-    .section a {
-      color: #7B3C25;
+    .admin-page .admin-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-lg) var(--space-2xl);
+      font-size: var(--text-body);
+      font-weight: 500;
+      font-family: var(--font-body);
+      color: var(--color-bg);
+      background-color: var(--color-ink);
+      border: 1px solid var(--color-ink);
       text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.18s ease, color 0.18s ease;
+      transition: opacity var(--transition), background-color var(--transition);
     }
-    .section a:hover {
-      color: #DA8861;
-      border-bottom-color: #DA8861;
+    .admin-page .admin-cta-icon {
+      flex-shrink: 0;
     }
-    .steps {
-      margin-top: 1.5rem;
+    .admin-page .admin-cta:hover {
+      opacity: 0.9;
+      color: var(--color-bg);
     }
-    .steps ol {
-      margin-left: 1.5rem;
-      color: #1a1a1a;
-      line-height: 1.8;
+    .admin-page .admin-cta:focus-visible {
+      outline: 2px solid var(--color-teal);
+      outline-offset: 2px;
     }
-    .steps li {
-      margin-bottom: 0.5rem;
+    .admin-page .admin-note {
+      margin-top: var(--space-2xl);
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 22rem;
+      padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-xl);
+      font-size: var(--text-small);
+      color: var(--color-text-soft);
+      text-align: center;
+      background: rgba(184, 149, 133, 0.1);
+      border-radius: var(--radius-sm);
     }
-    .button-wrapper {
-      text-align: left;
-      margin: 2rem 0;
+    .admin-page .admin-note a {
+      color: var(--color-brown-dark);
+      text-decoration: underline;
+      text-decoration-color: rgba(107, 83, 68, 0.4);
+      text-underline-offset: 0.2em;
+      transition: color var(--transition), text-decoration-color var(--transition);
     }
-    .button {
-      display: inline-block;
-      color: #fff !important;
-      background-color: #1a1a1a;
-      border: 1px solid #1a1a1a;
-      padding: 1rem 2.5rem;
-      text-decoration: none;
-      font-size: 1.1rem;
-      font-weight: 400;
-      transition: opacity 0.18s ease;
-    }
-    .button:hover {
-      opacity: 0.8;
-      color: #fff !important;
-    }
-    .note {
-      background-color: rgba(219, 158, 131, 0.05);
-      border-left: 3px solid #DB9E83;
-      padding: 1rem 1rem 1rem 1.25rem;
-      margin-top: 1.5rem;
-      font-size: 0.9rem;
-      color: #1a1a1a;
-    }
-    .note a {
-      color: #7B3C25;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.18s ease, color 0.18s ease;
-    }
-    .note a:hover {
-      color: #DA8861;
-      border-bottom-color: #DA8861;
-    }
-    @media (max-width: 700px) {
-      body {
-        padding: 2rem 1.25rem;
-      }
-      .section {
-        padding: 1.75rem 1.6rem;
-      }
-      .button {
-        padding: 0.9rem 2rem;
-        font-size: 1rem;
-      }
-    }
-    @media (max-width: 520px) {
-      body {
-        padding: 1.5rem 1rem;
-      }
-      .section {
-        padding: 1.6rem 1.25rem;
-      }
-      .button {
-        padding: 0.85rem 1.75rem;
-        font-size: 0.95rem;
-        width: 100%;
-        max-width: 280px;
-      }
+    .admin-page .admin-note a:hover {
+      color: var(--color-terracotta);
+      text-decoration-color: var(--color-terracotta);
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Hey Rachel!</h1>
-    <p class="subtitle">Ready to update your site?</p>
-    
-    <div class="button-wrapper">
-      <a href="https://app.pagescms.org/" target="_blank" class="button">
-        click here
-      </a>
+<body class="admin-page">
+  <main>
+    <div class="admin-hero">
+      <h1>Hey Rachel!</h1>
+      <p class="subtitle">Ready to update your site?</p>
+      <div class="button-wrapper">
+        <a href="https://app.pagescms.org/" target="_blank" rel="noopener noreferrer" class="admin-cta"><svg class="admin-cta-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 4.8C0 2.14903 2.14903 0 4.8 0H12.0118C13.2848 0 14.5057 0.505713 15.4059 1.40589L22.5941 8.59411C23.4943 9.49429 24 10.7152 24 11.9882V19.2C24 21.851 21.851 24 19.2 24H4.8C2.14903 24 0 21.851 0 19.2V4.8Z"/></svg> click here</a>
+      </div>
     </div>
-
-    <div class="note">
+    <div class="admin-note">
       Not Rachel? <a href="/">Head back to the main site</a>
     </div>
-  </div>
+  </main>
 </body>
 </html>

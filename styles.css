@@ -139,31 +139,31 @@ main {
 
 .main-nav a {
     color: var(--color-text);
-    text-decoration: none;
-    padding-bottom: 0.15rem;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--transition), color var(--transition);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
 }
 
 .main-nav a:hover {
     color: var(--color-brown-dark);
-    border-color: var(--color-brown-dark);
+    text-decoration-color: var(--color-brown-dark);
 }
 
 /* Individual nav link colors */
 .main-nav a[href="#about"]:hover {
     color: var(--color-peach-warm);
-    border-color: var(--color-peach-warm);
+    text-decoration-color: var(--color-peach-warm);
 }
 
 .main-nav a[href="#substack"]:hover {
     color: var(--color-teal);
-    border-color: var(--color-teal);
+    text-decoration-color: var(--color-teal);
 }
 
 .main-nav a[href="#inquiries"]:hover {
     color: var(--color-terracotta);
-    border-color: var(--color-terracotta);
+    text-decoration-color: var(--color-terracotta);
 }
 
 /* Sections – no card; consistent vertical rhythm */
@@ -226,14 +226,15 @@ main {
 
 .section a {
     color: var(--color-brown-dark);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(107, 83, 68, 0.4);
-    transition: color var(--transition), border-color var(--transition);
+    text-decoration: underline;
+    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
 }
 
 .section a:hover {
     color: var(--color-terracotta);
-    border-bottom-color: var(--color-terracotta);
+    text-decoration-color: var(--color-terracotta);
 }
 
 .section a:focus-visible {
@@ -377,9 +378,10 @@ blockquote {
     align-items: center;
     gap: var(--space-sm);
     padding: 0;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color var(--transition), border-color var(--transition);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
     flex-shrink: 0;
     color: var(--color-brown-dark);
     font-size: var(--text-small);
@@ -388,7 +390,7 @@ blockquote {
 
 .substack-header-link:hover {
     color: var(--color-terracotta);
-    border-bottom-color: var(--color-terracotta);
+    text-decoration-color: var(--color-terracotta);
 }
 
 .substack-header-link:focus-visible {
@@ -422,15 +424,17 @@ blockquote {
     font-size: var(--text-small);
     font-weight: 500;
     color: var(--color-brown-dark);
-    border-bottom: 1px solid rgba(107, 83, 68, 0.4);
-    padding-bottom: 0.1rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
     background: none;
     border-radius: 0;
 }
 
 .substack-load-more:hover {
     color: var(--color-terracotta);
-    border-bottom-color: var(--color-terracotta);
+    text-decoration-color: var(--color-terracotta);
 }
 
 .substack-load-more:focus-visible {
@@ -446,22 +450,22 @@ blockquote {
     font-size: var(--text-body);
     font-weight: 500;
     font-family: var(--font-body);
-    text-decoration: none;
     cursor: pointer;
     border: none;
     background: none;
-    transition: color var(--transition), border-color var(--transition);
+    transition: color var(--transition), text-decoration-color var(--transition);
 }
 
 .primary-button {
     color: var(--color-brown-dark);
-    border-bottom: 1px solid rgba(107, 83, 68, 0.4);
-    padding-bottom: 0.1rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-underline-offset: 0.2em;
 }
 
 .primary-button:hover {
     color: var(--color-terracotta);
-    border-bottom-color: var(--color-terracotta);
+    text-decoration-color: var(--color-terracotta);
 }
 
 .primary-button:focus-visible {
@@ -657,15 +661,15 @@ blockquote {
 
 .site-footer a {
     color: var(--color-text-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 0.1rem;
-    transition: border-color var(--transition), color var(--transition);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
 }
 
 .site-footer a:hover {
     color: var(--color-peach-warm);
-    border-color: var(--color-peach-warm);
+    text-decoration-color: var(--color-peach-warm);
 }
 
 .footer-links {
