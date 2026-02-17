@@ -23,9 +23,14 @@
   "sections": [
     {
       "type": "text",
+      "title": "Bio",
+      "content": "Rachel Marie Hannon started writing the day after her first kiss. Slightly less cute than it sounded, she didn't have anyone to talk to. She genuinely thought she was a whore. In college, Rachel made sure she had a class each semester where she could write about trees and her feelings. Now that Rachel is in her thirties, I Might Be An Idiot feels like a really natural extension of the work she began back then. \n\nWorking remotely and living with her parents, I feel really blessed to have this time to write about love. Thank you all for being a part of that journey."
+    },
+    {
+      "type": "text",
       "title": "About",
       "id": "about",
-      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from my private arts Pennsylvania college.",
+      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from Bucknell University.",
       "paragraphs": [
         {
           "text": "When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title."
