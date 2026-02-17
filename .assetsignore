@@ -14,6 +14,9 @@ node_modules/
 # OS
 .DS_Store
 
+# Wrangler build artifacts
+.wrangler/
+
 # Optional: uncomment to exclude docs from deployment
 # README.md
 # *.md

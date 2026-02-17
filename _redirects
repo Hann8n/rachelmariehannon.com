@@ -1,3 +1,3 @@
 # Cloudflare Pages redirects file
-# This ensures the admin interface is accessible
-/admin/*  /admin/index.html  200
+# /admin and /admin/ are served by Workers static assets as /admin/index.html by default.
+# Removed /admin/* -> /admin/index.html 200 to avoid infinite redirect loop (code 10021).
