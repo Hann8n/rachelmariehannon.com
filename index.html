@@ -432,7 +432,7 @@
             const placeId = (options && options.placeId ? String(options.placeId) : '').trim();
             const mapsUrl = options && options.mapsUrl ? String(options.mapsUrl) : '';
             const fallbackUrl = normalizeUrl(options && options.fallbackUrl ? String(options.fallbackUrl) : '');
-            const destination = [options?.destination, options?.venue, options?.city].filter(Boolean).join(', ').trim();
+            const destination = [options?.venue, options?.city].filter(Boolean).join(', ').trim();
             const latLng = extractLatLngFromMapsUrl(mapsUrl) || extractLatLngFromMapsUrl(fallbackUrl);
 
             let google = '';
@@ -481,7 +481,6 @@
                 '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
                 '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
                 '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
-                '<button type="button" class="directions-picker-option" data-provider="copy">Copy address</button>' +
                 '</div>' +
                 '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
                 '</div>';
@@ -497,7 +496,6 @@
             overlay.removeAttribute('data-google-url');
             overlay.removeAttribute('data-apple-url');
             overlay.removeAttribute('data-waze-url');
-            overlay.removeAttribute('data-copy-text');
         }
 
         function openDirectionsPicker(urls, label) {
@@ -510,42 +508,16 @@
             overlay.setAttribute('data-google-url', urls.google || '');
             overlay.setAttribute('data-apple-url', urls.apple || '');
             overlay.setAttribute('data-waze-url', urls.waze || '');
-            overlay.setAttribute('data-copy-text', urls.destination || '');
             overlay.hidden = false;
             overlay.setAttribute('data-open', 'true');
 
-            ['apple', 'google', 'waze', 'copy'].forEach((provider) => {
+            ['apple', 'google', 'waze'].forEach((provider) => {
                 const btn = overlay.querySelector('[data-provider="' + provider + '"]');
                 if (!btn) return;
-                const hasUrl = provider === 'copy' ? Boolean(urls.destination) : Boolean(urls[provider]);
+                const hasUrl = Boolean(urls[provider]);
                 btn.disabled = !hasUrl;
                 btn.setAttribute('aria-disabled', String(!hasUrl));
             });
-        }
-
-        async function copyTextToClipboard(text) {
-            if (!text) return false;
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(text);
-                    return true;
-                }
-            } catch (_) {}
-
-            try {
-                const input = document.createElement('textarea');
-                input.value = text;
-                input.setAttribute('readonly', 'readonly');
-                input.style.position = 'fixed';
-                input.style.opacity = '0';
-                document.body.appendChild(input);
-                input.select();
-                const copied = document.execCommand('copy');
-                input.remove();
-                return copied;
-            } catch (_) {
-                return false;
-            }
         }
 
         function initializeDirectionsPicker() {
@@ -564,16 +536,6 @@
                     const overlay = document.getElementById('directions-picker');
                     if (!overlay) return;
                     const provider = providerButton.getAttribute('data-provider');
-                    if (provider === 'copy') {
-                        const text = overlay.getAttribute('data-copy-text') || '';
-                        const originalLabel = providerButton.textContent || 'Copy address';
-                        const copied = await copyTextToClipboard(text);
-                        providerButton.textContent = copied ? 'Copied!' : 'Unable to copy';
-                        setTimeout(() => {
-                            providerButton.textContent = originalLabel;
-                        }, 1000);
-                        return;
-                    }
                     const url = overlay.getAttribute('data-' + provider + '-url');
                     if (url) {
                         window.open(url, '_blank', 'noopener,noreferrer');
@@ -592,10 +554,7 @@
                 const venue = card ? (card.getAttribute('data-venue') || '').trim() : '';
                 const city = card ? (card.getAttribute('data-city') || '').trim() : '';
                 const fallbackUrl = directionsLink.getAttribute('href') || '';
-                const address = card ? (card.getAttribute('data-address') || '').trim() : '';
-                const destination = address || [venue, city].filter(Boolean).join(', ').trim();
-                const urls = buildDirectionsProviderUrls({ placeId, mapsUrl, venue, city, destination, fallbackUrl });
-                urls.destination = destination;
+                const urls = buildDirectionsProviderUrls({ placeId, mapsUrl, venue, city, fallbackUrl });
 
                 if (!urls.fallback) return;
                 openDirectionsPicker(urls, venue || '');
@@ -627,7 +586,6 @@
                 const data = await response.json();
                 const normalized = {
                     name: typeof data.name === 'string' ? data.name : '',
-                    formattedAddress: typeof data.formattedAddress === 'string' ? data.formattedAddress : '',
                     url: normalizeUrl(data.url),
                     photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : '',
                     resolvedPlaceId: typeof data.resolvedPlaceId === 'string' ? data.resolvedPlaceId : ''
@@ -664,10 +622,6 @@
 
                 if (!placeIdAttr && place.resolvedPlaceId) {
                     card.setAttribute('data-place-id', place.resolvedPlaceId);
-                }
-
-                if (place.formattedAddress) {
-                    card.setAttribute('data-address', place.formattedAddress);
                 }
 
                 const directionsLink = card.querySelector('.event-directions');

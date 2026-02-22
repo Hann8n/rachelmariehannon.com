@@ -113,7 +113,7 @@ async function handlePlaceDetails(request, env) {
   const detailsUrl =
     "https://maps.googleapis.com/maps/api/place/details/json?place_id=" +
     encodeURIComponent(resolvedPlaceId) +
-    "&fields=name,formatted_address,url,photos&key=" +
+    "&fields=name,url,photos&key=" +
     encodeURIComponent(apiKey);
 
   const detailsResp = await fetch(detailsUrl);
@@ -138,7 +138,6 @@ async function handlePlaceDetails(request, env) {
     {
       resolvedPlaceId,
       name: details.result.name || "",
-      formattedAddress: details.result.formatted_address || "",
       url: details.result.url || "",
       photoUrl,
     },
