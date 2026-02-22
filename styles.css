@@ -22,14 +22,20 @@
     --space-xl: 1.5rem;
     --space-2xl: 2rem;
     --space-3xl: 2.5rem;
-    /* Colors – sepia palette: warm ink, parchment, muted complementary */
-    --color-ink: #2C2420;
-    --color-ink-soft: #5C534A;
-    --color-sepia: #6B5344;
-    --color-sepia-warm: #A66B4A;
-    --color-clay: #B89585;
-    --color-parchment: #E8DED4;
-    --color-sage: #5A7B6E;
+    /* Colors – HSL palette built from user-provided hex values */
+    --hue-ink: 0;
+    --hue-charcoal: 270;
+    --hue-peach: 19;
+    --hue-blush: 12;
+    --hue-teal: 191;
+
+    --color-ink: hsl(var(--hue-ink) 20% 5%);            /* #0F0A0A */
+    --color-ink-soft: hsl(var(--hue-charcoal) 3% 20%);
+    --color-sepia: hsl(var(--hue-charcoal) 3% 14%);     /* #222123 family */
+    --color-sepia-warm: hsl(var(--hue-peach) 52% 40%);
+    --color-clay: hsl(var(--hue-peach) 46% 52%);
+    --color-parchment: hsl(var(--hue-blush) 31% 82%);   /* #DFC8C2 */
+    --color-sage: hsl(var(--hue-teal) 60% 36%);
     /* Aliases for existing usage */
     --color-text: var(--color-ink);
     --color-text-soft: var(--color-ink-soft);
@@ -38,13 +44,15 @@
     --color-peach-warm: var(--color-clay);
     --color-peach-light: var(--color-parchment);
     --color-teal: var(--color-sage);
-    --color-bg: #F5F0E8;
-    --color-bg-card: #FAF7F2;
-    --color-border: rgba(44, 36, 32, 0.12);
+    --color-interactive: var(--color-brown-dark);
+    --color-interactive-hover: hsl(var(--hue-teal) 68% 28%);
+    --color-bg: hsl(var(--hue-charcoal) 15% 95%);
+    --color-bg-card: hsl(var(--hue-charcoal) 18% 97%);
+    --color-border: hsl(var(--hue-ink) 20% 5% / 0.12);
     --radius: 8px;
     --radius-sm: 4px;
-    --shadow: 0 1px 3px rgba(44, 36, 32, 0.06);
-    --shadow-hover: 0 4px 12px rgba(44, 36, 32, 0.08);
+    --shadow: 0 1px 3px hsl(var(--hue-ink) 20% 5% / 0.06);
+    --shadow-hover: 0 4px 12px hsl(var(--hue-ink) 20% 5% / 0.08);
     --transition: 0.2s ease;
     --font-heading: "Libre Baskerville", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
     --font-body: "Lora", Georgia, "Times New Roman", serif;
@@ -152,8 +160,8 @@ main {
 
 /* Individual nav link colors */
 .main-nav a[href="#about"]:hover {
-    color: var(--color-peach-warm);
-    text-decoration-color: var(--color-peach-warm);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .main-nav a[href="#substack"]:hover {
@@ -162,8 +170,8 @@ main {
 }
 
 .main-nav a[href="#inquiries"]:hover {
-    color: var(--color-terracotta);
-    text-decoration-color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 /* Sections – no card; consistent vertical rhythm */
@@ -186,7 +194,7 @@ main {
 }
 
 .section-error {
-    color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
     font-weight: 500;
     font-size: var(--text-body);
 }
@@ -225,16 +233,16 @@ main {
 }
 
 .section a {
-    color: var(--color-brown-dark);
+    color: var(--color-interactive);
     text-decoration: underline;
-    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
     text-underline-offset: 0.2em;
     transition: color var(--transition), text-decoration-color var(--transition);
 }
 
 .section a:hover {
-    color: var(--color-terracotta);
-    text-decoration-color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .section a:focus-visible {
@@ -326,12 +334,12 @@ main {
 blockquote {
     margin: var(--space-md) 0 0 0;
     padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-xl);
-    border-left: 4px solid var(--color-peach-warm);
+    border-left: 4px solid hsl(var(--hue-teal) 60% 40%);
     color: var(--color-text);
     font-size: var(--text-lead);
     font-style: italic;
     line-height: var(--leading-relaxed);
-    background: rgba(184, 149, 133, 0.1);
+    background: hsl(var(--hue-teal) 42% 90% / 0.45);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
@@ -378,7 +386,7 @@ blockquote {
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-lg);
-    background: rgba(166, 107, 74, 0.15);
+    background: hsl(var(--hue-charcoal) 12% 92%);
     border-radius: var(--radius-sm);
     text-decoration: none !important;
     transition: color var(--transition), background var(--transition);
@@ -389,8 +397,8 @@ blockquote {
 }
 
 .substack-header-link:hover {
-    color: var(--color-terracotta);
-    background: rgba(166, 107, 74, 0.25);
+    color: var(--color-ink);
+    background: hsl(var(--hue-teal) 42% 88% / 0.55);
 }
 
 .substack-header-link:focus-visible {
@@ -423,9 +431,9 @@ blockquote {
     font-family: var(--font-body);
     font-size: var(--text-small);
     font-weight: 500;
-    color: var(--color-brown-dark);
+    color: var(--color-interactive);
     text-decoration: underline;
-    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
     text-underline-offset: 0.2em;
     transition: color var(--transition), text-decoration-color var(--transition);
     background: none;
@@ -433,8 +441,8 @@ blockquote {
 }
 
 .substack-load-more:hover {
-    color: var(--color-terracotta);
-    text-decoration-color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .substack-load-more:focus-visible {
@@ -457,15 +465,15 @@ blockquote {
 }
 
 .primary-button {
-    color: var(--color-brown-dark);
+    color: var(--color-interactive);
     text-decoration: underline;
-    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
     text-underline-offset: 0.2em;
 }
 
 .primary-button:hover {
-    color: var(--color-terracotta);
-    text-decoration-color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .primary-button:focus-visible {
@@ -522,7 +530,7 @@ blockquote {
 }
 
 .substack-feed-card:hover {
-    background: rgba(90, 123, 110, 0.08);
+    background: hsl(var(--hue-teal) 60% 45% / 0.12);
     text-decoration: none;
 }
 
@@ -695,7 +703,7 @@ blockquote {
     padding: 0.35rem 0.45rem 0.4rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    background: rgba(44, 36, 32, 0.04);
+    background: hsl(var(--hue-ink) 20% 5% / 0.04);
     text-align: center;
     line-height: 1;
 }
@@ -754,16 +762,16 @@ blockquote {
 
 .event-link {
     font-size: var(--text-small);
-    color: var(--color-brown-dark);
+    color: var(--color-interactive);
     text-decoration: underline;
-    text-decoration-color: rgba(107, 83, 68, 0.4);
+    text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
     text-underline-offset: 0.2em;
     font-weight: 500;
 }
 
 .event-link:hover {
-    color: var(--color-terracotta);
-    text-decoration-color: var(--color-terracotta);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .event-card-media {
@@ -777,7 +785,7 @@ blockquote {
     border-radius: var(--radius-sm);
     overflow: hidden;
     border: 1px solid var(--color-border);
-    background: rgba(44, 36, 32, 0.04);
+    background: hsl(var(--hue-ink) 20% 5% / 0.04);
 }
 
 .event-photo img {
@@ -793,7 +801,7 @@ blockquote {
     height: 100%;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    background: rgba(44, 36, 32, 0.04);
+    background: hsl(var(--hue-ink) 20% 5% / 0.04);
 }
 
 @media (max-width: 600px) {
@@ -865,8 +873,8 @@ blockquote {
 }
 
 .site-footer a:hover {
-    color: var(--color-peach-warm);
-    text-decoration-color: var(--color-peach-warm);
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-interactive-hover);
 }
 
 .footer-links {
@@ -886,7 +894,7 @@ blockquote {
 }
 
 .footer-social-link:hover {
-    color: var(--color-peach-warm);
+    color: var(--color-interactive-hover);
 }
 
 .footer-social-link:focus-visible {
