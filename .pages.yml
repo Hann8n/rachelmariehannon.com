@@ -177,7 +177,7 @@ content:
                   - name: place_id
                     label: Google Place ID (optional)
                     type: string
-                    description: Best for reliable photos + map pin placement. Find a Place ID here: https://thrivemediagrp.com/resources/google-place-id-finder/
+                    description: "Best for reliable photos + map pin placement. Find a Place ID here: https://thrivemediagrp.com/resources/google-place-id-finder/"
                     pattern:
                       regex: "^[A-Za-z0-9_-]{10,}$"
                       message: "Place ID should be at least 10 characters and use letters, numbers, underscores, or hyphens."
