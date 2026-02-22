@@ -411,6 +411,203 @@
             return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
         }
 
+        function extractLatLngFromMapsUrl(urlText) {
+            const normalized = normalizeUrl(urlText);
+            if (!normalized) return null;
+            try {
+                const parsed = new URL(normalized);
+                const atMatch = parsed.pathname.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+                if (atMatch) return { lat: atMatch[1], lng: atMatch[2] };
+
+                const ll = parsed.searchParams.get('ll') || parsed.searchParams.get('sll');
+                if (ll && /^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$/.test(ll)) {
+                    const [lat, lng] = ll.split(',');
+                    return { lat, lng };
+                }
+            } catch (_) {}
+            return null;
+        }
+
+        function buildDirectionsProviderUrls(options) {
+            const placeId = (options && options.placeId ? String(options.placeId) : '').trim();
+            const mapsUrl = options && options.mapsUrl ? String(options.mapsUrl) : '';
+            const fallbackUrl = normalizeUrl(options && options.fallbackUrl ? String(options.fallbackUrl) : '');
+            const destination = [options?.destination, options?.venue, options?.city].filter(Boolean).join(', ').trim();
+            const latLng = extractLatLngFromMapsUrl(mapsUrl) || extractLatLngFromMapsUrl(fallbackUrl);
+
+            let google = '';
+            if (destination || placeId) {
+                const destinationValue = destination || ('place_id:' + placeId);
+                google = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(destinationValue);
+                if (placeId) {
+                    google += '&destination_place_id=' + encodeURIComponent(placeId);
+                }
+            } else if (fallbackUrl) {
+                google = fallbackUrl;
+            }
+
+            const apple = destination
+                ? 'https://maps.apple.com/?daddr=' + encodeURIComponent(destination) + '&dirflg=d'
+                : '';
+
+            let waze = '';
+            if (latLng) {
+                waze = 'https://waze.com/ul?ll=' + encodeURIComponent(latLng.lat + ',' + latLng.lng) + '&navigate=yes';
+            } else if (destination) {
+                waze = 'https://waze.com/ul?q=' + encodeURIComponent(destination) + '&navigate=yes';
+            }
+
+            return {
+                google,
+                apple,
+                waze,
+                fallback: google || fallbackUrl || ''
+            };
+        }
+
+        function getDirectionsDialog() {
+            let overlay = document.getElementById('directions-picker');
+            if (overlay) return overlay;
+
+            overlay = document.createElement('div');
+            overlay.id = 'directions-picker';
+            overlay.className = 'directions-picker';
+            overlay.hidden = true;
+            overlay.innerHTML =
+                '<div class="directions-picker-backdrop" data-close-directions-picker></div>' +
+                '<div class="directions-picker-panel" role="dialog" aria-modal="true" aria-labelledby="directions-picker-title">' +
+                '<h3 id="directions-picker-title">Open directions in</h3>' +
+                '<div class="directions-picker-actions">' +
+                '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
+                '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
+                '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
+                '<button type="button" class="directions-picker-option" data-provider="copy">Copy address</button>' +
+                '</div>' +
+                '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
+                '</div>';
+            document.body.appendChild(overlay);
+            return overlay;
+        }
+
+        function closeDirectionsPicker() {
+            const overlay = document.getElementById('directions-picker');
+            if (!overlay) return;
+            overlay.hidden = true;
+            overlay.removeAttribute('data-open');
+            overlay.removeAttribute('data-google-url');
+            overlay.removeAttribute('data-apple-url');
+            overlay.removeAttribute('data-waze-url');
+            overlay.removeAttribute('data-copy-text');
+        }
+
+        function openDirectionsPicker(urls, label) {
+            const overlay = getDirectionsDialog();
+            const title = overlay.querySelector('#directions-picker-title');
+            if (title) {
+                title.textContent = 'Open directions in:';
+            }
+
+            overlay.setAttribute('data-google-url', urls.google || '');
+            overlay.setAttribute('data-apple-url', urls.apple || '');
+            overlay.setAttribute('data-waze-url', urls.waze || '');
+            overlay.setAttribute('data-copy-text', urls.destination || '');
+            overlay.hidden = false;
+            overlay.setAttribute('data-open', 'true');
+
+            ['apple', 'google', 'waze', 'copy'].forEach((provider) => {
+                const btn = overlay.querySelector('[data-provider="' + provider + '"]');
+                if (!btn) return;
+                const hasUrl = provider === 'copy' ? Boolean(urls.destination) : Boolean(urls[provider]);
+                btn.disabled = !hasUrl;
+                btn.setAttribute('aria-disabled', String(!hasUrl));
+            });
+        }
+
+        async function copyTextToClipboard(text) {
+            if (!text) return false;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                }
+            } catch (_) {}
+
+            try {
+                const input = document.createElement('textarea');
+                input.value = text;
+                input.setAttribute('readonly', 'readonly');
+                input.style.position = 'fixed';
+                input.style.opacity = '0';
+                document.body.appendChild(input);
+                input.select();
+                const copied = document.execCommand('copy');
+                input.remove();
+                return copied;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function initializeDirectionsPicker() {
+            if (document.body.dataset.directionsPickerReady === 'true') return;
+            document.body.dataset.directionsPickerReady = 'true';
+
+            document.addEventListener('click', async (event) => {
+                const closeTrigger = event.target.closest('[data-close-directions-picker]');
+                if (closeTrigger) {
+                    closeDirectionsPicker();
+                    return;
+                }
+
+                const providerButton = event.target.closest('.directions-picker-option[data-provider]');
+                if (providerButton) {
+                    const overlay = document.getElementById('directions-picker');
+                    if (!overlay) return;
+                    const provider = providerButton.getAttribute('data-provider');
+                    if (provider === 'copy') {
+                        const text = overlay.getAttribute('data-copy-text') || '';
+                        const originalLabel = providerButton.textContent || 'Copy address';
+                        const copied = await copyTextToClipboard(text);
+                        providerButton.textContent = copied ? 'Copied!' : 'Unable to copy';
+                        setTimeout(() => {
+                            providerButton.textContent = originalLabel;
+                        }, 1000);
+                        return;
+                    }
+                    const url = overlay.getAttribute('data-' + provider + '-url');
+                    if (url) {
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                    }
+                    closeDirectionsPicker();
+                    return;
+                }
+
+                const directionsLink = event.target.closest('.event-directions');
+                if (!directionsLink) return;
+                event.preventDefault();
+
+                const card = directionsLink.closest('.event-card');
+                const placeId = card ? (card.getAttribute('data-place-id') || '').trim() : '';
+                const mapsUrl = card ? (card.getAttribute('data-google-maps-url') || '').trim() : '';
+                const venue = card ? (card.getAttribute('data-venue') || '').trim() : '';
+                const city = card ? (card.getAttribute('data-city') || '').trim() : '';
+                const fallbackUrl = directionsLink.getAttribute('href') || '';
+                const address = card ? (card.getAttribute('data-address') || '').trim() : '';
+                const destination = address || [venue, city].filter(Boolean).join(', ').trim();
+                const urls = buildDirectionsProviderUrls({ placeId, mapsUrl, venue, city, destination, fallbackUrl });
+                urls.destination = destination;
+
+                if (!urls.fallback) return;
+                openDirectionsPicker(urls, venue || '');
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeDirectionsPicker();
+                }
+            });
+        }
+
         async function fetchPlaceDetails(options) {
             const placeId = options && typeof options.placeId === 'string' ? options.placeId.trim() : '';
             const mapsUrl = options && typeof options.mapsUrl === 'string' ? options.mapsUrl.trim() : '';
@@ -430,6 +627,7 @@
                 const data = await response.json();
                 const normalized = {
                     name: typeof data.name === 'string' ? data.name : '',
+                    formattedAddress: typeof data.formattedAddress === 'string' ? data.formattedAddress : '',
                     url: normalizeUrl(data.url),
                     photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : '',
                     resolvedPlaceId: typeof data.resolvedPlaceId === 'string' ? data.resolvedPlaceId : ''
@@ -468,6 +666,10 @@
                     card.setAttribute('data-place-id', place.resolvedPlaceId);
                 }
 
+                if (place.formattedAddress) {
+                    card.setAttribute('data-address', place.formattedAddress);
+                }
+
                 const directionsLink = card.querySelector('.event-directions');
                 if (directionsLink && place.url) {
                     directionsLink.setAttribute('href', place.url);
@@ -483,6 +685,7 @@
         }
 
         async function initializeEventEnhancements() {
+            initializeDirectionsPicker();
             await enrichEventCardsWithPlaceData();
         }
         
