@@ -679,12 +679,42 @@ blockquote {
     min-width: 0;
 }
 
-.event-date-time {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm) var(--space-md);
-    align-items: center;
-    margin-bottom: var(--space-xs);
+.event-card-heading {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: start;
+}
+
+.event-heading-content {
+    min-width: 0;
+}
+
+.event-date-badge {
+    min-width: 3.1rem;
+    padding: 0.35rem 0.45rem 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: rgba(44, 36, 32, 0.04);
+    text-align: center;
+    line-height: 1;
+}
+
+.event-date-badge-month {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+    margin-bottom: 0.2rem;
+}
+
+.event-date-badge-day {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-brown-dark);
+    font-family: var(--font-heading);
 }
 
 .event-date {
@@ -694,15 +724,12 @@ blockquote {
     color: var(--color-text-soft);
 }
 
-.event-time {
-    font-size: var(--text-caption);
-    font-weight: 600;
-    color: var(--color-brown-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.45rem;
-    border-radius: var(--radius-sm);
-    background: rgba(166, 107, 74, 0.14);
+.event-meta {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--text-small);
+    font-weight: 400;
+    color: var(--color-text-soft);
+    letter-spacing: 0.01em;
 }
 
 .event-venue {
@@ -712,12 +739,6 @@ blockquote {
     color: var(--color-text);
     font-family: var(--font-heading);
     font-weight: 600;
-}
-
-.event-city {
-    color: var(--color-text-soft);
-    margin-bottom: var(--space-sm);
-    font-size: var(--text-small);
 }
 
 .event-details {
@@ -908,6 +929,11 @@ blockquote {
 
     .event-card-layout {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .event-card-heading {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-xs);
     }
 
     .event-card {
