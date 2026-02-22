@@ -165,7 +165,7 @@ content:
                       time: true
                       format: "yyyy-MM-dd'T'HH:mm"
                   - { name: venue, label: Venue, type: string, required: true }
-                  - { name: city, label: City, type: string, required: true }
+                  - { name: city, label: City, State, type: string, required: true, description: "Use format: City, ST (e.g., Philadelphia, PA)." }
                   - { name: details, label: Details/Notes, type: text }
                   - name: link
                     label: Link (signup/ticket/FB event)

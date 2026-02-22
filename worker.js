@@ -90,60 +90,6 @@ async function resolvePlaceId(apiKey, { placeId, mapsUrl, query }) {
   return isValidId(candidateId) ? candidateId : "";
 }
 
-function deriveCityFromPlaceResult(result) {
-  if (!result || typeof result !== "object") return "";
-
-  const components = Array.isArray(result.address_components)
-    ? result.address_components
-    : [];
-  const byType = (type) =>
-    components.find((component) => Array.isArray(component.types) && component.types.includes(type));
-
-  const locality =
-    byType("locality") ||
-    byType("postal_town") ||
-    byType("administrative_area_level_3") ||
-    byType("sublocality");
-
-  if (locality?.long_name) return locality.long_name;
-
-  const formatted = typeof result.formatted_address === "string" ? result.formatted_address : "";
-  if (!formatted) return "";
-  const [first] = formatted.split(",");
-  return (first || "").trim();
-}
-
-function deriveLocationLabelFromPlaceResult(result) {
-  if (!result || typeof result !== "object") return "";
-
-  const components = Array.isArray(result.address_components)
-    ? result.address_components
-    : [];
-  const byType = (type) =>
-    components.find((component) => Array.isArray(component.types) && component.types.includes(type));
-
-  const cityComponent =
-    byType("locality") ||
-    byType("postal_town") ||
-    byType("administrative_area_level_3") ||
-    byType("sublocality");
-  const stateComponent = byType("administrative_area_level_1");
-  const countryComponent = byType("country");
-
-  const city = cityComponent?.long_name || deriveCityFromPlaceResult(result);
-  const stateCode = stateComponent?.short_name || "";
-  const countryCode = countryComponent?.short_name || "";
-  const countryName = countryComponent?.long_name || "";
-
-  if (countryCode === "US") {
-    if (city && stateCode) return city + ", " + stateCode;
-    return city || stateCode || "";
-  }
-
-  if (city && countryName) return city + ", " + countryName;
-  return city || countryName || "";
-}
-
 async function handlePlaceDetails(request, env) {
   if (request.method !== "GET") {
     return json({ error: "Method not allowed" }, 405);
@@ -167,7 +113,7 @@ async function handlePlaceDetails(request, env) {
   const detailsUrl =
     "https://maps.googleapis.com/maps/api/place/details/json?place_id=" +
     encodeURIComponent(resolvedPlaceId) +
-    "&fields=name,url,photos,formatted_address,address_components&key=" +
+    "&fields=name,url,photos&key=" +
     encodeURIComponent(apiKey);
 
   const detailsResp = await fetch(detailsUrl);
@@ -187,8 +133,6 @@ async function handlePlaceDetails(request, env) {
   const photoUrl = photoRef
     ? "/api/place-photo?photoRef=" + encodeURIComponent(photoRef)
     : "";
-  const city = deriveCityFromPlaceResult(details.result);
-  const locationLabel = deriveLocationLabelFromPlaceResult(details.result);
 
   return json(
     {
@@ -196,8 +140,6 @@ async function handlePlaceDetails(request, env) {
       name: details.result.name || "",
       url: details.result.url || "",
       photoUrl,
-      city,
-      locationLabel,
     },
     200,
     { "cache-control": "public, max-age=300, s-maxage=300" }

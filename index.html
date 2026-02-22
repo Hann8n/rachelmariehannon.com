@@ -431,8 +431,6 @@
                     name: typeof data.name === 'string' ? data.name : '',
                     url: normalizeUrl(data.url),
                     photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : '',
-                    city: typeof data.city === 'string' ? data.city.trim() : '',
-                    locationLabel: typeof data.locationLabel === 'string' ? data.locationLabel.trim() : '',
                     resolvedPlaceId: typeof data.resolvedPlaceId === 'string' ? data.resolvedPlaceId : ''
                 };
                 placeDetailsCache.set(cacheKey, normalized);
@@ -467,27 +465,6 @@
 
                 if (!placeIdAttr && place.resolvedPlaceId) {
                     card.setAttribute('data-place-id', place.resolvedPlaceId);
-                }
-
-                const locationLabel = (place.locationLabel || place.city || '').trim();
-                if (locationLabel) {
-                    card.setAttribute('data-city', locationLabel);
-                    const timeLabel = (card.getAttribute('data-event-time') || '').trim();
-                    const metaParts = [locationLabel, timeLabel].filter(Boolean);
-                    const metaText = metaParts.join(' • ');
-                    const metaEl = card.querySelector('.event-meta');
-                    if (metaEl) {
-                        metaEl.textContent = metaText;
-                    } else if (metaText) {
-                        const headingContent = card.querySelector('.event-heading-content');
-                        const detailsEl = card.querySelector('.event-details');
-                        if (headingContent) {
-                            const newMeta = document.createElement('p');
-                            newMeta.className = 'event-meta';
-                            newMeta.textContent = metaText;
-                            headingContent.insertBefore(newMeta, detailsEl || null);
-                        }
-                    }
                 }
 
                 const directionsLink = card.querySelector('.event-directions');
@@ -671,11 +648,12 @@
                     const hasEventLink = Boolean(eventLink);
                     const hasDirections = Boolean(directionsUrl);
                     const eventMetaParts = [];
+                    if (eventEntry.city) eventMetaParts.push(escapeHtml(eventEntry.city));
                     if (eventTimeLabel) eventMetaParts.push(escapeHtml(eventTimeLabel));
                     const eventMeta = eventMetaParts.join(' • ');
 
                     parts.push(
-                        `<article class="event-card" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-time="${escapeHtml(eventTimeLabel || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
+                        `<article class="event-card" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
                     );
                     parts.push('<div class="event-card-layout">');
                     parts.push('<div class="event-card-main">');
