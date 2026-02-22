@@ -57,7 +57,7 @@
 
     <footer class="site-footer">
         <p>
-            &copy; <span id="year"></span> Rachel Marie Hannon.
+            <span class="footer-copyright">&copy; <span id="year"></span> Rachel Marie Hannon.</span>
             <span id="footer-socials" class="footer-links"></span>
         </p>
     </footer>
@@ -193,13 +193,9 @@
                             container.innerHTML = allItems.slice(0, displayedCount).map(renderFeedItem).join('');
                             
                             const loadMoreBtn = document.createElement('button');
-                            loadMoreBtn.className = 'button primary-button substack-load-more';
+                            loadMoreBtn.className = 'button secondary-button substack-load-more';
                             loadMoreBtn.textContent = 'Load more';
                             loadMoreBtn.type = 'button';
-                            loadMoreBtn.style.marginTop = '1rem';
-                            loadMoreBtn.style.display = 'block';
-                            loadMoreBtn.style.marginLeft = 'auto';
-                            loadMoreBtn.style.marginRight = 'auto';
                             
                             if (displayedCount >= allItems.length) {
                                 loadMoreBtn.style.display = 'none';
@@ -827,8 +823,10 @@
                     }
 
                     parts.push('<div class="event-heading-content">');
+                    parts.push('<div class="event-heading-copy">');
                     if (eventEntry.venue) parts.push(`<h3 class="event-venue">${escapeHtml(eventEntry.venue)}</h3>`);
                     if (eventMeta) parts.push(`<p class="event-meta">${eventMeta}</p>`);
+                    parts.push('</div>');
                     if (hasDetails) parts.push(`<p class="event-details">${escapeHtml(eventEntry.details)}</p>`);
 
                     if (hasEventLink || hasDirections) {
