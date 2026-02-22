@@ -1,5 +1,6 @@
 /* Design system – type scale: Minor Third (1.2), base 1rem */
 :root {
+    color-scheme: light dark;
     /* Type scale (rem) */
     --text-caption: 0.694rem;   /* ~11px – labels, tags, meta */
     --text-small: 0.833rem;    /* ~13px – secondary, footer, overline */
@@ -58,6 +59,43 @@
     --font-body: "Lora", Georgia, "Times New Roman", serif;
     /* Section accent (single consistent accent) */
     --section-accent: var(--color-peach-light);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-ink: hsl(var(--hue-charcoal) 20% 92%);
+        --color-ink-soft: hsl(var(--hue-charcoal) 12% 74%);
+        --color-sepia: hsl(var(--hue-charcoal) 8% 86%);
+        --color-sepia-warm: hsl(var(--hue-peach) 70% 70%);
+        --color-clay: hsl(var(--hue-peach) 58% 68%);
+        --color-parchment: hsl(var(--hue-charcoal) 14% 22%);
+        --color-sage: hsl(var(--hue-teal) 56% 62%);
+        --color-interactive: hsl(var(--hue-teal) 65% 74%);
+        --color-interactive-hover: hsl(var(--hue-teal) 78% 82%);
+        --color-bg: hsl(var(--hue-charcoal) 16% 10%);
+        --color-bg-card: hsl(var(--hue-charcoal) 14% 14%);
+        --color-border: hsl(var(--hue-charcoal) 20% 88% / 0.2);
+        --shadow: 0 1px 3px hsl(var(--hue-ink) 20% 2% / 0.55);
+        --shadow-hover: 0 4px 12px hsl(var(--hue-ink) 20% 2% / 0.65);
+        --section-accent: hsl(var(--hue-teal) 24% 22%);
+    }
+
+    blockquote {
+        background: hsl(var(--hue-teal) 28% 20% / 0.5);
+        border-left-color: hsl(var(--hue-teal) 58% 62%);
+    }
+
+    .substack-header-link {
+        background: hsl(var(--hue-charcoal) 14% 18%);
+    }
+
+    .substack-header-link:hover {
+        background: hsl(var(--hue-teal) 28% 24% / 0.9);
+    }
+
+    .substack-feed-card:hover {
+        background: hsl(var(--hue-teal) 30% 24% / 0.45);
+    }
 }
 
 /* Reset and base */
@@ -454,6 +492,8 @@ blockquote {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     font-size: var(--text-body);
     font-weight: 500;
@@ -818,6 +858,25 @@ blockquote {
     }
 }
 
+@media (prefers-color-scheme: dark) {
+    blockquote {
+        background: hsl(var(--hue-teal) 28% 20% / 0.5);
+        border-left-color: hsl(var(--hue-teal) 58% 62%);
+    }
+
+    .substack-header-link {
+        background: hsl(var(--hue-charcoal) 14% 18%);
+    }
+
+    .substack-header-link:hover {
+        background: hsl(var(--hue-teal) 28% 24% / 0.9);
+    }
+
+    .substack-feed-card:hover {
+        background: hsl(var(--hue-teal) 30% 24% / 0.45);
+    }
+}
+
 /* Projects & Inquiries */
 .section-projects p {
     max-width: 38rem;
@@ -940,8 +999,8 @@ blockquote {
     }
 
     .event-card-heading {
-        grid-template-columns: minmax(0, 1fr);
-        gap: var(--space-xs);
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-md);
     }
 
     .event-card {
