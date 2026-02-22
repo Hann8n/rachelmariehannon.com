@@ -18,16 +18,41 @@ content:
       - name: socials
         label: Footer Social Links
         type: object
-        list: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.platform} ({index})"
         description: Social media links shown in the footer.
         fields:
-          - { name: platform, label: Platform, type: string, required: true, description: "e.g. LinkedIn, Instagram, Facebook, Bluesky" }
-          - { name: url, label: URL, type: string, required: true, description: "Full URL to your profile" }
+          - name: platform
+            label: Platform
+            type: select
+            required: true
+            description: Choose the social network for this profile.
+            options:
+              - LinkedIn
+              - Instagram
+              - Facebook
+              - Twitter
+              - X
+              - Bluesky
+              - Other
+          - name: url
+            label: URL
+            type: string
+            required: true
+            description: Full URL to your profile.
+            pattern:
+              regex: "^https?://.+$"
+              message: "Please enter a full URL starting with http:// or https://."
 
       - name: sections
         label: Page Sections
         type: block
-        list: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.type} - {fields.title}"
         blockKey: type
         blocks:
           - name: text
@@ -40,7 +65,10 @@ content:
               - name: paragraphs
                 label: Extra paragraphs
                 type: object
-                list: true
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: "Paragraph {index}"
                 fields:
                   - { name: text, label: Paragraph, type: text, required: true }
 
@@ -62,7 +90,10 @@ content:
               - name: items
                 label: Items
                 type: object
-                list: true
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: "{fields.title} ({index})"
                 fields:
                   - { name: title, label: Title, type: string, required: true }
                   - { name: description, label: Description, type: text, required: true }
@@ -79,7 +110,10 @@ content:
                   - name: items
                     label: Items
                     type: object
-                    list: true
+                    list:
+                      collapsible:
+                        collapsed: true
+                        summary: "{fields.title} ({index})"
                     fields:
                       - { name: title, label: Title, type: string, required: true }
                       - { name: description, label: Description, type: text, required: true }
@@ -98,8 +132,60 @@ content:
               - { name: id, label: ID, type: string, description: "Optional. For anchor links." }
               - { name: description, label: Intro text, type: text }
               - { name: button_text, label: Button text, type: string }
-              - { name: button_url, label: Button URL, type: string }
+              - name: button_url
+                label: Button URL
+                type: string
+                pattern:
+                  regex: "^https?://.+$"
+                  message: "Please enter a full URL starting with http:// or https://."
               - { name: embed_id, label: Embed ID, type: string, description: "Unused — feed is free and built from your Substack RSS using the Button URL." }
+
+          - name: events
+            label: Events schedule
+            fields:
+              - { name: title, label: Title, type: string }
+              - { name: tagline, label: Tagline, type: string }
+              - { name: id, label: ID, type: string, description: "Optional. For anchor links (e.g. events)." }
+              - { name: empty_state_text, label: Empty state text, type: string, description: "Shown when there are no upcoming events." }
+              - name: items
+                label: Items
+                type: object
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: "{fields.venue} ({index})"
+                fields:
+                  - name: starts_at
+                    label: Start Date & Time
+                    type: date
+                    required: true
+                    description: Date and time for the event.
+                    options:
+                      time: true
+                      format: "yyyy-MM-dd'T'HH:mm"
+                  - { name: venue, label: Venue, type: string, required: true }
+                  - { name: city, label: City, type: string, required: true }
+                  - { name: details, label: Details/Notes, type: text }
+                  - name: link
+                    label: Link (signup/ticket/FB event)
+                    type: string
+                    pattern:
+                      regex: "^https?://.+$"
+                      message: "Please enter a full URL starting with http:// or https://."
+                  - name: place_id
+                    label: Google Place ID (optional)
+                    type: string
+                    description: Best for reliable photos + map pin placement.
+                    pattern:
+                      regex: "^[A-Za-z0-9_-]{10,}$"
+                      message: "Place ID should be at least 10 characters and use letters, numbers, underscores, or hyphens."
+                  - name: google_maps_url
+                    label: Google Maps URL (optional)
+                    type: string
+                    description: Paste a Google Maps venue URL to auto-enrich with place photo when possible.
+                    pattern:
+                      regex: "^https?://.+$"
+                      message: "Please enter a full URL starting with http:// or https://."
 
           - name: inquiries
             label: Inquiries
@@ -109,4 +195,11 @@ content:
               - { name: id, label: ID, type: string, description: "Optional. For anchor links (e.g. inquiries)." }
               - { name: description, label: Intro text, type: text, description: "Short message above the email link." }
               - { name: button_text, label: Button text, type: string, description: "e.g. Contact, Email me" }
-              - { name: email, label: Email address, type: string, required: true, description: "Contact email (not shown; used for mailto link)" }
+              - name: email
+                label: Email address
+                type: string
+                required: true
+                description: Contact email (not shown; used for mailto link).
+                pattern:
+                  regex: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                  message: "Please enter a valid email address."

@@ -72,6 +72,31 @@
       "embed_id": "588945971728"
     },
     {
+      "type": "events",
+      "title": "Events",
+      "tagline": "Catch Rachel at upcoming open mics.",
+      "id": "events",
+      "empty_state_text": "No upcoming events yet. Check back soon.",
+      "items": [
+        {
+          "starts_at": "2026-03-14T19:30",
+          "venue": "Johnny Brenda's",
+          "city": "1201 Frankford Ave, Philadelphia, PA 19125",
+          "details": "Open mic set.",
+          "link": "https://www.google.com/maps/search/?api=1&query=Johnny+Brenda%27s+1201+Frankford+Ave+Philadelphia+PA+19125",
+          "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Johnny+Brenda%27s+1201+Frankford+Ave+Philadelphia+PA+19125"
+        },
+        {
+          "starts_at": "2026-03-28T20:00",
+          "venue": "Open Mic Night",
+          "city": "120 S. 23rd St, Philadelphia, PA 19083",
+          "details": "Guest appearance and new material.",
+          "link": "https://www.google.com/maps/search/?api=1&query=120+S.+23rd+St+Philadelphia+PA+19083",
+          "google_maps_url": "https://www.google.com/maps/search/?api=1&query=120+S.+23rd+St+Philadelphia+PA+19083"
+        }
+      ]
+    },
+    {
       "type": "inquiries",
       "title": "Inquiries",
       "id": "inquiries",

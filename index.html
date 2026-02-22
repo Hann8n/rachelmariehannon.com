@@ -254,6 +254,205 @@
             const svg = SOCIAL_ICONS[key.toLowerCase()];
             return svg ? svg.replace('<svg ', '<svg aria-hidden="true" ') : null;
         };
+        const placeDetailsCache = new Map();
+
+        function extractPlaceIdFromMapsUrl(urlText) {
+            if (!urlText || typeof urlText !== 'string') return '';
+            const normalized = normalizeUrl(urlText);
+            if (!normalized) return '';
+
+            try {
+                const parsed = new URL(normalized);
+                const fromQuery = parsed.searchParams.get('query_place_id') || parsed.searchParams.get('place_id');
+                if (fromQuery) return fromQuery;
+
+                const qParam = parsed.searchParams.get('q') || parsed.searchParams.get('query');
+                if (qParam && qParam.startsWith('place_id:')) {
+                    return qParam.replace(/^place_id:/, '');
+                }
+            } catch (_) {}
+
+            const decoded = decodeURIComponent(normalized);
+            const match = decoded.match(/ChI[0-9A-Za-z_-]{10,}/);
+            return match ? match[0] : '';
+        }
+
+        function getEventPlaceId(eventEntry) {
+            if (eventEntry.place_id && typeof eventEntry.place_id === 'string') {
+                return eventEntry.place_id.trim();
+            }
+            return extractPlaceIdFromMapsUrl(eventEntry.google_maps_url);
+        }
+
+        function parseEventDate(dateText) {
+            if (!dateText || typeof dateText !== 'string') return null;
+            const match = dateText.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (!match) return null;
+            const year = Number(match[1]);
+            const month = Number(match[2]);
+            const day = Number(match[3]);
+            const parsed = new Date(year, month - 1, day);
+            if (
+                Number.isNaN(parsed.getTime()) ||
+                parsed.getFullYear() !== year ||
+                parsed.getMonth() !== month - 1 ||
+                parsed.getDate() !== day
+            ) {
+                return null;
+            }
+            parsed.setHours(0, 0, 0, 0);
+            return parsed;
+        }
+
+        function applyLegacyTime(baseDate, timeText) {
+            if (!baseDate || !timeText || typeof timeText !== 'string') return baseDate;
+            const copy = new Date(baseDate.getTime());
+            const trimmed = timeText.trim();
+
+            const twelveHour = trimmed.match(/^(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])$/);
+            if (twelveHour) {
+                let hour = Number(twelveHour[1]);
+                const minute = Number(twelveHour[2] || '0');
+                const meridiem = twelveHour[3].toUpperCase();
+                if (hour === 12) hour = 0;
+                if (meridiem === 'PM') hour += 12;
+                copy.setHours(hour, minute, 0, 0);
+                return copy;
+            }
+
+            const twentyFourHour = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+            if (twentyFourHour) {
+                const hour = Number(twentyFourHour[1]);
+                const minute = Number(twentyFourHour[2]);
+                if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                    copy.setHours(hour, minute, 0, 0);
+                }
+            }
+
+            return copy;
+        }
+
+        function parseEventStart(eventEntry) {
+            const startsAt = eventEntry && typeof eventEntry.starts_at === 'string'
+                ? eventEntry.starts_at.trim()
+                : '';
+
+            if (startsAt) {
+                const parsedStart = new Date(startsAt);
+                if (!Number.isNaN(parsedStart.getTime())) {
+                    return parsedStart;
+                }
+            }
+
+            const legacyDate = parseEventDate(eventEntry && eventEntry.date);
+            if (!legacyDate) return null;
+            return applyLegacyTime(legacyDate, eventEntry.time);
+        }
+
+        function getTodayStart() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return today;
+        }
+
+        function formatEventDate(date) {
+            if (!date) return '';
+            return date.toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function formatEventTime(date) {
+            if (!date) return '';
+            const midnight = date.getHours() === 0 && date.getMinutes() === 0;
+            if (midnight) return '';
+            return date.toLocaleTimeString(undefined, {
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        function normalizeUrl(urlText) {
+            if (!urlText || typeof urlText !== 'string') return '';
+            try {
+                return new URL(urlText).href;
+            } catch (_) {
+                return '';
+            }
+        }
+
+        function buildDirectionsUrl(eventEntry) {
+            const explicitMapUrl = normalizeUrl(eventEntry.google_maps_url);
+            if (explicitMapUrl) return explicitMapUrl;
+            const query = [eventEntry.venue, eventEntry.city].filter(Boolean).join(', ');
+            if (!query) return '';
+            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+        }
+
+        function buildMapEmbedUrl(eventEntry) {
+            const placeId = getEventPlaceId(eventEntry);
+            if (placeId) {
+                return 'https://www.google.com/maps?q=place_id:' + encodeURIComponent(placeId) + '&output=embed';
+            }
+            const query = [eventEntry.venue, eventEntry.city].filter(Boolean).join(', ');
+            if (!query) return '';
+            return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
+        }
+
+        async function fetchPlaceDetails(placeId) {
+            if (!placeId) return null;
+            if (placeDetailsCache.has(placeId)) {
+                return placeDetailsCache.get(placeId);
+            }
+            try {
+                const response = await fetch('/api/place-details?placeId=' + encodeURIComponent(placeId));
+                if (!response.ok) return null;
+                const data = await response.json();
+                const normalized = {
+                    name: typeof data.name === 'string' ? data.name : '',
+                    url: normalizeUrl(data.url),
+                    photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : ''
+                };
+                placeDetailsCache.set(placeId, normalized);
+                return normalized;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        async function enrichEventCardsWithPlaceData() {
+            const cards = Array.from(document.querySelectorAll('.event-card[data-google-maps-url]'));
+            if (!cards.length) return;
+
+            await Promise.all(cards.map(async (card) => {
+                const mapsUrl = card.getAttribute('data-google-maps-url') || '';
+                const placeIdAttr = (card.getAttribute('data-place-id') || '').trim();
+                const placeId = placeIdAttr || extractPlaceIdFromMapsUrl(mapsUrl);
+                if (!placeId) return;
+
+                const place = await fetchPlaceDetails(placeId);
+                if (!place) return;
+
+                const directionsLink = card.querySelector('.event-directions');
+                if (directionsLink && place.url) {
+                    directionsLink.setAttribute('href', place.url);
+                }
+
+                const photoWrapper = card.querySelector('[data-event-photo]');
+                const photoImg = card.querySelector('[data-event-photo-img]');
+                if (!photoWrapper || !photoImg || !place.photoUrl) return;
+                photoImg.setAttribute('src', place.photoUrl);
+                photoImg.setAttribute('alt', (place.name || 'Venue') + ' photo');
+                photoWrapper.hidden = false;
+            }));
+        }
+
+        async function initializeEventEnhancements() {
+            await enrichEventCardsWithPlaceData();
+        }
         
         // Section renderers - cleaner, more maintainable approach
         const SectionRenderers = {
@@ -379,6 +578,96 @@
                     parts.push('</div>');
                 }
                 return parts.join('');
+            },
+
+            events: (section) => {
+                const parts = [];
+                const entries = Array.isArray(section.items)
+                    ? section.items
+                    : (Array.isArray(section.events) ? section.events : []);
+                const today = getTodayStart();
+                const upcomingEvents = entries
+                    .map((entry, idx) => {
+                        const parsedStart = parseEventStart(entry);
+                        return { ...entry, _parsedStart: parsedStart, _idx: idx };
+                    })
+                    .filter(entry => entry._parsedStart && entry._parsedStart >= today)
+                    .sort((a, b) => a._parsedStart - b._parsedStart || a._idx - b._idx);
+
+                if (!upcomingEvents.length) {
+                    return '';
+                }
+
+                if (section.title || section.tagline) {
+                    parts.push('<div class="section-header">');
+                    if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
+                    parts.push('</div>');
+                }
+
+                parts.push('<div class="events-list">');
+                upcomingEvents.forEach((eventEntry, idx) => {
+                    const eventDateLabel = formatEventDate(eventEntry._parsedStart);
+                    const eventTimeLabel = formatEventTime(eventEntry._parsedStart) || eventEntry.time;
+                    const directionsUrl = buildDirectionsUrl(eventEntry);
+                    const mapEmbedUrl = buildMapEmbedUrl(eventEntry);
+                    const placeId = getEventPlaceId(eventEntry);
+                    const eventLink = normalizeUrl(eventEntry.link);
+                    const hasDetails = Boolean(eventEntry.details);
+                    const hasEventLink = Boolean(eventLink);
+                    const hasDirections = Boolean(directionsUrl);
+
+                    parts.push(
+                        `<article class="event-card" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
+                    );
+                    parts.push('<div class="event-card-layout">');
+                    parts.push('<div class="event-card-main">');
+
+                    parts.push('<p class="event-date-time">');
+                    if (eventDateLabel) parts.push(`<span class="event-date">${escapeHtml(eventDateLabel)}</span>`);
+                    if (eventTimeLabel) parts.push(`<span class="event-time">${escapeHtml(eventTimeLabel)}</span>`);
+                    parts.push('</p>');
+
+                    if (eventEntry.venue) parts.push(`<h3 class="event-venue">${escapeHtml(eventEntry.venue)}</h3>`);
+                    if (eventEntry.city) parts.push(`<p class="event-city">${escapeHtml(eventEntry.city)}</p>`);
+                    if (hasDetails) parts.push(`<p class="event-details">${escapeHtml(eventEntry.details)}</p>`);
+
+                    if (hasEventLink || hasDirections) {
+                        parts.push('<div class="event-actions">');
+                        if (hasEventLink) {
+                            parts.push(
+                                `<a href="${escapeHtml(eventLink)}" target="_blank" rel="noopener noreferrer" class="event-link">Open event link</a>`
+                            );
+                        }
+                        if (hasDirections) {
+                            parts.push(
+                                `<a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener noreferrer" class="event-link event-directions">Get directions</a>`
+                            );
+                        }
+                        parts.push('</div>');
+                    }
+
+                    parts.push('</div>');
+
+                    if (mapEmbedUrl) {
+                        const mapTitle = `Map for ${eventEntry.venue || 'event location'}`;
+                        parts.push('<div class="event-card-media">');
+                        parts.push(
+                            '<figure class="event-photo" data-event-photo hidden>' +
+                            '<img data-event-photo-img loading="lazy" alt="Venue photo" />' +
+                            '</figure>'
+                        );
+                        parts.push(
+                            `<iframe class="event-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${escapeHtml(mapEmbedUrl)}" title="${escapeHtml(mapTitle)}"></iframe>`
+                        );
+                        parts.push('</div>');
+                    }
+
+                    parts.push('</div>');
+                    parts.push('</article>');
+                });
+                parts.push('</div>');
+                return parts.join('');
             }
         };
         
@@ -388,6 +677,7 @@
             if (!renderer) return '<p>Unknown section type</p>';
             
             const content = renderer(section);
+            if (!content || !content.trim()) return '';
             const idAttr = section.id ? `id="${section.id}"` : '';
             const classAttr = `section section-${section.type}`;
             
@@ -455,6 +745,7 @@
                         container.innerHTML = data.sections.map(renderSection).join('');
                         setTimeout(function() {
                             window.loadSubstackFeeds && window.loadSubstackFeeds();
+                            initializeEventEnhancements();
                         }, 50);
                     } else {
                         container.innerHTML = '';

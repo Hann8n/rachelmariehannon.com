@@ -1,72 +1,34 @@
-# ✅ Setup Complete - Optimized for Ease of Use
+# Setup Summary
 
-## What's Been Optimized
+## Current CMS Setup
 
-### 1. **Pages CMS Configuration (.pages.yml)**
-   - ✅ Uses **components** for reusable field groups (cleaner, DRY)
-   - ✅ **Descriptions** on every field (helpful tooltips)
-   - ✅ **Collapsible sections** with smart summaries ("type - title")
-   - ✅ **Validation patterns** (e.g., URL validation for buttons)
-   - ✅ **Required fields** clearly marked
-   - ✅ **Better organization** - fields grouped logically
+- CMS platform: Pages CMS
+- Config file: `.pages.yml`
+- Content file: `content/site.json`
+- Admin entry page: `admin/index.html` (opens `https://app.pagescms.org/`)
+- Save behavior: `settings.content.merge: true`
 
-### 2. **User Experience Improvements**
-   - ✅ Sections show as "type - title" in the list (easy to identify)
-   - ✅ Each field has helpful descriptions
-   - ✅ Components make editing consistent
-   - ✅ Clear field labels and organization
+## Schema Improvements Applied
 
-### 3. **Documentation**
-   - ✅ `QUICK_START.md` - Simple guide for Rachel
-   - ✅ `PAGES_CMS_SETUP.md` - Detailed setup instructions
-   - ✅ `README.md` - Updated with Pages CMS info
-   - ✅ `admin/index.html` - Beautiful redirect page
+- Added stronger field typing and validation in `.pages.yml`
+  - `socials.platform` is now a `select`
+  - URL fields use `http(s)` pattern validation
+  - `inquiries.email` uses email pattern validation
+- Converted events to a single datetime field:
+  - `starts_at` (`type: date`, `options.time: true`)
+- Added collapsible list summaries for easier editing in Pages CMS.
 
-## Key Features
+## Frontend Alignment
 
-### Components Used
-- **`paragraph`** - Reusable paragraph component for text sections
-- **`list_item`** - Reusable list item component (title + description)
+- `content/site.json` event entries now use `starts_at`.
+- `index.html` now parses datetime events and still supports legacy `date` + `time` fallback to avoid breakage.
 
-### Smart Defaults
-- Sections are **expanded by default** (not collapsed) for easier editing
-- Summary shows **"type - title"** so sections are easy to identify
-- All optional fields clearly marked
+## Documentation Alignment
 
-### Validation
-- URL fields validate proper format
-- Required fields prevent saving incomplete data
-- Clear error messages
+- `PAGES_CMS_SETUP.md` now matches the live schema and section types.
+- `QUICK_START.md` now reflects current field names and workflow.
 
-## File Structure
+## Recommended Ongoing Practice
 
-```
-├── .pages.yml              # Optimized Pages CMS config
-├── admin/
-│   └── index.html         # Beautiful redirect to Pages CMS
-├── content/
-│   └── site.json          # Your content (managed by Pages CMS)
-├── index.html             # Main website
-├── styles.css             # Site styles
-├── QUICK_START.md         # Simple guide for Rachel
-├── PAGES_CMS_SETUP.md     # Detailed setup guide
-└── README.md              # Project documentation
-```
-
-## Next Steps
-
-1. **Push to GitHub** (if not already done)
-2. **Go to** https://app.pagescms.org/
-3. **Sign in** with GitHub
-4. **Connect** your repository
-5. **Start editing!**
-
-## Why This Setup is Best
-
-1. **Clean Configuration** - Uses Pages CMS best practices
-2. **User-Friendly** - Descriptions guide users through each field
-3. **Maintainable** - Components reduce duplication
-4. **Professional** - Validation and proper structure
-5. **Well-Documented** - Multiple guides for different needs
-
-Everything is ready to go! 🚀
+- Keep schema changes in `.pages.yml` and frontend parsing changes in `index.html` in sync.
+- If you add a new section block type, update docs in the same PR.
