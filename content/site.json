@@ -74,7 +74,16 @@
     {
       "type": "events",
       "title": "Events",
-      "id": "events"
+      "id": "events",
+      "items": [
+        {
+          "starts_at": "2026-02-28T21:00",
+          "venue": "Bonners Irish Pub",
+          "city": "Philadelphia",
+          "place_id": "ChIJKaM7GkjGxokRQ91nB2nx8cs",
+          "google_maps_url": "https://www.google.com/maps/place/Bonner's+Irish+Pub/@39.9520319,-75.1784937,17z/data=!3m1!4b1!4m6!3m5!1s0x89c6c6481a3ba329:0xcbf1f1690767dd43!8m2!3d39.9520319!4d-75.1784937!16s%2Fg%2F11d_8m7r29?entry=ttu&g_ep=EgoyMDI2MDIxOC4wIKXMDSoASAFQAw%3D%3D"
+        }
+      ]
     },
     {
       "type": "inquiries",
