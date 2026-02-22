@@ -30,13 +30,14 @@ content:
             required: true
             description: Choose the social network for this profile.
             options:
-              - LinkedIn
-              - Instagram
-              - Facebook
-              - Twitter
-              - X
-              - Bluesky
-              - Other
+              values:
+                - LinkedIn
+                - Instagram
+                - Facebook
+                - Twitter
+                - X
+                - Bluesky
+                - Other
           - name: url
             label: URL
             type: string
