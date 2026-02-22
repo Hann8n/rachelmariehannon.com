@@ -174,20 +174,20 @@ content:
                     pattern:
                       regex: "^$|^https?://.+$"
                       message: "Leave blank or enter a full URL starting with http:// or https://."
-                  - name: place_id
-                    label: Google Place ID (optional)
-                    type: string
-                    description: "Best for reliable photos + map pin placement. Find a Place ID here: https://thrivemediagrp.com/resources/google-place-id-finder/"
-                    pattern:
-                      regex: "^[A-Za-z0-9_-]{10,}$"
-                      message: "Place ID should be at least 10 characters and use letters, numbers, underscores, or hyphens."
                   - name: google_maps_url
-                    label: Google Maps URL (optional)
+                    label: Google Maps URL (recommended)
                     type: string
-                    description: Paste a Google Maps venue URL to auto-enrich with place photo when possible.
+                    description: "Paste the venue's Google Maps URL. We'll use it to resolve the place automatically."
                     pattern:
-                      regex: "^https?://.+$"
-                      message: "Please enter a full URL starting with http:// or https://."
+                      regex: "^$|^https?://.+$"
+                      message: "Leave blank or enter a full URL starting with http:// or https://."
+                  - name: place_id
+                    label: Google Place ID (optional override)
+                    type: string
+                    description: "Optional: paste a Place ID for maximum accuracy. Finder: https://thrivemediagrp.com/resources/google-place-id-finder/"
+                    pattern:
+                      regex: "^$|^[A-Za-z0-9_-]{10,}$"
+                      message: "Leave blank or enter a valid Place ID (letters, numbers, underscores, or hyphens)."
 
           - name: inquiries
             label: Inquiries

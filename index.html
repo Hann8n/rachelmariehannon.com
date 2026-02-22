@@ -402,21 +402,33 @@
             return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
         }
 
-        async function fetchPlaceDetails(placeId) {
-            if (!placeId) return null;
-            if (placeDetailsCache.has(placeId)) {
-                return placeDetailsCache.get(placeId);
+        async function fetchPlaceDetails(options) {
+            const placeId = options && typeof options.placeId === 'string' ? options.placeId.trim() : '';
+            const mapsUrl = options && typeof options.mapsUrl === 'string' ? options.mapsUrl.trim() : '';
+            const query = [options?.venue, options?.city].filter(Boolean).join(', ');
+            const cacheKey = placeId || mapsUrl || query;
+            if (!cacheKey) return null;
+            if (placeDetailsCache.has(cacheKey)) {
+                return placeDetailsCache.get(cacheKey);
             }
             try {
-                const response = await fetch('/api/place-details?placeId=' + encodeURIComponent(placeId));
+                const params = new URLSearchParams();
+                if (placeId) params.set('placeId', placeId);
+                if (mapsUrl) params.set('mapsUrl', mapsUrl);
+                if (query) params.set('query', query);
+                const response = await fetch('/api/place-details?' + params.toString());
                 if (!response.ok) return null;
                 const data = await response.json();
                 const normalized = {
                     name: typeof data.name === 'string' ? data.name : '',
                     url: normalizeUrl(data.url),
-                    photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : ''
+                    photoUrl: typeof data.photoUrl === 'string' ? data.photoUrl : '',
+                    resolvedPlaceId: typeof data.resolvedPlaceId === 'string' ? data.resolvedPlaceId : ''
                 };
-                placeDetailsCache.set(placeId, normalized);
+                placeDetailsCache.set(cacheKey, normalized);
+                if (normalized.resolvedPlaceId && normalized.resolvedPlaceId !== cacheKey) {
+                    placeDetailsCache.set(normalized.resolvedPlaceId, normalized);
+                }
                 return normalized;
             } catch (_) {
                 return null;
@@ -431,10 +443,21 @@
                 const mapsUrl = card.getAttribute('data-google-maps-url') || '';
                 const placeIdAttr = (card.getAttribute('data-place-id') || '').trim();
                 const placeId = placeIdAttr || extractPlaceIdFromMapsUrl(mapsUrl);
-                if (!placeId) return;
+                const venue = card.getAttribute('data-venue') || '';
+                const city = card.getAttribute('data-city') || '';
+                if (!placeId && !mapsUrl && !venue && !city) return;
 
-                const place = await fetchPlaceDetails(placeId);
+                const place = await fetchPlaceDetails({
+                    placeId,
+                    mapsUrl,
+                    venue,
+                    city
+                });
                 if (!place) return;
+
+                if (!placeIdAttr && place.resolvedPlaceId) {
+                    card.setAttribute('data-place-id', place.resolvedPlaceId);
+                }
 
                 const directionsLink = card.querySelector('.event-directions');
                 if (directionsLink && place.url) {
