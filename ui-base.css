@@ -1,0 +1,123 @@
+/* Base semantic element styles backed by ui-tokens.css */
+html {
+    font-size: 100%;
+}
+
+body {
+    text-rendering: optimizeLegibility;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: var(--field-text);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: var(--control-min-height);
+    padding: var(--control-pad-y) var(--control-pad-x);
+    border: 1px solid var(--field-border);
+    border-radius: var(--radius-sm);
+    background: var(--field-bg);
+    transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--field-placeholder);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: color-mix(in srgb, var(--field-border), var(--color-focus-ring) 28%);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-primary);
+    font-size: var(--text-small);
+    font-weight: 600;
+}
+
+fieldset {
+    border: 1px solid var(--field-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+}
+
+legend {
+    padding: 0 var(--space-xs);
+    font-weight: 600;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-small);
+}
+
+thead th {
+    text-align: left;
+    color: var(--color-text-primary);
+    font-family: var(--font-heading);
+    font-size: var(--text-small);
+}
+
+th,
+td {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border-subtle);
+    vertical-align: top;
+}
+
+tbody tr:hover {
+    background: var(--table-row-hover);
+}
+
+.ui-table {
+    overflow-x: auto;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+}
+
+.ui-field {
+    display: grid;
+    gap: var(--space-xs);
+}
+
+.ui-help {
+    color: var(--color-text-muted);
+    font-size: var(--text-caption);
+}
+
+.ui-error {
+    color: var(--color-interactive-emphasis);
+    font-size: var(--text-caption);
+}

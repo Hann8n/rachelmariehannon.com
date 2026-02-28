@@ -1,0 +1,63 @@
+/* Theme mapping for FAST components to site tokens */
+:root {
+    --accent-fill-rest: var(--button-primary-bg);
+    --accent-fill-hover: var(--button-primary-bg-hover);
+    --accent-fill-active: var(--button-primary-bg-hover);
+    --accent-foreground-rest: var(--button-primary-fg);
+    --neutral-fill-rest: var(--button-secondary-bg);
+    --neutral-fill-hover: var(--button-secondary-bg-hover);
+    --neutral-fill-active: var(--button-secondary-bg-hover);
+    --neutral-foreground-rest: var(--button-secondary-fg);
+    --neutral-foreground-hover: var(--button-secondary-fg-hover);
+    --neutral-stroke-rest: var(--button-secondary-border);
+    --neutral-stroke-hover: var(--button-secondary-border-hover);
+    --neutral-layer-1: var(--color-surface-raised);
+    --neutral-layer-2: var(--color-surface-page);
+    --focus-stroke-outer: transparent;
+    --focus-stroke-inner: var(--color-focus-ring);
+}
+
+fast-dialog::part(control) {
+    border-radius: 12px;
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-raised);
+    box-shadow: 0 22px 42px hsl(var(--hue-ink) 20% 5% / 0.2);
+    color: var(--color-text-primary);
+}
+
+fast-dialog::part(positioning-region) {
+    padding: var(--space-lg);
+}
+
+.directions-picker-fast-title {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--text-body);
+    font-family: var(--font-heading);
+    line-height: var(--leading-snug);
+}
+
+.directions-picker-fast-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.directions-picker-fast-actions fast-button::part(control) {
+    min-height: var(--control-min-height);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: var(--control-font-size);
+    font-weight: var(--control-font-weight);
+}
+
+.directions-picker-fast-cancel {
+    margin-top: var(--space-lg);
+}
+
+.directions-picker-fast-cancel::part(control) {
+    min-height: var(--control-min-height);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: var(--control-font-size);
+    font-weight: var(--control-font-weight);
+}

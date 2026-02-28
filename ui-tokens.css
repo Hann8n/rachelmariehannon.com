@@ -1,0 +1,158 @@
+:root {
+    color-scheme: light dark;
+
+    /* Foundation: type */
+    --text-caption: clamp(0.66rem, 0.64rem + 0.1vw, 0.694rem);
+    --text-small: clamp(0.79rem, 0.74rem + 0.22vw, 0.833rem);
+    --text-body: clamp(0.98rem, 0.93rem + 0.24vw, 1rem);
+    --text-lead: clamp(1.08rem, 0.98rem + 0.5vw, 1.2rem);
+    --text-h3: clamp(1.22rem, 1.06rem + 0.8vw, 1.44rem);
+    --text-h2: clamp(1.4rem, 1.15rem + 1.1vw, 1.728rem);
+    --text-h1: clamp(1.72rem, 1.28rem + 1.7vw, 2.074rem);
+    --text-display: clamp(2rem, 1.4rem + 2.3vw, 2.488rem);
+    --leading-tight: 1.2;
+    --leading-snug: 1.35;
+    --leading-normal: 1.6;
+    --leading-relaxed: 1.75;
+    --measure-content: 72ch;
+    --measure-readable: 66ch;
+    --page-gutter: clamp(1rem, 2.2vw, 1.5rem);
+    --page-gutter-mobile: var(--space-lg);
+    --section-pad-y: clamp(0.95rem, 1.2vw + 0.6rem, 1.5rem);
+    --row-bleed-mobile: var(--page-gutter-mobile);
+
+    /* Foundation: spacing, radius, shadow */
+    --space-2xs: 0.125rem;
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 0.75rem;
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+    --space-3xl: 2.5rem;
+    --radius-sm: 4px;
+    --radius: 8px;
+    --shadow: 0 1px 3px hsl(0 20% 5% / 0.06);
+    --shadow-hover: 0 4px 12px hsl(0 20% 5% / 0.08);
+    --transition: 0.2s ease;
+
+    /* Foundation: palette */
+    --hue-ink: 0;
+    --hue-charcoal: 270;
+    --hue-peach: 19;
+    --hue-blush: 12;
+    --hue-teal: 191;
+
+    --color-ink: hsl(var(--hue-ink) 20% 5%);
+    --color-ink-soft: hsl(var(--hue-charcoal) 3% 20%);
+    --color-sepia: hsl(var(--hue-charcoal) 3% 14%);
+    --color-sepia-warm: hsl(var(--hue-peach) 52% 40%);
+    --color-clay: hsl(var(--hue-peach) 46% 52%);
+    --color-parchment: hsl(var(--hue-blush) 31% 82%);
+    --color-sage: hsl(var(--hue-teal) 60% 36%);
+
+    /* Semantic tokens */
+    --color-text-primary: var(--color-ink);
+    --color-text-muted: var(--color-ink-soft);
+    --color-surface-page: hsl(var(--hue-charcoal) 15% 97%);
+    --color-surface-raised: hsl(var(--hue-charcoal) 18% 97%);
+    --color-surface-accent: var(--color-parchment);
+    --color-border-subtle: hsl(var(--hue-ink) 20% 5% / 0.12);
+    --color-divider-secondary: hsl(var(--hue-ink) 20% 5% / 0.08);
+    --color-item-alt: hsl(var(--hue-ink) 20% 5% / 0.03);
+    --color-item-alt-strong: hsl(var(--hue-ink) 20% 5% / 0.05);
+    --color-interactive-primary: var(--color-sepia);
+    --color-interactive-emphasis: hsl(var(--hue-teal) 68% 28%);
+    --color-focus-ring: var(--color-sage);
+
+    /* Typography tokens */
+    --font-heading: "Libre Baskerville", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    --font-body: "Lora", Georgia, "Times New Roman", serif;
+
+    /* Component aliases */
+    --control-min-height: 2.5rem;
+    --control-pad-y: 0.45rem;
+    --control-pad-x: 0.9rem;
+    --control-font-size: var(--text-small);
+    --control-font-weight: 600;
+    --field-border: var(--color-border-subtle);
+    --field-bg: var(--color-surface-raised);
+    --field-text: var(--color-text-primary);
+    --field-placeholder: var(--color-text-muted);
+    --table-row-hover: hsl(var(--hue-teal) 60% 45% / 0.08);
+
+    --button-primary-fg: var(--color-surface-page);
+    --button-primary-bg: var(--color-ink);
+    --button-primary-border: var(--color-ink);
+    --button-primary-fg-hover: var(--color-surface-page);
+    --button-primary-bg-hover: var(--color-sepia);
+    --button-primary-border-hover: var(--color-sepia);
+    --button-secondary-fg: var(--color-sepia);
+    --button-secondary-bg: hsl(var(--hue-charcoal) 12% 92%);
+    --button-secondary-border: hsl(var(--hue-charcoal) 12% 82%);
+    --button-secondary-fg-hover: var(--color-ink);
+    --button-secondary-bg-hover: hsl(var(--hue-teal) 42% 88% / 0.55);
+    --button-secondary-border-hover: hsl(var(--hue-teal) 42% 72% / 0.8);
+
+    /* Back-compat aliases used in existing CSS */
+    --color-text: var(--color-text-primary);
+    --color-text-soft: var(--color-text-muted);
+    --color-bg: var(--color-surface-page);
+    --color-bg-card: var(--color-surface-raised);
+    --color-border: var(--color-border-subtle);
+    --color-brown-dark: var(--color-sepia);
+    --color-terracotta: var(--color-sepia-warm);
+    --color-peach-warm: var(--color-clay);
+    --color-peach-light: var(--color-surface-accent);
+    --color-teal: var(--color-focus-ring);
+    --color-interactive: var(--color-interactive-primary);
+    --color-interactive-hover: var(--color-interactive-emphasis);
+    --section-accent: var(--color-surface-accent);
+}
+
+@media (max-width: 700px) {
+    :root {
+        --text-caption: clamp(0.68rem, 0.66rem + 0.1vw, 0.72rem);
+        --text-small: clamp(0.8rem, 0.77rem + 0.18vw, 0.88rem);
+        --text-body: clamp(0.97rem, 0.94rem + 0.22vw, 1.02rem);
+        --text-lead: clamp(1.04rem, 0.99rem + 0.35vw, 1.16rem);
+        --leading-normal: 1.68;
+        --leading-relaxed: 1.8;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-ink: hsl(var(--hue-charcoal) 20% 92%);
+        --color-ink-soft: hsl(var(--hue-charcoal) 12% 74%);
+        --color-sepia: hsl(var(--hue-charcoal) 8% 86%);
+        --color-sepia-warm: hsl(var(--hue-peach) 70% 70%);
+        --color-clay: hsl(var(--hue-peach) 58% 68%);
+        --color-parchment: hsl(var(--hue-charcoal) 14% 22%);
+        --color-sage: hsl(var(--hue-teal) 56% 62%);
+
+        --color-surface-page: hsl(var(--hue-charcoal) 16% 10%);
+        --color-surface-raised: hsl(var(--hue-charcoal) 14% 14%);
+        --color-border-subtle: hsl(var(--hue-charcoal) 20% 88% / 0.2);
+        --color-divider-secondary: hsl(var(--hue-charcoal) 20% 88% / 0.14);
+        --color-item-alt: hsl(var(--hue-charcoal) 20% 88% / 0.04);
+        --color-item-alt-strong: hsl(var(--hue-charcoal) 20% 88% / 0.08);
+        --color-interactive-primary: var(--color-sepia);
+        --color-interactive-emphasis: var(--color-ink);
+        --button-primary-fg: var(--color-surface-page);
+        --button-primary-bg: var(--color-sepia);
+        --button-primary-border: var(--color-sepia);
+        --button-primary-fg-hover: var(--color-surface-page);
+        --button-primary-bg-hover: var(--color-ink);
+        --button-primary-border-hover: var(--color-ink);
+        --button-secondary-fg: var(--color-sepia);
+        --button-secondary-bg: hsl(var(--hue-charcoal) 14% 18%);
+        --button-secondary-border: hsl(var(--hue-charcoal) 20% 30%);
+        --button-secondary-bg-hover: hsl(var(--hue-charcoal) 16% 22%);
+        --button-secondary-border-hover: hsl(var(--hue-charcoal) 20% 44%);
+        --shadow: 0 1px 3px hsl(var(--hue-ink) 20% 2% / 0.55);
+        --shadow-hover: 0 4px 12px hsl(var(--hue-ink) 20% 2% / 0.65);
+        --section-accent: hsl(var(--hue-teal) 24% 22%);
+        --table-row-hover: hsl(var(--hue-teal) 30% 24% / 0.35);
+    }
+}

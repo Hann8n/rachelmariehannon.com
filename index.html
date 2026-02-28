@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
+    <meta name="description" content="A memoir by Rachel Marie Hannon.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://rachelmariehannon.com/">
     <title>I Might Be An Idiot – Rachel Marie Hannon</title>
 
     <!-- Open Graph / Facebook -->
@@ -37,7 +40,12 @@
 @font-face{font-family:"Libre Baskerville";font-style:normal;font-weight:400 700;font-display:optional;src:url("/fonts/librebaskerville-normal-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
 @font-face{font-family:"Libre Baskerville";font-style:italic;font-weight:400;font-display:optional;src:url("/fonts/librebaskerville-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
     </style>
+    <link rel="preload" href="/ui-tokens.css" as="style">
+    <link rel="preload" href="/ui-base.css" as="style">
     <link rel="preload" href="/styles.css" as="style">
+    <link rel="stylesheet" href="/ui-tokens.css">
+    <link rel="stylesheet" href="/ui-base.css">
+    <link rel="stylesheet" href="/ui-component-theme.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -56,11 +64,15 @@
     </main>
 
     <footer class="site-footer">
-        <p>
-            <span class="footer-copyright">&copy; <span id="year"></span> Rachel Marie Hannon.</span>
+        <div class="footer-top">
             <span id="footer-socials" class="footer-links"></span>
+        </div>
+        <p class="footer-bottom">
+            <span class="footer-copyright">&copy; <span id="year"></span> Rachel Marie Hannon.</span>
         </p>
     </footer>
+
+    <script type="module" src="/ui-components.js"></script>
 
     <!-- Free Substack feed via RSS (no Supascribe) -->
     <script>
@@ -131,7 +143,8 @@
                     } catch (_) {}
                 }
                 let imageHtml = '';
-                if (imageUrl) {
+                const shouldShowImage = Boolean(imageUrl);
+                if (shouldShowImage) {
                     imageHtml = '<div class="substack-feed-card-image"><img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(title) + '" loading="lazy"></div>';
                 }
                 const metaInfo = [];
@@ -147,11 +160,12 @@
                     tagsHtml = '<div class="substack-feed-card-tags">' + tags + '</div>';
                 }
                 
-                return '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer" class="substack-feed-card">' +
+                const cardClasses = 'substack-feed-card ui-surface' + (shouldShowImage ? ' substack-feed-card--with-image' : '');
+                return '<a href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer" class="' + cardClasses + '">' +
                     '<div class="substack-feed-card-content">' +
-                    '<h3 class="substack-feed-card-title">' + escapeHtml(title) + '</h3>' +
-                    (metaText ? '<span class="substack-feed-card-meta">' + escapeHtml(metaText) + '</span>' : '') +
-                    (cleanDescription ? '<p class="substack-feed-card-description">' + escapeHtml(cleanDescription.substring(0, 120)) + (cleanDescription.length > 120 ? '…' : '') + '</p>' : '') +
+                    '<h3 class="substack-feed-card-title"><span class="substack-feed-text-bg">' + escapeHtml(title) + '</span></h3>' +
+                    (metaText ? '<span class="substack-feed-card-meta"><span class="substack-feed-text-bg">' + escapeHtml(metaText) + '</span></span>' : '') +
+                    (cleanDescription ? '<p class="substack-feed-card-description"><span class="substack-feed-text-bg">' + escapeHtml(cleanDescription.substring(0, 120)) + (cleanDescription.length > 120 ? '…' : '') + '</span></p>' : '') +
                     tagsHtml +
                     '</div>' +
                     imageHtml +
@@ -189,7 +203,7 @@
                             let displayedCount = initialCount;
                             
                             const container = document.createElement('div');
-                            container.className = 'substack-feed-cards';
+                            container.className = 'substack-feed-cards ui-stack';
                             container.innerHTML = allItems.slice(0, displayedCount).map(renderFeedItem).join('');
                             
                             const loadMoreBtn = document.createElement('button');
@@ -465,21 +479,34 @@
             let overlay = document.getElementById('directions-picker');
             if (overlay) return overlay;
 
+            const hasFastDialog = typeof customElements !== 'undefined' && Boolean(customElements.get('fast-dialog'));
+
             overlay = document.createElement('div');
             overlay.id = 'directions-picker';
-            overlay.className = 'directions-picker';
+            overlay.className = hasFastDialog ? 'directions-picker-fast' : 'directions-picker';
             overlay.hidden = true;
-            overlay.innerHTML =
-                '<div class="directions-picker-backdrop" data-close-directions-picker></div>' +
-                '<div class="directions-picker-panel" role="dialog" aria-modal="true" aria-labelledby="directions-picker-title">' +
-                '<h3 id="directions-picker-title">Open directions in</h3>' +
-                '<div class="directions-picker-actions">' +
-                '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
-                '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
-                '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
-                '</div>' +
-                '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
-                '</div>';
+            overlay.innerHTML = hasFastDialog
+                ? '<fast-dialog aria-labelledby="directions-picker-title">' +
+                    '<div class="directions-picker-fast-body">' +
+                        '<h3 id="directions-picker-title" class="directions-picker-fast-title">Open directions in</h3>' +
+                        '<div class="directions-picker-fast-actions">' +
+                            '<fast-button class="directions-picker-option" data-provider="apple" appearance="outline">Apple Maps</fast-button>' +
+                            '<fast-button class="directions-picker-option" data-provider="google" appearance="outline">Google Maps</fast-button>' +
+                            '<fast-button class="directions-picker-option" data-provider="waze" appearance="outline">Waze</fast-button>' +
+                        '</div>' +
+                        '<fast-button class="directions-picker-fast-cancel" data-close-directions-picker appearance="outline">Cancel</fast-button>' +
+                    '</div>' +
+                '</fast-dialog>'
+                : '<div class="directions-picker-backdrop" data-close-directions-picker></div>' +
+                    '<div class="directions-picker-panel" role="dialog" aria-modal="true" aria-labelledby="directions-picker-title">' +
+                    '<h3 id="directions-picker-title">Open directions in</h3>' +
+                    '<div class="directions-picker-actions">' +
+                    '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
+                    '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
+                    '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
+                    '</div>' +
+                    '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
+                    '</div>';
             document.body.appendChild(overlay);
             return overlay;
         }
@@ -487,6 +514,10 @@
         function closeDirectionsPicker() {
             const overlay = document.getElementById('directions-picker');
             if (!overlay) return;
+            const fastDialog = overlay.querySelector('fast-dialog');
+            if (fastDialog && typeof fastDialog.hide === 'function') {
+                fastDialog.hide();
+            }
             overlay.hidden = true;
             overlay.removeAttribute('data-open');
             overlay.removeAttribute('data-google-url');
@@ -506,6 +537,10 @@
             overlay.setAttribute('data-waze-url', urls.waze || '');
             overlay.hidden = false;
             overlay.setAttribute('data-open', 'true');
+            const fastDialog = overlay.querySelector('fast-dialog');
+            if (fastDialog && typeof fastDialog.showModal === 'function') {
+                fastDialog.showModal();
+            }
 
             ['apple', 'google', 'waze'].forEach((provider) => {
                 const btn = overlay.querySelector('[data-provider="' + provider + '"]');
@@ -527,7 +562,7 @@
                     return;
                 }
 
-                const providerButton = event.target.closest('.directions-picker-option[data-provider]');
+                const providerButton = event.target.closest('[data-provider].directions-picker-option');
                 if (providerButton) {
                     const overlay = document.getElementById('directions-picker');
                     if (!overlay) return;
@@ -638,6 +673,58 @@
             initializeDirectionsPicker();
             await enrichEventCardsWithPlaceData();
         }
+
+        function updateAutoStickyHeaders() {
+            const sections = document.querySelectorAll('.section-substack, .section-events');
+            if (!sections.length) return;
+
+            const minStickyHeight = Math.round(window.innerHeight * 1.1);
+            sections.forEach((section) => {
+                const shouldStick = section.scrollHeight >= minStickyHeight;
+                section.classList.toggle('auto-sticky-on', shouldStick);
+            });
+        }
+
+        function initializeAutoStickyHeaders() {
+            if (document.body.dataset.autoStickyHeadersReady === 'true') return;
+            document.body.dataset.autoStickyHeadersReady = 'true';
+
+            const sections = document.querySelectorAll('.section-substack, .section-events');
+            if (!sections.length) return;
+
+            let rafId = 0;
+            const scheduleUpdate = () => {
+                if (rafId) return;
+                rafId = window.requestAnimationFrame(() => {
+                    rafId = 0;
+                    updateAutoStickyHeaders();
+                });
+            };
+
+            if ('ResizeObserver' in window) {
+                const observer = new ResizeObserver(scheduleUpdate);
+                sections.forEach((section) => observer.observe(section));
+            }
+
+            window.addEventListener('resize', scheduleUpdate, { passive: true });
+            window.addEventListener('orientationchange', scheduleUpdate);
+            scheduleUpdate();
+        }
+
+        function initializeStickyHeaderJump() {
+            if (document.body.dataset.stickyHeaderJumpReady === 'true') return;
+            document.body.dataset.stickyHeaderJumpReady = 'true';
+
+            document.addEventListener('click', (event) => {
+                const stickyHeader = event.target.closest('.auto-sticky-on > .section-header');
+                if (!stickyHeader) return;
+                if (event.target.closest('a, button')) return;
+
+                const section = stickyHeader.closest('section');
+                if (!section) return;
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
         
         // Section renderers - cleaner, more maintainable approach
         const SectionRenderers = {
@@ -710,10 +797,23 @@
                     parts.push('<div class="about-block">');
                     if (section.right_column.title) parts.push(`<h3>${escapeHtml(section.right_column.title)}</h3>`);
                     if (section.right_column.content) {
-                        const formatted = escapeHtml(section.right_column.content)
-                            .replace(/\n\n/g, '</p><p>')
-                            .replace(/\n/g, '<br>');
-                        parts.push(`<div>${formatted}</div>`);
+                        const isReviewBlock = (section.right_column.title || '').trim().toLowerCase() === 'review';
+                        if (isReviewBlock) {
+                            const { quoteText, attributionText } = parseReviewQuoteContent(section.right_column.content);
+                            if (quoteText) {
+                                parts.push('<blockquote>');
+                                parts.push(`<p>${escapeHtml(quoteText)}</p>`);
+                                if (attributionText) {
+                                    parts.push(`<cite class="quote-attribution">– ${escapeHtml(attributionText)}</cite>`);
+                                }
+                                parts.push('</blockquote>');
+                            }
+                        } else {
+                            const formatted = escapeHtml(section.right_column.content)
+                                .replace(/\n\n/g, '</p><p>')
+                                .replace(/\n/g, '<br>');
+                            parts.push(`<div>${formatted}</div>`);
+                        }
                     }
                     parts.push('</div>');
                 }
@@ -724,7 +824,7 @@
             
             inquiries: (section) => {
                 const parts = [];
-                parts.push('<div class="inquiries-layout">');
+                parts.push('<div class="inquiries-layout ui-stack">');
                 parts.push('<div class="inquiries-header">');
                 if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
                 if (section.email) {
@@ -790,7 +890,7 @@
                     parts.push('</div>');
                 }
 
-                parts.push('<div class="events-list">');
+                parts.push('<div class="events-list ui-stack">');
                 upcomingEvents.forEach((eventEntry, idx) => {
                     const eventTimeLabel = formatEventTime(eventEntry._parsedStart) || eventEntry.time;
                     const eventBadge = formatEventBadge(eventEntry._parsedStart);
@@ -807,7 +907,7 @@
                     const eventMeta = eventMetaParts.join(' • ');
 
                     parts.push(
-                        `<article class="event-card" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
+                        `<article class="event-card ui-surface" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
                     );
                     parts.push('<div class="event-card-layout">');
                     parts.push('<div class="event-card-main">');
@@ -903,6 +1003,34 @@
             div.querySelectorAll('script, iframe, object, embed').forEach(el => el.remove());
             return div.innerHTML;
         }
+
+        function parseReviewQuoteContent(content) {
+            if (!content || typeof content !== 'string') {
+                return { quoteText: '', attributionText: '' };
+            }
+
+            const normalized = content.replace(/\r\n?/g, '\n').trim();
+            if (!normalized) {
+                return { quoteText: '', attributionText: '' };
+            }
+
+            const parts = normalized.split(/\n{2,}/).map(part => part.trim()).filter(Boolean);
+            const quoteRaw = parts[0] || normalized;
+            const attributionRaw = parts.slice(1).join(' ').trim();
+            const quoteText = quoteRaw.replace(/^["']+|["']+$/g, '').trim();
+            const attributionText = attributionRaw.replace(/^[—–-]\s*/, '').trim();
+
+            return { quoteText, attributionText };
+        }
+
+        function renderFooterEmailLink(section) {
+            if (!section || !section.email) return '';
+            const mailto = 'mailto:' + section.email.replace(/^mailto:/, '');
+            return (
+                `<a href="${escapeHtml(mailto)}" class="footer-social-link" aria-label="Email ${escapeHtml(section.email)}">` +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 3.25L12.4 12.3a.7.7 0 0 1-.8 0L4 7.25V6h16zM4 18V9l6.78 4.52a2.7 2.7 0 0 0 2.44 0L20 9v9z"/></svg></a>'
+            );
+        }
         
         // Set copyright year to current year (runs immediately)
         (function() {
@@ -926,24 +1054,36 @@
                 if (data.subtitle) document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
                 if (data.author) document.querySelector('[data-content="author"]').textContent = data.author;
                 
+                const sections = Array.isArray(data.sections) ? data.sections : [];
+                const inquiriesSection = sections.find(section => section.type === 'inquiries');
+
                 // Render footer socials (with icons)
                 const socialsEl = document.getElementById('footer-socials');
-                if (socialsEl && data.socials?.length) {
-                    const links = data.socials.map(s => {
-                        if (!s.platform || !s.url) return '';
-                        const key = s.platform.toLowerCase();
-                        const icon = iconSvg(key);
-                        const content = icon || escapeHtml(s.platform);
-                        return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="${escapeHtml(s.platform)}">${content}</a>`;
-                    }).filter(Boolean);
+                if (socialsEl) {
+                    const links = [];
+                    const emailLink = renderFooterEmailLink(inquiriesSection);
+                    if (emailLink) links.push(emailLink);
+                    if (data.socials?.length) {
+                        const socialLinks = data.socials.map(s => {
+                            if (!s.platform || !s.url) return '';
+                            const key = s.platform.toLowerCase();
+                            const icon = iconSvg(key);
+                            const content = icon || escapeHtml(s.platform);
+                            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="${escapeHtml(s.platform)}">${content}</a>`;
+                        }).filter(Boolean);
+                        links.push(...socialLinks);
+                    }
                     socialsEl.innerHTML = links.length ? links.join('') : '';
                 }
                 
                 // Render sections
                 if (container) {
-                    if (data.sections && data.sections.length) {
-                        container.innerHTML = data.sections.map(renderSection).join('');
+                    const displaySections = sections.filter(section => section.type !== 'inquiries');
+                    if (displaySections.length) {
+                        container.innerHTML = displaySections.map(renderSection).join('');
                         setTimeout(function() {
+                            initializeAutoStickyHeaders();
+                            initializeStickyHeaderJump();
                             window.loadSubstackFeeds && window.loadSubstackFeeds();
                             initializeEventEnhancements();
                         }, 50);
