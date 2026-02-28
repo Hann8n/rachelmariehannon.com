@@ -853,8 +853,8 @@ blockquote p {
 
 .event-heading-copy {
     min-height: 0;
-    display: block;
     margin: 0;
+    display: block;
 }
 
 .event-date-badge {
@@ -872,6 +872,7 @@ blockquote p {
     background: hsl(var(--hue-ink) 20% 5% / 0.04);
     text-align: center;
     line-height: 1;
+    align-self: start;
 }
 
 .event-date-badge-month {
@@ -899,27 +900,50 @@ blockquote p {
 }
 
 .event-meta {
-    margin: 0.1rem 0 0;
-    font-size: var(--text-small);
-    font-weight: 400;
-    line-height: 1.35;
+    margin: 0.02rem 0 0;
+    font-size: var(--text-caption);
+    font-weight: 500;
+    line-height: 1.15;
     color: var(--color-text-soft);
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.26rem;
+}
+
+.section .event-meta {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.event-meta-item {
+    white-space: nowrap;
+}
+
+.event-meta-separator {
+    color: color-mix(in oklab, var(--color-text-soft) 72%, transparent);
+    font-size: 0.85em;
+    line-height: 1;
 }
 
 .event-venue {
-    font-size: var(--text-lead);
-    line-height: var(--leading-snug);
+    font-size: clamp(var(--text-lead), 1rem + 0.18vw, var(--text-h3));
+    line-height: 1.12;
     margin: 0;
     color: var(--color-text);
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
 .event-details {
-    margin-top: var(--space-md);
+    margin-top: var(--space-sm);
     margin-bottom: var(--space-md);
-    color: var(--color-text);
+    color: color-mix(in oklab, var(--color-text) 88%, var(--color-text-soft));
+    font-size: var(--text-body);
+    line-height: var(--leading-relaxed);
+    max-width: 62ch;
 }
 
 .event-actions {
@@ -1366,6 +1390,27 @@ blockquote p {
         max-width: 10rem;
         width: 100%;
     }
+
+    .footer-top {
+        gap: var(--space-md);
+    }
+
+    .footer-links {
+        gap: var(--space-md);
+        margin-bottom: 0;
+    }
+
+    .footer-social-link {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        justify-content: center;
+        border-radius: 999px;
+    }
+
+    .footer-bottom {
+        margin: var(--space-sm) 0 0;
+        padding-top: var(--space-sm);
+    }
 }
 
 @media (max-width: 520px) {
@@ -1558,24 +1603,4 @@ blockquote p {
         min-width: 0;
     }
 
-    .footer-top {
-        gap: var(--space-md);
-    }
-
-    .footer-links {
-        gap: var(--space-md);
-        margin-bottom: 0;
-    }
-
-    .footer-social-link {
-        min-width: 2.75rem;
-        min-height: 2.75rem;
-        justify-content: center;
-        border-radius: 999px;
-    }
-
-    .footer-bottom {
-        margin: 0;
-        padding-top: var(--space-xs);
-    }
 }

@@ -419,9 +419,15 @@
             const hasEventLink = Boolean(eventLink);
             const hasDirections = Boolean(directionsUrl);
             const eventMetaParts = [];
-            if (eventEntry.city) eventMetaParts.push(escapeHtml(eventEntry.city));
-            if (eventTimeLabel) eventMetaParts.push(escapeHtml(eventTimeLabel));
-            const eventMeta = eventMetaParts.join(' • ');
+            if (eventEntry.city) eventMetaParts.push(eventEntry.city);
+            if (eventTimeLabel) eventMetaParts.push(eventTimeLabel);
+            const eventMeta = eventMetaParts
+                .map((part, partIdx) => {
+                    const safePart = escapeHtml(part);
+                    if (partIdx === eventMetaParts.length - 1) return `<span class="event-meta-item">${safePart}</span>`;
+                    return `<span class="event-meta-item">${safePart}</span><span class="event-meta-separator" aria-hidden="true">•</span>`;
+                })
+                .join('');
 
             const parts = [];
             const monthAttr = monthKey ? ` data-event-month="${escapeHtml(monthKey)}"` : '';
