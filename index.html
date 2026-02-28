@@ -454,7 +454,7 @@
                 }
                 if (hasDirections) {
                     parts.push(
-                        `<a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener noreferrer" class="event-link event-directions">Get directions</a>`
+                        `<button type="button" class="event-link event-directions" data-directions-url="${escapeHtml(directionsUrl)}">Get directions</button>`
                     );
                 }
                 parts.push('</div>');
@@ -568,34 +568,21 @@
             let overlay = document.getElementById('directions-picker');
             if (overlay) return overlay;
 
-            const hasFastDialog = typeof customElements !== 'undefined' && Boolean(customElements.get('fast-dialog'));
-
             overlay = document.createElement('div');
             overlay.id = 'directions-picker';
-            overlay.className = hasFastDialog ? 'directions-picker-fast' : 'directions-picker';
+            overlay.className = 'directions-picker';
             overlay.hidden = true;
-            overlay.innerHTML = hasFastDialog
-                ? '<fast-dialog aria-labelledby="directions-picker-title">' +
-                    '<div class="directions-picker-fast-body">' +
-                        '<h3 id="directions-picker-title" class="directions-picker-fast-title">Open directions in</h3>' +
-                        '<div class="directions-picker-fast-actions">' +
-                            '<fast-button class="directions-picker-option" data-provider="apple" appearance="outline">Apple Maps</fast-button>' +
-                            '<fast-button class="directions-picker-option" data-provider="google" appearance="outline">Google Maps</fast-button>' +
-                            '<fast-button class="directions-picker-option" data-provider="waze" appearance="outline">Waze</fast-button>' +
-                        '</div>' +
-                        '<fast-button class="directions-picker-fast-cancel" data-close-directions-picker appearance="outline">Cancel</fast-button>' +
-                    '</div>' +
-                '</fast-dialog>'
-                : '<div class="directions-picker-backdrop" data-close-directions-picker></div>' +
-                    '<div class="directions-picker-panel" role="dialog" aria-modal="true" aria-labelledby="directions-picker-title">' +
-                    '<h3 id="directions-picker-title">Open directions in</h3>' +
-                    '<div class="directions-picker-actions">' +
-                    '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
-                    '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
-                    '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
-                    '</div>' +
-                    '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
-                    '</div>';
+            overlay.innerHTML =
+                '<div class="directions-picker-backdrop" data-close-directions-picker></div>' +
+                '<div class="directions-picker-panel" role="dialog" aria-modal="true" aria-labelledby="directions-picker-title">' +
+                '<h3 id="directions-picker-title">Open directions in</h3>' +
+                '<div class="directions-picker-actions">' +
+                '<button type="button" class="directions-picker-option" data-provider="apple">Apple Maps</button>' +
+                '<button type="button" class="directions-picker-option" data-provider="google">Google Maps</button>' +
+                '<button type="button" class="directions-picker-option" data-provider="waze">Waze</button>' +
+                '</div>' +
+                '<button type="button" class="directions-picker-cancel" data-close-directions-picker>Cancel</button>' +
+                '</div>';
             document.body.appendChild(overlay);
             return overlay;
         }
@@ -644,14 +631,30 @@
             if (document.body.dataset.directionsPickerReady === 'true') return;
             document.body.dataset.directionsPickerReady = 'true';
 
+            function getDelegatedMatch(event, selector) {
+                if (event.target instanceof Element) {
+                    const closest = event.target.closest(selector);
+                    if (closest) return closest;
+                }
+                if (typeof event.composedPath === 'function') {
+                    const path = event.composedPath();
+                    for (const node of path) {
+                        if (node instanceof Element && node.matches(selector)) {
+                            return node;
+                        }
+                    }
+                }
+                return null;
+            }
+
             document.addEventListener('click', async (event) => {
-                const closeTrigger = event.target.closest('[data-close-directions-picker]');
+                const closeTrigger = getDelegatedMatch(event, '[data-close-directions-picker]');
                 if (closeTrigger) {
                     closeDirectionsPicker();
                     return;
                 }
 
-                const providerButton = event.target.closest('[data-provider].directions-picker-option');
+                const providerButton = getDelegatedMatch(event, '[data-provider].directions-picker-option');
                 if (providerButton) {
                     const overlay = document.getElementById('directions-picker');
                     if (!overlay) return;
@@ -664,7 +667,7 @@
                     return;
                 }
 
-                const directionsLink = event.target.closest('.event-directions');
+                const directionsLink = getDelegatedMatch(event, '.event-directions');
                 if (!directionsLink) return;
                 event.preventDefault();
 
@@ -673,7 +676,7 @@
                 const mapsUrl = card ? (card.getAttribute('data-google-maps-url') || '').trim() : '';
                 const venue = card ? (card.getAttribute('data-venue') || '').trim() : '';
                 const city = card ? (card.getAttribute('data-city') || '').trim() : '';
-                const fallbackUrl = directionsLink.getAttribute('href') || '';
+                const fallbackUrl = directionsLink.getAttribute('data-directions-url') || directionsLink.getAttribute('href') || '';
                 const urls = buildDirectionsProviderUrls({ placeId, mapsUrl, venue, city, fallbackUrl });
 
                 if (!urls.fallback) return;
@@ -746,7 +749,10 @@
 
                 const directionsLink = card.querySelector('.event-directions');
                 if (directionsLink && place.url) {
-                    directionsLink.setAttribute('href', place.url);
+                    if (directionsLink.tagName === 'A') {
+                        directionsLink.setAttribute('href', place.url);
+                    }
+                    directionsLink.setAttribute('data-directions-url', place.url);
                 }
 
                 const photoWrapper = card.querySelector('[data-event-photo]');

@@ -400,8 +400,7 @@ blockquote p {
 .button-secondary,
 .secondary-button,
 .button-primary,
-.primary-cta,
-.directions-picker-option {
+.primary-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -423,8 +422,7 @@ blockquote p {
 .button-secondary:focus-visible,
 .secondary-button:focus-visible,
 .button-primary:focus-visible,
-.primary-cta:focus-visible,
-.directions-picker-option:focus-visible {
+.primary-cta:focus-visible {
     outline: 2px solid var(--color-teal);
     outline-offset: 2px;
 }
@@ -524,8 +522,7 @@ blockquote p {
 .button.substack-load-more,
 .event-link,
 .button-secondary,
-.secondary-button,
-.directions-picker-option {
+.secondary-button {
     color: var(--button-secondary-fg);
     border: none;
     background: var(--button-secondary-bg);
@@ -534,8 +531,7 @@ blockquote p {
 .button.substack-load-more:hover,
 .event-link:hover,
 .button-secondary:hover,
-.secondary-button:hover,
-.directions-picker-option:hover {
+.secondary-button:hover {
     color: var(--button-secondary-fg-hover);
     background: var(--button-secondary-bg-hover);
 }
@@ -1004,12 +1000,38 @@ blockquote p {
     gap: var(--space-sm);
 }
 
-.directions-picker-option {
+.directions-picker-panel .directions-picker-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--control-min-height);
+    padding: var(--control-pad-y) var(--control-pad-x);
+    font-family: var(--font-body);
+    font-size: var(--control-font-size);
+    font-weight: var(--control-font-weight);
+    line-height: 1.2;
+    border: 1px solid var(--button-secondary-border);
+    border-radius: var(--radius-sm);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-fg);
+    text-decoration: none;
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
     cursor: pointer;
     text-align: center;
 }
 
-.directions-picker-option:disabled {
+.directions-picker-panel .directions-picker-option:hover {
+    color: var(--button-secondary-fg-hover);
+    border-color: var(--button-secondary-border-hover);
+    background: var(--button-secondary-bg-hover);
+}
+
+.directions-picker-panel .directions-picker-option:focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+}
+
+.directions-picker-panel .directions-picker-option:disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }
@@ -1063,7 +1085,7 @@ blockquote p {
 
 @media (max-width: 520px) {
     .directions-picker {
-        place-items: end center;
+        place-items: center;
         padding: var(--space-sm);
     }
 
