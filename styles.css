@@ -1281,14 +1281,7 @@ blockquote p {
     width: 100%;
 }
 
-@media (min-width: 701px) {
-    .event-map {
-        max-width: 240px;
-        aspect-ratio: 4 / 3;
-        min-height: 0;
-        height: auto;
-    }
-
+@media (min-width: 521px) {
     .site-footer {
         display: flex;
         align-items: center;
@@ -1313,6 +1306,15 @@ blockquote p {
     }
 }
 
+@media (min-width: 901px) {
+    .event-map {
+        max-width: 240px;
+        aspect-ratio: 4 / 3;
+        min-height: 0;
+        height: auto;
+    }
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     body {
@@ -1326,41 +1328,18 @@ blockquote p {
     .section:last-of-type {
         padding-bottom: 0;
     }
-}
 
-@media (max-width: 700px) {
-    main,
-    .site-header {
-        max-width: 100%;
-    }
-
-    .about-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: var(--space-lg);
-    }
-
-    .section-substack .section-header,
     .section-events .section-header {
         margin-bottom: var(--space-md);
     }
 
-    .substack-feed-card {
+    .event-card {
         padding-top: var(--space-md);
         padding-bottom: var(--space-md);
-    }
-
-    .substack-feed-card-content {
-        gap: var(--space-xs);
-    }
-
-    .substack-feed-card-description {
-        margin-top: var(--space-sm);
-    }
-
-    .event-card {
-        padding-top: var(--space-lg);
-        padding-bottom: var(--space-lg);
         min-height: 0;
+        margin: 0;
+        padding-left: var(--row-bleed-mobile);
+        padding-right: var(--row-bleed-mobile);
     }
 
     .event-card-heading {
@@ -1374,21 +1353,75 @@ blockquote p {
 
     .event-actions {
         margin-top: var(--space-sm);
-    }
-
-    .event-card-layout {
-        grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10rem);
         gap: var(--space-md);
     }
 
-    .event-card {
-        padding-top: var(--space-md);
-        padding-bottom: var(--space-md);
+    .event-card-layout {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "media"
+            "main";
+        gap: var(--space-md);
     }
 
     .event-card-media {
-        max-width: 10rem;
+        grid-area: media;
+        max-width: none;
         width: 100%;
+    }
+
+    .event-card-main {
+        grid-area: main;
+    }
+
+    .event-venue {
+        font-size: var(--text-h3);
+    }
+
+    .event-date-badge {
+        width: 3.1rem;
+        flex: 0 0 3.1rem;
+    }
+
+    .event-heading-content {
+        min-width: 0;
+    }
+
+    .section-events > .section-header {
+        margin-left: calc(-1 * var(--row-bleed-mobile));
+        margin-right: calc(-1 * var(--row-bleed-mobile));
+        padding-left: var(--row-bleed-mobile);
+        padding-right: var(--row-bleed-mobile);
+    }
+
+    .events-list {
+        margin-left: calc(-1 * var(--row-bleed-mobile));
+        margin-right: calc(-1 * var(--row-bleed-mobile));
+    }
+
+    .events-load-more-row {
+        padding-left: var(--row-bleed-mobile);
+        padding-right: var(--row-bleed-mobile);
+    }
+}
+
+@media (max-width: 520px) {
+    main,
+    .site-header {
+        max-width: 100%;
+    }
+
+    .about-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-lg);
+    }
+
+    .section-substack .section-header {
+        margin-bottom: var(--space-md);
+    }
+
+    .substack-feed-card-content {
+        gap: var(--space-xs);
     }
 
     .footer-top {
@@ -1423,16 +1456,7 @@ blockquote p {
         padding-bottom: var(--space-md);
     }
 
-    .section {
-        padding: var(--space-lg) 0;
-    }
-
-    .section:last-of-type {
-        padding-bottom: 0;
-    }
-
-    .section-substack > .section-header,
-    .section-events > .section-header {
+    .section-substack > .section-header {
         margin-left: calc(-1 * var(--row-bleed-mobile));
         margin-right: calc(-1 * var(--row-bleed-mobile));
         padding-left: var(--row-bleed-mobile);
@@ -1441,14 +1465,12 @@ blockquote p {
 
     /* Mobile full-bleed row pattern:
        rows can extend to viewport edges while content stays aligned to the page gutter. */
-    .substack-feed-shell,
-    .events-list {
+    .substack-feed-shell {
         margin-left: calc(-1 * var(--row-bleed-mobile));
         margin-right: calc(-1 * var(--row-bleed-mobile));
     }
 
-    .substack-feed-load-more-row,
-    .events-load-more-row {
+    .substack-feed-load-more-row {
         padding-left: var(--row-bleed-mobile);
         padding-right: var(--row-bleed-mobile);
     }
@@ -1559,48 +1581,6 @@ blockquote p {
 
     .substack-feed-card-meta {
         font-size: var(--text-caption);
-    }
-
-    .event-card {
-        margin: 0;
-        padding-left: var(--row-bleed-mobile);
-        padding-right: var(--row-bleed-mobile);
-        min-height: 0;
-    }
-
-    .event-card-layout {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-areas:
-            "media"
-            "main";
-        gap: var(--space-md);
-    }
-
-    .event-card-media {
-        grid-area: media;
-        max-width: none;
-        width: 100%;
-    }
-
-    .event-card-main {
-        grid-area: main;
-    }
-
-    .event-venue {
-        font-size: var(--text-h3);
-    }
-
-    .event-actions {
-        gap: var(--space-md);
-    }
-
-    .event-date-badge {
-        width: 3.1rem;
-        flex: 0 0 3.1rem;
-    }
-
-    .event-heading-content {
-        min-width: 0;
     }
 
 }
