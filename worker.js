@@ -194,20 +194,30 @@ export default {
       return handlePlacePhoto(request, env);
     }
 
-    const assetResponse = await env.ASSETS.fetch(request);
-    const isGetLikeRequest =
-      request.method === "GET" || request.method === "HEAD";
-    const pathLooksLikeFile = /\/[^/]+\.[^/]+$/.test(url.pathname);
+    try {
+      // Serve the home document explicitly to avoid root resolution edge cases.
+      if (url.pathname === "/") {
+        const indexUrl = new URL("/index.html", request.url).toString();
+        return env.ASSETS.fetch(new Request(indexUrl, request));
+      }
 
-    if (
-      assetResponse.status === 404 &&
-      isGetLikeRequest &&
-      !url.pathname.startsWith("/api/") &&
-      !pathLooksLikeFile
-    ) {
-      return Response.redirect(new URL("/", url.origin), 301);
+      const assetResponse = await env.ASSETS.fetch(request);
+      const isGetLikeRequest =
+        request.method === "GET" || request.method === "HEAD";
+      const pathLooksLikeFile = /\/[^/]+\.[^/]+$/.test(url.pathname);
+
+      if (
+        assetResponse.status === 404 &&
+        isGetLikeRequest &&
+        !url.pathname.startsWith("/api/") &&
+        !pathLooksLikeFile
+      ) {
+        return Response.redirect(new URL("/", request.url).toString(), 301);
+      }
+
+      return assetResponse;
+    } catch {
+      return new Response("Site temporarily unavailable", { status: 503 });
     }
-
-    return assetResponse;
   },
 };
