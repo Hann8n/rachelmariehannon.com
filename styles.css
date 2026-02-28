@@ -840,8 +840,8 @@ blockquote p {
 
 .event-card-heading {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-md);
+    grid-template-columns: 3.1rem minmax(0, 1fr);
+    column-gap: var(--space-md);
     align-items: start;
 }
 
@@ -850,11 +850,9 @@ blockquote p {
 }
 
 .event-heading-copy {
-    min-height: 3.1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-top: -0.06rem;
+    min-height: 0;
+    display: block;
+    margin: 0;
 }
 
 .event-date-badge {
@@ -899,9 +897,10 @@ blockquote p {
 }
 
 .event-meta {
-    margin: 0;
+    margin: 0.1rem 0 0;
     font-size: var(--text-small);
     font-weight: 400;
+    line-height: 1.35;
     color: var(--color-text-soft);
     letter-spacing: 0.01em;
 }
@@ -1308,17 +1307,6 @@ blockquote p {
         gap: var(--space-md);
     }
 
-    .event-heading-copy {
-        min-height: auto;
-        margin-top: 0;
-        gap: var(--space-xs);
-        justify-content: flex-start;
-    }
-
-    .event-meta {
-        line-height: 1.5;
-    }
-
     .event-details {
         margin-top: var(--space-sm);
         margin-bottom: var(--space-lg);
@@ -1330,11 +1318,6 @@ blockquote p {
 
     .event-card-layout {
         grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10rem);
-        gap: var(--space-md);
-    }
-
-    .event-card-heading {
-        grid-template-columns: auto minmax(0, 1fr);
         gap: var(--space-md);
     }
 
@@ -1520,20 +1503,8 @@ blockquote p {
         min-height: 180px;
     }
 
-    .event-card-heading {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        gap: var(--space-md);
-    }
-
     .event-venue {
         font-size: var(--text-h3);
-        line-height: var(--leading-snug);
-    }
-
-    .event-meta {
-        margin-top: var(--space-2xs);
     }
 
     .event-actions {
@@ -1546,7 +1517,6 @@ blockquote p {
     }
 
     .event-heading-content {
-        flex: 1 1 14rem;
         min-width: 0;
     }
 

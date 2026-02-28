@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -200,7 +199,8 @@
                             }
                             const allItems = data.items;
                             const initialCount = 4;
-                            let displayedCount = initialCount;
+                            const batchSize = 4;
+                            let displayedCount = Math.min(initialCount, allItems.length);
                             
                             const container = document.createElement('div');
                             container.className = 'substack-feed-cards ui-stack';
@@ -208,23 +208,27 @@
                             
                             const loadMoreBtn = document.createElement('button');
                             loadMoreBtn.className = 'button secondary-button substack-load-more';
-                            loadMoreBtn.textContent = 'Load more';
                             loadMoreBtn.type = 'button';
-                            
-                            if (displayedCount >= allItems.length) {
-                                loadMoreBtn.style.display = 'none';
-                            }
+
+                            const updateSubstackLoadMoreLabel = () => {
+                                const remaining = allItems.length - displayedCount;
+                                if (remaining <= 0) {
+                                    loadMoreBtn.style.display = 'none';
+                                    return;
+                                }
+                                loadMoreBtn.textContent = 'Show more articles';
+                                loadMoreBtn.style.display = '';
+                            };
+                            updateSubstackLoadMoreLabel();
                             
                             loadMoreBtn.addEventListener('click', function() {
-                                const nextBatch = allItems.slice(displayedCount, displayedCount + 4);
+                                const nextBatch = allItems.slice(displayedCount, displayedCount + batchSize);
                                 if (nextBatch.length > 0) {
                                     nextBatch.forEach(function(item) {
                                         container.insertAdjacentHTML('beforeend', renderFeedItem(item));
                                     });
                                     displayedCount += nextBatch.length;
-                                    if (displayedCount >= allItems.length) {
-                                        loadMoreBtn.style.display = 'none';
-                                    }
+                                    updateSubstackLoadMoreLabel();
                                 }
                             });
                             
@@ -392,6 +396,91 @@
                 month: date.toLocaleDateString(undefined, { month: 'short' }).toUpperCase(),
                 day: String(date.getDate())
             };
+        }
+
+        function formatEventMonthKey(date) {
+            if (!date || Number.isNaN(date.getTime())) return '';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return year + '-' + month;
+        }
+
+        function renderEventCard(eventEntry, idx, monthKey) {
+            const eventTimeLabel = formatEventTime(eventEntry._parsedStart) || eventEntry.time;
+            const eventBadge = formatEventBadge(eventEntry._parsedStart);
+            const directionsUrl = buildDirectionsUrl(eventEntry);
+            const mapEmbedUrl = buildMapEmbedUrl(eventEntry);
+            const placeId = getEventPlaceId(eventEntry);
+            const eventLink = normalizeUrl(eventEntry.link);
+            const hasDetails = Boolean(eventEntry.details);
+            const hasEventLink = Boolean(eventLink);
+            const hasDirections = Boolean(directionsUrl);
+            const eventMetaParts = [];
+            if (eventEntry.city) eventMetaParts.push(escapeHtml(eventEntry.city));
+            if (eventTimeLabel) eventMetaParts.push(escapeHtml(eventTimeLabel));
+            const eventMeta = eventMetaParts.join(' • ');
+
+            const parts = [];
+            const monthAttr = monthKey ? ` data-event-month="${escapeHtml(monthKey)}"` : '';
+            parts.push(
+                `<article class="event-card ui-surface"${monthAttr} data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
+            );
+            parts.push('<div class="event-card-layout">');
+            parts.push('<div class="event-card-main">');
+            parts.push('<div class="event-card-heading">');
+
+            if (eventBadge) {
+                parts.push(
+                    '<div class="event-date-badge" aria-hidden="true">' +
+                    `<span class="event-date-badge-month">${escapeHtml(eventBadge.month)}</span>` +
+                    `<span class="event-date-badge-day">${escapeHtml(eventBadge.day)}</span>` +
+                    '</div>'
+                );
+            }
+
+            parts.push('<div class="event-heading-content">');
+            parts.push('<div class="event-heading-copy">');
+            if (eventEntry.venue) parts.push(`<h3 class="event-venue">${escapeHtml(eventEntry.venue)}</h3>`);
+            if (eventMeta) parts.push(`<p class="event-meta">${eventMeta}</p>`);
+            parts.push('</div>');
+            if (hasDetails) parts.push(`<p class="event-details">${escapeHtml(eventEntry.details)}</p>`);
+
+            if (hasEventLink || hasDirections) {
+                parts.push('<div class="event-actions">');
+                if (hasEventLink) {
+                    parts.push(
+                        `<a href="${escapeHtml(eventLink)}" target="_blank" rel="noopener noreferrer" class="event-link">View details</a>`
+                    );
+                }
+                if (hasDirections) {
+                    parts.push(
+                        `<a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener noreferrer" class="event-link event-directions">Get directions</a>`
+                    );
+                }
+                parts.push('</div>');
+            }
+
+            parts.push('</div>');
+            parts.push('</div>');
+            parts.push('</div>');
+
+            if (mapEmbedUrl) {
+                const mapTitle = `Map for ${eventEntry.venue || 'event location'}`;
+                parts.push('<div class="event-card-media">');
+                parts.push(
+                    '<figure class="event-photo" data-event-photo hidden>' +
+                    '<img data-event-photo-img loading="lazy" alt="Venue photo" />' +
+                    '</figure>'
+                );
+                parts.push(
+                    `<iframe class="event-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${escapeHtml(mapEmbedUrl)}" title="${escapeHtml(mapTitle)}"></iframe>`
+                );
+                parts.push('</div>');
+            }
+
+            parts.push('</div>');
+            parts.push('</article>');
+            return parts.join('');
         }
 
         function normalizeUrl(urlText) {
@@ -674,11 +763,74 @@
             await enrichEventCardsWithPlaceData();
         }
 
+        function initializeEventMonthLoaders() {
+            document.querySelectorAll('[data-events-month-loader]').forEach((sectionRoot) => {
+                const list = sectionRoot.querySelector('.events-list');
+                const loadMoreBtn = sectionRoot.querySelector('[data-events-load-more]');
+                if (!list || !loadMoreBtn) return;
+                const minimumEventsToAdd = 4;
+
+                const getMonthTemplates = () => Array.from(
+                    sectionRoot.querySelectorAll('template[data-events-month-template]')
+                );
+
+                const getNextEventsCount = () => {
+                    const templates = getMonthTemplates();
+                    let projectedCount = 0;
+                    for (let idx = 0; idx < templates.length && projectedCount < minimumEventsToAdd; idx += 1) {
+                        const monthEventCount = Number(templates[idx].getAttribute('data-event-count') || '0');
+                        projectedCount += monthEventCount;
+                    }
+                    return projectedCount;
+                };
+
+                const updateButtonVisibility = () => {
+                    const hasRemainingMonths = getMonthTemplates().length > 0;
+                    loadMoreBtn.hidden = !hasRemainingMonths;
+                    loadMoreBtn.style.display = hasRemainingMonths ? '' : 'none';
+                    if (hasRemainingMonths) loadMoreBtn.textContent = 'Show more events';
+                };
+                let isLoadingMoreEvents = false;
+
+                loadMoreBtn.addEventListener('click', async () => {
+                    if (isLoadingMoreEvents || loadMoreBtn.disabled) return;
+                    isLoadingMoreEvents = true;
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.setAttribute('aria-busy', 'true');
+
+                    try {
+                        let addedEvents = 0;
+                        let templates = getMonthTemplates();
+
+                        while (templates.length && addedEvents < minimumEventsToAdd) {
+                            const nextTemplate = templates[0];
+                            const monthEventCount = Number(nextTemplate.getAttribute('data-event-count') || '0');
+                            list.append(nextTemplate.content.cloneNode(true));
+                            nextTemplate.remove();
+                            addedEvents += monthEventCount;
+                            templates = getMonthTemplates();
+                        }
+
+                        await enrichEventCardsWithPlaceData();
+                    } catch (error) {
+                        console.error('Failed to enrich event cards after loading more events.', error);
+                    } finally {
+                        isLoadingMoreEvents = false;
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.setAttribute('aria-busy', 'false');
+                        updateButtonVisibility();
+                    }
+                });
+
+                updateButtonVisibility();
+            });
+        }
+
         function updateAutoStickyHeaders() {
             const sections = document.querySelectorAll('.section-substack, .section-events');
             if (!sections.length) return;
 
-            const minStickyHeight = Math.round(window.innerHeight * 1.1);
+            const minStickyHeight = Math.round(window.innerHeight * 0.75);
             sections.forEach((section) => {
                 const shouldStick = section.scrollHeight >= minStickyHeight;
                 section.classList.toggle('auto-sticky-on', shouldStick);
@@ -880,8 +1032,31 @@
                     .sort((a, b) => a._parsedStart - b._parsedStart || a._idx - b._idx);
 
                 if (!upcomingEvents.length) {
-                    return '';
+                    if (section.title || section.tagline) {
+                        parts.push('<div class="section-header">');
+                        if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
+                        if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
+                        parts.push('</div>');
+                    }
+                    parts.push(`<p class="events-empty">${escapeHtml(section.empty_state_text || 'No upcoming events right now. Please check back soon.')}</p>`);
+                    return parts.join('');
                 }
+
+                const monthGroups = new Map();
+                upcomingEvents.forEach((eventEntry) => {
+                    const monthKey = formatEventMonthKey(eventEntry._parsedStart);
+                    if (!monthGroups.has(monthKey)) {
+                        monthGroups.set(monthKey, []);
+                    }
+                    monthGroups.get(monthKey).push(eventEntry);
+                });
+                const monthKeys = Array.from(monthGroups.keys());
+                const currentMonthKey = formatEventMonthKey(today);
+                const initialMonthKey = monthGroups.has(currentMonthKey)
+                    ? currentMonthKey
+                    : monthKeys[0];
+                const initialMonthIndex = monthKeys.indexOf(initialMonthKey);
+                const remainingMonthKeys = monthKeys.slice(initialMonthIndex + 1);
 
                 if (section.title || section.tagline) {
                     parts.push('<div class="section-header">');
@@ -890,82 +1065,27 @@
                     parts.push('</div>');
                 }
 
+                parts.push('<div data-events-month-loader>');
                 parts.push('<div class="events-list ui-stack">');
-                upcomingEvents.forEach((eventEntry, idx) => {
-                    const eventTimeLabel = formatEventTime(eventEntry._parsedStart) || eventEntry.time;
-                    const eventBadge = formatEventBadge(eventEntry._parsedStart);
-                    const directionsUrl = buildDirectionsUrl(eventEntry);
-                    const mapEmbedUrl = buildMapEmbedUrl(eventEntry);
-                    const placeId = getEventPlaceId(eventEntry);
-                    const eventLink = normalizeUrl(eventEntry.link);
-                    const hasDetails = Boolean(eventEntry.details);
-                    const hasEventLink = Boolean(eventLink);
-                    const hasDirections = Boolean(directionsUrl);
-                    const eventMetaParts = [];
-                    if (eventEntry.city) eventMetaParts.push(escapeHtml(eventEntry.city));
-                    if (eventTimeLabel) eventMetaParts.push(escapeHtml(eventTimeLabel));
-                    const eventMeta = eventMetaParts.join(' • ');
-
-                    parts.push(
-                        `<article class="event-card ui-surface" data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
-                    );
-                    parts.push('<div class="event-card-layout">');
-                    parts.push('<div class="event-card-main">');
-                    parts.push('<div class="event-card-heading">');
-
-                    if (eventBadge) {
-                        parts.push(
-                            '<div class="event-date-badge" aria-hidden="true">' +
-                            `<span class="event-date-badge-month">${escapeHtml(eventBadge.month)}</span>` +
-                            `<span class="event-date-badge-day">${escapeHtml(eventBadge.day)}</span>` +
-                            '</div>'
-                        );
-                    }
-
-                    parts.push('<div class="event-heading-content">');
-                    parts.push('<div class="event-heading-copy">');
-                    if (eventEntry.venue) parts.push(`<h3 class="event-venue">${escapeHtml(eventEntry.venue)}</h3>`);
-                    if (eventMeta) parts.push(`<p class="event-meta">${eventMeta}</p>`);
-                    parts.push('</div>');
-                    if (hasDetails) parts.push(`<p class="event-details">${escapeHtml(eventEntry.details)}</p>`);
-
-                    if (hasEventLink || hasDirections) {
-                        parts.push('<div class="event-actions">');
-                        if (hasEventLink) {
-                            parts.push(
-                                `<a href="${escapeHtml(eventLink)}" target="_blank" rel="noopener noreferrer" class="event-link">View details</a>`
-                            );
-                        }
-                        if (hasDirections) {
-                            parts.push(
-                                `<a href="${escapeHtml(directionsUrl)}" target="_blank" rel="noopener noreferrer" class="event-link event-directions">Get directions</a>`
-                            );
-                        }
-                        parts.push('</div>');
-                    }
-
-                    parts.push('</div>');
-                    parts.push('</div>');
-
-                    parts.push('</div>');
-
-                    if (mapEmbedUrl) {
-                        const mapTitle = `Map for ${eventEntry.venue || 'event location'}`;
-                        parts.push('<div class="event-card-media">');
-                        parts.push(
-                            '<figure class="event-photo" data-event-photo hidden>' +
-                            '<img data-event-photo-img loading="lazy" alt="Venue photo" />' +
-                            '</figure>'
-                        );
-                        parts.push(
-                            `<iframe class="event-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${escapeHtml(mapEmbedUrl)}" title="${escapeHtml(mapTitle)}"></iframe>`
-                        );
-                        parts.push('</div>');
-                    }
-
-                    parts.push('</div>');
-                    parts.push('</article>');
+                const initialMonthEvents = monthGroups.get(initialMonthKey) || [];
+                initialMonthEvents.forEach((eventEntry, idx) => {
+                    parts.push(renderEventCard(eventEntry, idx, initialMonthKey));
                 });
+                parts.push('</div>');
+
+                let renderedEventIndex = initialMonthEvents.length;
+                remainingMonthKeys.forEach((monthKey) => {
+                    const monthEvents = monthGroups.get(monthKey) || [];
+                    const monthHtml = monthEvents.map((eventEntry, idx) =>
+                        renderEventCard(eventEntry, renderedEventIndex + idx, monthKey)
+                    ).join('');
+                    renderedEventIndex += monthEvents.length;
+                    parts.push(
+                        `<template data-events-month-template data-month-key="${escapeHtml(monthKey)}" data-event-count="${monthEvents.length}">${monthHtml}</template>`
+                    );
+                });
+
+                parts.push('<button class="button secondary-button substack-load-more" type="button" data-events-load-more>Show more events</button>');
                 parts.push('</div>');
                 return parts.join('');
             }
@@ -1085,6 +1205,7 @@
                             initializeAutoStickyHeaders();
                             initializeStickyHeaderJump();
                             window.loadSubstackFeeds && window.loadSubstackFeeds();
+                            initializeEventMonthLoaders();
                             initializeEventEnhancements();
                         }, 50);
                     } else {
