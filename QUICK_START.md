@@ -19,7 +19,6 @@
    - `two-column`
    - `substack`
    - `events`
-   - `inquiries`
 4. Fill only the fields you need
 5. Save
 
@@ -35,6 +34,7 @@ Each event item uses:
 ## Useful Tips
 
 - Optional fields can be left blank.
+- In `text` sections, use blank lines in `content` for new paragraphs.
 - Use drag handles to reorder list items.
 - Changes are saved to GitHub and appear on the live site after deployment.
 

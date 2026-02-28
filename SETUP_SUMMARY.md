@@ -13,9 +13,10 @@
 - Added stronger field typing and validation in `.pages.yml`
   - `socials.platform` is now a `select`
   - URL fields use `http(s)` pattern validation
-  - `inquiries.email` uses email pattern validation
 - Converted events to a single datetime field:
   - `starts_at` (`type: date`, `options.time: true`)
+- Simplified text sections:
+  - `text.content` is now one multiline field (no extra paragraph list)
 - Added collapsible list summaries for easier editing in Pages CMS.
 
 ## Frontend Alignment

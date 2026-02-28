@@ -4,6 +4,10 @@
   "author": "Rachel Marie Hannon",
   "socials": [
     {
+      "platform": "Email",
+      "url": "mailto:rachelmariehannon@gmail.com"
+    },
+    {
       "platform": "LinkedIn",
       "url": "https://www.linkedin.com/in/rachel-hannon-60759159/"
     },
@@ -25,12 +29,7 @@
       "type": "text",
       "title": "About",
       "id": "about",
-      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from Bucknell University.",
-      "paragraphs": [
-        {
-          "text": "When things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title."
-        }
-      ]
+      "content": "I Might Be An Idiot follows my determined search for popularity as I maintain trails in Arizona following a suspension from Bucknell University.\n\nWhen things get worse it forces me to search for the reason why all these things kept happening to me. In the end… well, you read the title."
     },
     {
       "type": "two-column",
@@ -117,14 +116,6 @@
           "google_maps_url": "https://www.google.com/maps/place/Woolly+Mammoth+Theatre+Company/@38.8949788,-77.0240207,17z/data=!3m1!4b1!4m6!3m5!1s0x89b7b78ffb9dd2eb:0xce05126f81ec284d!8m2!3d38.8949788!4d-77.0214458!16s%2Fm%2F0k06hhb?entry=ttu&g_ep=EgoyMDI2MDIxOC4wIKXMDSoASAFQAw%3D%3D"
         }
       ]
-    },
-    {
-      "type": "inquiries",
-      "title": "Inquiries",
-      "id": "inquiries",
-      "description": "For speaking, events, or press inquiries, please reach out.",
-      "button_text": "Get in Contact",
-      "email": "rachelmariehannon@gmail.com"
     }
   ]
 }

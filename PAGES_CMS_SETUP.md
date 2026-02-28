@@ -34,7 +34,6 @@ Supported section block types:
 - `two-column`
 - `substack`
 - `events`
-- `inquiries`
 
 ## Events Model
 
@@ -48,7 +47,12 @@ Event entries use a single datetime field:
 Notes:
 
 - Dates/times are filtered on the frontend to show upcoming events.
-- Link/email fields have validation patterns in `.pages.yml`.
+- Link fields have validation patterns in `.pages.yml`.
+
+Text block note:
+
+- `text.content` is a single multiline field.
+- Use a blank line to create a new paragraph.
 
 ## Editing Tips
 
