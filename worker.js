@@ -194,6 +194,20 @@ export default {
       return handlePlacePhoto(request, env);
     }
 
-    return env.ASSETS.fetch(request);
+    const assetResponse = await env.ASSETS.fetch(request);
+    const isGetLikeRequest =
+      request.method === "GET" || request.method === "HEAD";
+    const pathLooksLikeFile = /\/[^/]+\.[^/]+$/.test(url.pathname);
+
+    if (
+      assetResponse.status === 404 &&
+      isGetLikeRequest &&
+      !url.pathname.startsWith("/api/") &&
+      !pathLooksLikeFile
+    ) {
+      return Response.redirect(new URL("/", url.origin), 301);
+    }
+
+    return assetResponse;
   },
 };
