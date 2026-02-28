@@ -537,10 +537,16 @@ blockquote p {
 }
 
 .button.substack-load-more {
-    display: block;
-    margin-top: var(--space-lg);
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0;
+}
+
+.substack-feed-load-more-row,
+.events-load-more-row {
+    border-top: 1px solid var(--color-divider-secondary);
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    justify-content: center;
+    background: transparent;
 }
 
 .button {
@@ -1123,6 +1129,7 @@ blockquote p {
 
 .event-map {
     width: 100%;
+    max-width: none;
     min-height: 140px;
     height: 100%;
     border: 1px solid var(--color-border);
@@ -1251,6 +1258,13 @@ blockquote p {
 }
 
 @media (min-width: 701px) {
+    .event-map {
+        max-width: 240px;
+        aspect-ratio: 4 / 3;
+        min-height: 0;
+        height: auto;
+    }
+
     .site-footer {
         display: flex;
         align-items: center;
@@ -1388,6 +1402,12 @@ blockquote p {
         margin-right: calc(-1 * var(--row-bleed-mobile));
     }
 
+    .substack-feed-load-more-row,
+    .events-load-more-row {
+        padding-left: var(--row-bleed-mobile);
+        padding-right: var(--row-bleed-mobile);
+    }
+
     .substack-feed-card {
         grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
@@ -1519,10 +1539,6 @@ blockquote p {
 
     .event-card-main {
         grid-area: main;
-    }
-
-    .event-map {
-        min-height: 180px;
     }
 
     .event-venue {

@@ -209,6 +209,9 @@
                             const loadMoreBtn = document.createElement('button');
                             loadMoreBtn.className = 'button secondary-button substack-load-more';
                             loadMoreBtn.type = 'button';
+                            const loadMoreRow = document.createElement('div');
+                            loadMoreRow.className = 'substack-feed-load-more-row';
+                            loadMoreRow.appendChild(loadMoreBtn);
 
                             const updateSubstackLoadMoreLabel = () => {
                                 const remaining = allItems.length - displayedCount;
@@ -225,7 +228,7 @@
                                 const nextBatch = allItems.slice(displayedCount, displayedCount + batchSize);
                                 if (nextBatch.length > 0) {
                                     nextBatch.forEach(function(item) {
-                                        container.insertAdjacentHTML('beforeend', renderFeedItem(item));
+                                        loadMoreRow.insertAdjacentHTML('beforebegin', renderFeedItem(item));
                                     });
                                     displayedCount += nextBatch.length;
                                     updateSubstackLoadMoreLabel();
@@ -233,8 +236,8 @@
                             });
                             
                             el.innerHTML = '';
+                            container.appendChild(loadMoreRow);
                             el.appendChild(container);
-                            el.appendChild(loadMoreBtn);
                         })
                         .catch(function (err) {
                             console.error('Substack feed error:', err);
@@ -772,8 +775,9 @@
         function initializeEventMonthLoaders() {
             document.querySelectorAll('[data-events-month-loader]').forEach((sectionRoot) => {
                 const list = sectionRoot.querySelector('.events-list');
+                const loadMoreRow = sectionRoot.querySelector('.events-load-more-row');
                 const loadMoreBtn = sectionRoot.querySelector('[data-events-load-more]');
-                if (!list || !loadMoreBtn) return;
+                if (!list || !loadMoreRow || !loadMoreBtn) return;
                 const minimumEventsToAdd = 4;
 
                 const getMonthTemplates = () => Array.from(
@@ -811,7 +815,7 @@
                         while (templates.length && addedEvents < minimumEventsToAdd) {
                             const nextTemplate = templates[0];
                             const monthEventCount = Number(nextTemplate.getAttribute('data-event-count') || '0');
-                            list.append(nextTemplate.content.cloneNode(true));
+                            list.insertBefore(nextTemplate.content.cloneNode(true), loadMoreRow);
                             nextTemplate.remove();
                             addedEvents += monthEventCount;
                             templates = getMonthTemplates();
@@ -1077,8 +1081,6 @@
                 initialMonthEvents.forEach((eventEntry, idx) => {
                     parts.push(renderEventCard(eventEntry, idx, initialMonthKey));
                 });
-                parts.push('</div>');
-
                 let renderedEventIndex = initialMonthEvents.length;
                 remainingMonthKeys.forEach((monthKey) => {
                     const monthEvents = monthGroups.get(monthKey) || [];
@@ -1091,7 +1093,9 @@
                     );
                 });
 
+                parts.push('<div class="events-load-more-row">');
                 parts.push('<button class="button secondary-button substack-load-more" type="button" data-events-load-more>Show more events</button>');
+                parts.push('</div>');
                 parts.push('</div>');
                 return parts.join('');
             }
