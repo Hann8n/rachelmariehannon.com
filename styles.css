@@ -74,47 +74,6 @@ main {
     color: var(--color-brown-dark);
 }
 
-.main-nav {
-    margin-top: var(--space-xl);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xl) var(--space-2xl);
-    justify-content: center;
-    font-size: var(--text-small);
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
-
-.main-nav a {
-    color: var(--color-text);
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 0.2em;
-    transition: color var(--transition), text-decoration-color var(--transition);
-}
-
-.main-nav a:hover {
-    color: var(--color-brown-dark);
-    text-decoration-color: var(--color-brown-dark);
-}
-
-/* Individual nav link colors */
-.main-nav a[href="#about"]:hover {
-    color: var(--color-interactive-hover);
-    text-decoration-color: var(--color-interactive-hover);
-}
-
-.main-nav a[href="#substack"]:hover {
-    color: var(--color-teal);
-    text-decoration-color: var(--color-teal);
-}
-
-.main-nav a[href="#inquiries"]:hover {
-    color: var(--color-interactive-hover);
-    text-decoration-color: var(--color-interactive-hover);
-}
-
 /* Sections – no card; consistent vertical rhythm */
 .section {
     padding: var(--section-pad-y) 0;
@@ -216,8 +175,7 @@ main {
 
 .section p a,
 .section li a,
-.section blockquote a,
-.section .inquiries-description a {
+.section blockquote a {
     text-decoration: underline;
     text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
     text-underline-offset: 0.2em;
@@ -225,8 +183,7 @@ main {
 
 .section p a:hover,
 .section li a:hover,
-.section blockquote a:hover,
-.section .inquiries-description a:hover {
+.section blockquote a:hover {
     text-decoration-color: var(--color-interactive-hover);
 }
 
@@ -267,8 +224,7 @@ main {
 .event-meta,
 .substack-feed-card-meta,
 .substack-feed-card-description,
-.quote-attribution,
-.inquiries-description {
+.quote-attribution {
     color: var(--color-text-soft);
 }
 
@@ -509,16 +465,6 @@ blockquote p {
     white-space: nowrap;
 }
 
-.substack-actions {
-    margin: var(--space-lg) 0;
-    text-align: center;
-}
-
-.button.substack-load-more.primary-button {
-    text-decoration: none;
-    text-decoration-color: transparent;
-}
-
 .button.substack-load-more,
 .event-link,
 .button-secondary,
@@ -563,23 +509,6 @@ blockquote p {
     border: none;
     background: none;
     transition: color var(--transition), text-decoration-color var(--transition);
-}
-
-.primary-button {
-    color: var(--color-interactive);
-    text-decoration: underline;
-    text-decoration-color: hsl(var(--hue-charcoal) 3% 14% / 0.4);
-    text-underline-offset: 0.2em;
-}
-
-.primary-button:hover {
-    color: var(--color-interactive-hover);
-    text-decoration-color: var(--color-interactive-hover);
-}
-
-.primary-button:focus-visible {
-    outline: 2px solid var(--color-teal);
-    outline-offset: 2px;
 }
 
 .substack-feed-shell {
@@ -711,14 +640,6 @@ blockquote p {
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-}
-
-.substack-feed-card-author {
-    font-size: var(--text-small);
-    color: var(--color-text);
-    margin: 0 0 var(--space-xs) 0;
-    font-weight: 500;
-    line-height: 1.4;
 }
 
 .substack-feed-card-tags {
@@ -1157,41 +1078,6 @@ blockquote p {
         background: hsl(var(--hue-teal) 28% 20% / 0.5);
         border-left-color: hsl(var(--hue-teal) 58% 62%);
     }
-}
-
-/* Projects & Inquiries */
-.section-projects p {
-    max-width: 38rem;
-}
-
-/* Inquiries layout – title + button row, description below */
-.inquiries-layout {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-}
-
-.inquiries-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-lg);
-    flex-wrap: wrap;
-}
-
-.inquiries-header h2 {
-    margin: 0;
-}
-
-.inquiries-description {
-    max-width: 38rem;
-    margin: 0;
-    color: var(--color-text-soft);
-}
-
-/* Mail icon sits low in its path – nudge up to align with Substack icon */
-.section-inquiries .substack-header-link svg {
-    transform: translateY(-1px);
 }
 
 /* Footer */

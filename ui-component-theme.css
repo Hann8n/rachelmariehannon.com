@@ -29,35 +29,3 @@ fast-dialog::part(positioning-region) {
     padding: var(--space-lg);
 }
 
-.directions-picker-fast-title {
-    margin: 0 0 var(--space-lg) 0;
-    font-size: var(--text-body);
-    font-family: var(--font-heading);
-    line-height: var(--leading-snug);
-}
-
-.directions-picker-fast-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-}
-
-.directions-picker-fast-actions fast-button::part(control) {
-    min-height: var(--control-min-height);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-body);
-    font-size: var(--control-font-size);
-    font-weight: var(--control-font-weight);
-}
-
-.directions-picker-fast-cancel {
-    margin-top: var(--space-lg);
-}
-
-.directions-picker-fast-cancel::part(control) {
-    min-height: var(--control-min-height);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-body);
-    font-size: var(--control-font-size);
-    font-weight: var(--control-font-weight);
-}

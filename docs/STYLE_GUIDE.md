@@ -6,7 +6,7 @@ This guide defines typography, spacing, and component styles so the site stays c
 
 ## 1. Type scale
 
-We use a **Minor Third (1.2)** scale with base **1rem (16px)**. Each step is 1.2× the previous.
+We use a **Minor Third (1.2)** scale with base **1rem (16px)**. Each step is 1.2x the previous.
 
 | Token | Size (rem) | ~px | Use |
 |-------|------------|-----|-----|
@@ -114,7 +114,7 @@ Section types (text, quote, list, two-column, substack, etc.) do **not** change 
 
 - **In-content links:** `--color-brown-dark`, underline on hover (`--color-terracotta`), focus ring `2px solid var(--color-teal)`
 - **Footer links:** `--color-text-soft`, hover `--color-peach-warm`
-- **Primary button (e.g. “Load more”):** Teal underline style, hover to brown-dark, focus ring teal
+- **Primary button (e.g. "Load more"):** Teal underline style, hover to brown-dark, focus ring teal
 - **Substack CTA:** Orange tint background, hover darken; focus ring orange
 
 ---
@@ -132,7 +132,7 @@ Limit to these two families. Use weight (400, 500, 600, 700) and the type scale 
 
 - Body text at least 16px (`--text-body` = 1rem)
 - Line height for body at least 1.5 (`--leading-normal` = 1.6)
-- Don’t rely on color alone: links have underline on hover; focus uses visible outline
+- Don't rely on color alone: links have underline on hover; focus uses visible outline
 - Sufficient contrast: `--color-text` on `--color-bg` and `--color-bg-card` meets AA
 
 ---

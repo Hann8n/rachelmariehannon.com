@@ -4,7 +4,8 @@
   "description": "Website for Rachel Marie Hannon",
   "scripts": {
     "build": "npm run check && echo 'No build step required - static site'",
-    "check": "echo 'No automated checks configured for this static site.'",
+    "check": "npm run check:refs",
+    "check:refs": "node scripts/check-references.mjs",
     "check:visual": "echo 'Manual visual diff: compare desktop/mobile screenshots before and after changes.'",
     "dev": "python3 -m http.server 8000 || python -m SimpleHTTPServer 8000 || npx serve .",
     "deploy": "wrangler deploy"
