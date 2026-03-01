@@ -649,14 +649,6 @@ blockquote p {
     -webkit-line-clamp: 3;
 }
 
-.substack-feed-card:nth-child(odd) {
-    background: var(--color-item-alt);
-}
-
-.substack-feed-card:nth-child(even) {
-    background: transparent;
-}
-
 .substack-feed-card:first-child {
     border-top: 0;
 }
@@ -811,14 +803,6 @@ blockquote p {
     min-height: clamp(9.5rem, 16vw, 12rem);
     margin: 0;
     transition: background var(--transition);
-}
-
-.event-card:nth-child(odd) {
-    background: var(--color-item-alt);
-}
-
-.event-card:nth-child(even) {
-    background: transparent;
 }
 
 .event-card:first-child {
