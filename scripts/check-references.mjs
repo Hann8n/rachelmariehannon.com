@@ -17,6 +17,7 @@ function normalizeLocalRef(ref) {
 
 function collectMissingRefs(filePath) {
   const source = fs.readFileSync(filePath, "utf8");
+  attrRegex.lastIndex = 0;
   const missing = [];
   let match;
   while ((match = attrRegex.exec(source)) !== null) {
