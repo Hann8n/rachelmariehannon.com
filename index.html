@@ -77,7 +77,6 @@
 
     <!-- Content Loader -->
     <script type="module">
-        import { renderSectionsHtml } from "/src/js/shared/section-renderer.js";
         // Social platform icons — full SVG per platform (correct viewBox each)
         const SOCIAL_ICONS = {
             email: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M2 7.25A3.25 3.25 0 0 1 5.25 4h13.5A3.25 3.25 0 0 1 22 7.25v9.5A3.25 3.25 0 0 1 18.75 20H5.25A3.25 3.25 0 0 1 2 16.75zm2.9-.75L12 11.55L19.1 6.5z"/></svg>',
@@ -507,15 +506,50 @@
             return div.innerHTML;
         }
 
+        function renderFooterSocials(data) {
+            const socialsEl = document.getElementById('footer-socials');
+            if (!socialsEl) return;
+            const links = [];
+            if (data && Array.isArray(data.socials) && data.socials.length) {
+                const socialLinks = data.socials.map((s) => {
+                    if (!s.platform || !s.url) return '';
+                    const key = s.platform.toLowerCase();
+                    const icon = iconSvg(key);
+                    const content = icon || escapeHtml(s.platform);
+                    const href = escapeHtml(s.url);
+                    const isMailto = /^mailto:/i.test(s.url);
+                    const attrs = isMailto ? '' : ' target="_blank" rel="noopener noreferrer"';
+                    return `<a href="${href}"${attrs} class="footer-social-link" aria-label="${escapeHtml(s.platform)}">${content}</a>`;
+                }).filter(Boolean);
+                links.push(...socialLinks);
+            }
+            socialsEl.innerHTML = links.length ? links.join('') : '';
+        }
+
         // Set copyright year to current year (runs immediately)
         (function() {
             var yearEl = document.getElementById('year');
             if (yearEl) yearEl.textContent = new Date().getFullYear();
         })();
 
-        // Initialize page
+        // Initialize page (SSR-only)
         const container = document.getElementById('sections-container');
-        if (window.__SSR_RENDERED__ === true) {
+        const data = window.__SITE_DATA__ || {};
+        if (window.__SSR_RENDERED__ !== true || !window.__SITE_DATA__) {
+            console.error('Missing SSR bootstrap data');
+            if (container) {
+                container.innerHTML = '<p class="section-loading section-error">Content could not be loaded. Please try again later.</p>';
+            }
+        } else {
+            // Keep metadata and footer in sync with CMS content.
+            if (data.title) {
+                document.querySelectorAll('[data-content="title"]').forEach(el => el.textContent = data.title);
+                document.title = data.title + ' – Rachel Marie Hannon';
+            }
+            if (data.subtitle) document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
+            if (data.author) document.querySelector('[data-content="author"]').textContent = data.author;
+            renderFooterSocials(data);
+
             setTimeout(function() {
                 initializeAutoStickyHeaders();
                 initializeStickyHeaderJump();
@@ -523,68 +557,6 @@
                 initializeEventMonthLoaders();
                 initializeEventEnhancements();
             }, 50);
-        } else {
-        fetch('/content/site.json')
-            .then(response => {
-                if (!response.ok) throw new Error('Content unavailable');
-                return response.json();
-            })
-            .then(data => {
-                // Update header
-                if (data.title) {
-                    document.querySelectorAll('[data-content="title"]').forEach(el => el.textContent = data.title);
-                    document.title = data.title + ' – Rachel Marie Hannon';
-                }
-                if (data.subtitle) document.querySelector('[data-content="subtitle"]').textContent = data.subtitle;
-                if (data.author) document.querySelector('[data-content="author"]').textContent = data.author;
-                
-                const sections = Array.isArray(data.sections) ? data.sections : [];
-
-                // Render footer socials (with icons)
-                const socialsEl = document.getElementById('footer-socials');
-                if (socialsEl) {
-                    const links = [];
-                    if (data.socials?.length) {
-                        const socialLinks = data.socials.map(s => {
-                            if (!s.platform || !s.url) return '';
-                            const key = s.platform.toLowerCase();
-                            const icon = iconSvg(key);
-                            const content = icon || escapeHtml(s.platform);
-                            const href = escapeHtml(s.url);
-                            const isMailto = /^mailto:/i.test(s.url);
-                            const attrs = isMailto ? '' : ' target="_blank" rel="noopener noreferrer"';
-                            return `<a href="${href}"${attrs} class="footer-social-link" aria-label="${escapeHtml(s.platform)}">${content}</a>`;
-                        }).filter(Boolean);
-                        links.push(...socialLinks);
-                    }
-                    socialsEl.innerHTML = links.length ? links.join('') : '';
-                }
-                
-                // Render sections
-                if (container) {
-                    if (sections.length) {
-                        container.innerHTML = renderSectionsHtml(data, {
-                            feedItems: Array.isArray(window.__SUBSTACK_FEED_ITEMS__) ? window.__SUBSTACK_FEED_ITEMS__ : [],
-                            skeletonHtml: window.SUBSTACK_SKELETON_HTML || ''
-                        });
-                        setTimeout(function() {
-                            initializeAutoStickyHeaders();
-                            initializeStickyHeaderJump();
-                            window.loadSubstackFeeds && window.loadSubstackFeeds();
-                            initializeEventMonthLoaders();
-                            initializeEventEnhancements();
-                        }, 50);
-                    } else {
-                        container.innerHTML = '';
-                    }
-                }
-            })
-            .catch(function(err) {
-                console.error('Error loading content:', err);
-                if (container) {
-                    container.innerHTML = '<p class="section-loading section-error">Content could not be loaded. Please try again later.</p>';
-                }
-            });
         }
     </script>
 </body>
