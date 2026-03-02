@@ -73,10 +73,11 @@
 
     <script type="module" src="/src/js/ui-components.js"></script>
 
-    <script src="/src/js/feed.js"></script>
+    <script type="module" src="/src/js/feed.js"></script>
 
     <!-- Content Loader -->
-    <script>
+    <script type="module">
+        import { renderSectionsHtml } from "/src/js/shared/section-renderer.js";
         // Social platform icons — full SVG per platform (correct viewBox each)
         const SOCIAL_ICONS = {
             email: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M2 7.25A3.25 3.25 0 0 1 5.25 4h13.5A3.25 3.25 0 0 1 22 7.25v9.5A3.25 3.25 0 0 1 18.75 20H5.25A3.25 3.25 0 0 1 2 16.75zm2.9-.75L12 11.55L19.1 6.5z"/></svg>',
@@ -114,203 +115,6 @@
             return match ? match[0] : '';
         }
 
-        function getEventPlaceId(eventEntry) {
-            if (eventEntry.place_id && typeof eventEntry.place_id === 'string') {
-                return eventEntry.place_id.trim();
-            }
-            return extractPlaceIdFromMapsUrl(eventEntry.google_maps_url);
-        }
-
-        function parseEventDate(dateText) {
-            if (!dateText || typeof dateText !== 'string') return null;
-            const match = dateText.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-            if (!match) return null;
-            const year = Number(match[1]);
-            const month = Number(match[2]);
-            const day = Number(match[3]);
-            const parsed = new Date(year, month - 1, day);
-            if (
-                Number.isNaN(parsed.getTime()) ||
-                parsed.getFullYear() !== year ||
-                parsed.getMonth() !== month - 1 ||
-                parsed.getDate() !== day
-            ) {
-                return null;
-            }
-            parsed.setHours(0, 0, 0, 0);
-            return parsed;
-        }
-
-        function applyLegacyTime(baseDate, timeText) {
-            if (!baseDate || !timeText || typeof timeText !== 'string') return baseDate;
-            const copy = new Date(baseDate.getTime());
-            const trimmed = timeText.trim();
-
-            const twelveHour = trimmed.match(/^(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])$/);
-            if (twelveHour) {
-                let hour = Number(twelveHour[1]);
-                const minute = Number(twelveHour[2] || '0');
-                const meridiem = twelveHour[3].toUpperCase();
-                if (hour === 12) hour = 0;
-                if (meridiem === 'PM') hour += 12;
-                copy.setHours(hour, minute, 0, 0);
-                return copy;
-            }
-
-            const twentyFourHour = trimmed.match(/^(\d{1,2}):(\d{2})$/);
-            if (twentyFourHour) {
-                const hour = Number(twentyFourHour[1]);
-                const minute = Number(twentyFourHour[2]);
-                if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
-                    copy.setHours(hour, minute, 0, 0);
-                }
-            }
-
-            return copy;
-        }
-
-        function parseEventStart(eventEntry) {
-            const startsAt = eventEntry && typeof eventEntry.starts_at === 'string'
-                ? eventEntry.starts_at.trim()
-                : '';
-
-            if (startsAt) {
-                const parsedStart = new Date(startsAt);
-                if (!Number.isNaN(parsedStart.getTime())) {
-                    return parsedStart;
-                }
-            }
-
-            const legacyDate = parseEventDate(eventEntry && eventEntry.date);
-            if (!legacyDate) return null;
-            return applyLegacyTime(legacyDate, eventEntry.time);
-        }
-
-        function getTodayStart() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return today;
-        }
-
-        function formatEventDate(date) {
-            if (!date) return '';
-            return date.toLocaleDateString(undefined, {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-        }
-
-        function formatEventTime(date) {
-            if (!date) return '';
-            const midnight = date.getHours() === 0 && date.getMinutes() === 0;
-            if (midnight) return '';
-            return date.toLocaleTimeString(undefined, {
-                hour: 'numeric',
-                minute: '2-digit'
-            });
-        }
-
-        function formatEventBadge(date) {
-            if (!date) return null;
-            return {
-                month: date.toLocaleDateString(undefined, { month: 'short' }).toUpperCase(),
-                day: String(date.getDate())
-            };
-        }
-
-        function formatEventMonthKey(date) {
-            if (!date || Number.isNaN(date.getTime())) return '';
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            return year + '-' + month;
-        }
-
-        function renderEventCard(eventEntry, idx, monthKey) {
-            const eventTimeLabel = formatEventTime(eventEntry._parsedStart) || eventEntry.time;
-            const eventBadge = formatEventBadge(eventEntry._parsedStart);
-            const directionsUrl = buildDirectionsUrl(eventEntry);
-            const mapEmbedUrl = buildMapEmbedUrl(eventEntry);
-            const placeId = getEventPlaceId(eventEntry);
-            const eventLink = normalizeUrl(eventEntry.link);
-            const hasDetails = Boolean(eventEntry.details);
-            const hasEventLink = Boolean(eventLink);
-            const hasDirections = Boolean(directionsUrl);
-            const eventMetaParts = [];
-            if (eventEntry.city) eventMetaParts.push(eventEntry.city);
-            if (eventTimeLabel) eventMetaParts.push(eventTimeLabel);
-            const eventMeta = eventMetaParts
-                .map((part, partIdx) => {
-                    const safePart = escapeHtml(part);
-                    if (partIdx === eventMetaParts.length - 1) return `<span class="event-meta-item">${safePart}</span>`;
-                    return `<span class="event-meta-item">${safePart}</span><span class="event-meta-separator" aria-hidden="true">•</span>`;
-                })
-                .join('');
-
-            const parts = [];
-            const monthAttr = monthKey ? ` data-event-month="${escapeHtml(monthKey)}"` : '';
-            parts.push(
-                `<article class="event-card ui-surface"${monthAttr} data-google-maps-url="${escapeHtml(eventEntry.google_maps_url || '')}" data-place-id="${escapeHtml(placeId)}" data-venue="${escapeHtml(eventEntry.venue || '')}" data-city="${escapeHtml(eventEntry.city || '')}" data-event-label="${escapeHtml(eventEntry.venue || 'Event')}" data-event-index="${idx}">`
-            );
-            parts.push('<div class="event-card-layout">');
-            parts.push('<div class="event-card-main">');
-            parts.push('<div class="event-card-heading">');
-
-            if (eventBadge) {
-                parts.push(
-                    '<div class="event-date-badge" aria-hidden="true">' +
-                    `<span class="event-date-badge-month">${escapeHtml(eventBadge.month)}</span>` +
-                    `<span class="event-date-badge-day">${escapeHtml(eventBadge.day)}</span>` +
-                    '</div>'
-                );
-            }
-
-            parts.push('<div class="event-heading-content">');
-            parts.push('<div class="event-heading-copy">');
-            if (eventEntry.venue) parts.push(`<h3 class="event-venue">${escapeHtml(eventEntry.venue)}</h3>`);
-            if (eventMeta) parts.push(`<p class="event-meta">${eventMeta}</p>`);
-            parts.push('</div>');
-            if (hasDetails) parts.push(`<p class="event-details">${escapeHtml(eventEntry.details)}</p>`);
-
-            if (hasEventLink || hasDirections) {
-                parts.push('<div class="event-actions">');
-                if (hasEventLink) {
-                    parts.push(
-                        `<a href="${escapeHtml(eventLink)}" target="_blank" rel="noopener noreferrer" class="event-link">View details</a>`
-                    );
-                }
-                if (hasDirections) {
-                    parts.push(
-                        `<button type="button" class="event-link event-directions" data-directions-url="${escapeHtml(directionsUrl)}">Get directions</button>`
-                    );
-                }
-                parts.push('</div>');
-            }
-
-            parts.push('</div>');
-            parts.push('</div>');
-            parts.push('</div>');
-
-            if (mapEmbedUrl) {
-                const mapTitle = `Map for ${eventEntry.venue || 'event location'}`;
-                parts.push('<div class="event-card-media">');
-                parts.push(
-                    '<figure class="event-photo" data-event-photo hidden>' +
-                    '<img data-event-photo-img loading="lazy" alt="Venue photo" />' +
-                    '</figure>'
-                );
-                parts.push(
-                    `<iframe class="event-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${escapeHtml(mapEmbedUrl)}" title="${escapeHtml(mapTitle)}"></iframe>`
-                );
-                parts.push('</div>');
-            }
-
-            parts.push('</div>');
-            parts.push('</article>');
-            return parts.join('');
-        }
-
         function normalizeUrl(urlText) {
             if (!urlText || typeof urlText !== 'string') return '';
             try {
@@ -318,24 +122,6 @@
             } catch (_) {
                 return '';
             }
-        }
-
-        function buildDirectionsUrl(eventEntry) {
-            const explicitMapUrl = normalizeUrl(eventEntry.google_maps_url);
-            if (explicitMapUrl) return explicitMapUrl;
-            const query = [eventEntry.venue, eventEntry.city].filter(Boolean).join(', ');
-            if (!query) return '';
-            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
-        }
-
-        function buildMapEmbedUrl(eventEntry) {
-            const placeId = getEventPlaceId(eventEntry);
-            if (placeId) {
-                return 'https://www.google.com/maps?q=place_id:' + encodeURIComponent(placeId) + '&output=embed';
-            }
-            const query = [eventEntry.venue, eventEntry.city].filter(Boolean).join(', ');
-            if (!query) return '';
-            return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
         }
 
         function extractLatLngFromMapsUrl(urlText) {
@@ -713,266 +499,12 @@
             });
         }
         
-        // Section renderers - cleaner, more maintainable approach
-        const SectionRenderers = {
-            text: (section) => {
-                const parts = [];
-                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                if (section.content) parts.push(formatMultilineTextToParagraphs(section.content, 'lede'));
-                return parts.join('');
-            },
-            
-            quote: (section) => {
-                const parts = [];
-                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                if (section.quote) {
-                    parts.push('<blockquote>');
-                    parts.push(`<span>"${escapeHtml(section.quote)}"</span>`);
-                    if (section.attribution) {
-                        parts.push(`<span class="quote-attribution">– ${escapeHtml(section.attribution)}</span>`);
-                    }
-                    parts.push('</blockquote>');
-                }
-                return parts.join('');
-            },
-            
-            list: (section) => {
-                const parts = [];
-                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                if (section.items?.length) {
-                    parts.push('<ul>');
-                    section.items.forEach(item => {
-                        parts.push('<li>');
-                        if (item.title) parts.push(`<strong>${escapeHtml(item.title)}</strong> `);
-                        if (item.description) parts.push(escapeHtml(item.description));
-                        parts.push('</li>');
-                    });
-                    parts.push('</ul>');
-                }
-                return parts.join('');
-            },
-            
-            'two-column': (section) => {
-                const parts = [];
-                if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                parts.push('<div class="about-grid">');
-                
-                // Left column
-                if (section.left_column) {
-                    parts.push('<div class="about-block">');
-                    if (section.left_column.title) parts.push(`<h3>${escapeHtml(section.left_column.title)}</h3>`);
-                    if (section.left_column.items?.length) {
-                        parts.push('<ul>');
-                        section.left_column.items.forEach(item => {
-                            parts.push('<li>');
-                            if (item.title) parts.push(`<strong>${escapeHtml(item.title)}</strong> `);
-                            if (item.description) parts.push(escapeHtml(item.description));
-                            parts.push('</li>');
-                        });
-                        parts.push('</ul>');
-                    }
-                    parts.push('</div>');
-                }
-                
-                // Right column
-                if (section.right_column) {
-                    parts.push('<div class="about-block">');
-                    if (section.right_column.title) parts.push(`<h3>${escapeHtml(section.right_column.title)}</h3>`);
-                    if (section.right_column.content) {
-                        const isReviewBlock = (section.right_column.title || '').trim().toLowerCase() === 'review';
-                        if (isReviewBlock) {
-                            const { quoteText, attributionText } = parseReviewQuoteContent(section.right_column.content);
-                            if (quoteText) {
-                                parts.push('<blockquote>');
-                                parts.push(`<p>${escapeHtml(quoteText)}</p>`);
-                                if (attributionText) {
-                                    parts.push(`<cite class="quote-attribution">– ${escapeHtml(attributionText)}</cite>`);
-                                }
-                                parts.push('</blockquote>');
-                            }
-                        } else {
-                            const formatted = escapeHtml(section.right_column.content)
-                                .replace(/\n\n/g, '</p><p>')
-                                .replace(/\n/g, '<br>');
-                            parts.push(`<div>${formatted}</div>`);
-                        }
-                    }
-                    parts.push('</div>');
-                }
-                
-                parts.push('</div>');
-                return parts.join('');
-            },
-            
-            substack: (section) => {
-                const parts = [];
-                if (section.title || section.tagline) {
-                    parts.push('<div class="section-header">');
-                    parts.push('<div class="section-header-top">');
-                    if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                    const substackUrl = section.button_url || 'https://substack.com/@imightbeanidiot';
-                    parts.push(`<a href="${escapeHtml(substackUrl)}" target="_blank" rel="noopener noreferrer" class="substack-header-link" aria-label="Visit Substack">`);
-                    parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M15 3.604H1v1.891h14v-1.89ZM1 7.208V16l7-3.926L15 16V7.208zM15 0H1v1.89h14z"/></svg>');
-                    parts.push('<span class="substack-header-link-text">Open on Substack</span>');
-                    parts.push('</a>');
-                    parts.push('</div>');
-                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                    parts.push('</div>');
-                }
-                if (section.button_url) {
-                    parts.push('<div class="substack-feed-shell">');
-                    const skeleton = (typeof window !== 'undefined' && window.SUBSTACK_SKELETON_HTML) ? window.SUBSTACK_SKELETON_HTML : '';
-                    parts.push(`<div class="substack-feed-list" data-substack-feed>${skeleton}</div>`);
-                    parts.push('</div>');
-                }
-                return parts.join('');
-            },
-
-            events: (section) => {
-                const parts = [];
-                const entries = Array.isArray(section.items)
-                    ? section.items
-                    : (Array.isArray(section.events) ? section.events : []);
-                const today = getTodayStart();
-                const upcomingEvents = entries
-                    .map((entry, idx) => {
-                        const parsedStart = parseEventStart(entry);
-                        return { ...entry, _parsedStart: parsedStart, _idx: idx };
-                    })
-                    .filter(entry => entry._parsedStart && entry._parsedStart >= today)
-                    .sort((a, b) => a._parsedStart - b._parsedStart || a._idx - b._idx);
-
-                if (!upcomingEvents.length) {
-                    if (section.title || section.tagline) {
-                        parts.push('<div class="section-header">');
-                        if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                        if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                        parts.push('</div>');
-                    }
-                    parts.push(`<p class="events-empty">${escapeHtml(section.empty_state_text || 'No upcoming events right now. Please check back soon.')}</p>`);
-                    return parts.join('');
-                }
-
-                const monthGroups = new Map();
-                upcomingEvents.forEach((eventEntry) => {
-                    const monthKey = formatEventMonthKey(eventEntry._parsedStart);
-                    if (!monthGroups.has(monthKey)) {
-                        monthGroups.set(monthKey, []);
-                    }
-                    monthGroups.get(monthKey).push(eventEntry);
-                });
-                const monthKeys = Array.from(monthGroups.keys());
-                const currentMonthKey = formatEventMonthKey(today);
-                const initialMonthKey = monthGroups.has(currentMonthKey)
-                    ? currentMonthKey
-                    : monthKeys[0];
-                const initialMonthIndex = monthKeys.indexOf(initialMonthKey);
-                const remainingMonthKeys = monthKeys.slice(initialMonthIndex + 1);
-
-                if (section.title || section.tagline) {
-                    parts.push('<div class="section-header">');
-                    if (section.title) parts.push(`<h2>${sanitizeHtml(section.title)}</h2>`);
-                    if (section.tagline) parts.push(`<p class="section-tagline">${escapeHtml(section.tagline)}</p>`);
-                    parts.push('</div>');
-                }
-
-                parts.push('<div data-events-month-loader>');
-                parts.push('<div class="events-list ui-stack">');
-                const initialMonthEvents = monthGroups.get(initialMonthKey) || [];
-                initialMonthEvents.forEach((eventEntry, idx) => {
-                    parts.push(renderEventCard(eventEntry, idx, initialMonthKey));
-                });
-                let renderedEventIndex = initialMonthEvents.length;
-                remainingMonthKeys.forEach((monthKey) => {
-                    const monthEvents = monthGroups.get(monthKey) || [];
-                    const monthHtml = monthEvents.map((eventEntry, idx) =>
-                        renderEventCard(eventEntry, renderedEventIndex + idx, monthKey)
-                    ).join('');
-                    renderedEventIndex += monthEvents.length;
-                    parts.push(
-                        `<template data-events-month-template data-month-key="${escapeHtml(monthKey)}" data-event-count="${monthEvents.length}">${monthHtml}</template>`
-                    );
-                });
-
-                parts.push('<div class="events-load-more-row">');
-                parts.push('<button class="button secondary-button substack-load-more" type="button" data-events-load-more>Show more events</button>');
-                parts.push('</div>');
-                parts.push('</div>');
-                return parts.join('');
-            }
-        };
-        
-        // Render a section
-        function renderSection(section) {
-            const renderer = SectionRenderers[section.type];
-            if (!renderer) return '<p>Unknown section type</p>';
-            
-            const content = renderer(section);
-            if (!content || !content.trim()) return '';
-            const idAttr = section.id ? `id="${section.id}"` : '';
-            const classAttr = `section section-${section.type}`;
-            
-            return `<section ${idAttr} class="${classAttr}">${content}</section>`;
-        }
-        
         // HTML utilities
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        function formatMultilineTextToParagraphs(text, firstParagraphClass) {
-            if (!text || typeof text !== 'string') return '';
-            const paragraphs = text
-                .replace(/\r\n?/g, '\n')
-                .split(/\n{2,}/)
-                .map((part) => part.trim())
-                .filter(Boolean);
-            if (!paragraphs.length) return '';
-            return paragraphs
-                .map((paragraph, idx) => {
-                    const formatted = escapeHtml(paragraph).replace(/\n/g, '<br>');
-                    if (idx === 0 && firstParagraphClass) {
-                        return `<p class="${firstParagraphClass}">${formatted}</p>`;
-                    }
-                    return `<p>${formatted}</p>`;
-                })
-                .join('');
-        }
-        
-        function sanitizeHtml(text) {
-            // Allow safe HTML tags (em, strong, etc.) but escape the rest
-            if (!text) return '';
-            // Simple sanitization - allow common formatting tags
-            const allowedTags = ['em', 'strong', 'i', 'b', 'u', 'br'];
-            const div = document.createElement('div');
-            div.innerHTML = text;
-            // Remove script tags and dangerous attributes
-            div.querySelectorAll('script, iframe, object, embed').forEach(el => el.remove());
-            return div.innerHTML;
-        }
-
-        function parseReviewQuoteContent(content) {
-            if (!content || typeof content !== 'string') {
-                return { quoteText: '', attributionText: '' };
-            }
-
-            const normalized = content.replace(/\r\n?/g, '\n').trim();
-            if (!normalized) {
-                return { quoteText: '', attributionText: '' };
-            }
-
-            const parts = normalized.split(/\n{2,}/).map(part => part.trim()).filter(Boolean);
-            const quoteRaw = parts[0] || normalized;
-            const attributionRaw = parts.slice(1).join(' ').trim();
-            const quoteText = quoteRaw.replace(/^["']+|["']+$/g, '').trim();
-            const attributionText = attributionRaw.replace(/^[—–-]\s*/, '').trim();
-
-            return { quoteText, attributionText };
         }
 
         // Set copyright year to current year (runs immediately)
@@ -983,6 +515,15 @@
 
         // Initialize page
         const container = document.getElementById('sections-container');
+        if (window.__SSR_RENDERED__ === true) {
+            setTimeout(function() {
+                initializeAutoStickyHeaders();
+                initializeStickyHeaderJump();
+                window.loadSubstackFeeds && window.loadSubstackFeeds();
+                initializeEventMonthLoaders();
+                initializeEventEnhancements();
+            }, 50);
+        } else {
         fetch('/content/site.json')
             .then(response => {
                 if (!response.ok) throw new Error('Content unavailable');
@@ -1022,7 +563,10 @@
                 // Render sections
                 if (container) {
                     if (sections.length) {
-                        container.innerHTML = sections.map(renderSection).join('');
+                        container.innerHTML = renderSectionsHtml(data, {
+                            feedItems: Array.isArray(window.__SUBSTACK_FEED_ITEMS__) ? window.__SUBSTACK_FEED_ITEMS__ : [],
+                            skeletonHtml: window.SUBSTACK_SKELETON_HTML || ''
+                        });
                         setTimeout(function() {
                             initializeAutoStickyHeaders();
                             initializeStickyHeaderJump();
@@ -1041,6 +585,7 @@
                     container.innerHTML = '<p class="section-loading section-error">Content could not be loaded. Please try again later.</p>';
                 }
             });
+        }
     </script>
 </body>
 </html>

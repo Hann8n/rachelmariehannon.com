@@ -1,4 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
+import { normalizeFeedItem } from "./src/js/shared/feed-render.js";
+import { renderSectionsHtml } from "./src/js/shared/section-renderer.js";
 
 const FIXED_RSS_FEED_URL = "https://imightbeanidiot.substack.com/feed";
 const XML_PARSER = new XMLParser({
@@ -28,14 +30,13 @@ function firstString(...values) {
   return "";
 }
 
-function normalizeItem(item) {
+function rssItemToNormalized(item) {
   const mediaContent = Array.isArray(item?.["media:content"])
     ? item["media:content"][0]
     : item?.["media:content"];
   const enclosure = Array.isArray(item?.enclosure) ? item.enclosure[0] : item?.enclosure;
   const guidValue = typeof item?.guid === "object" ? item.guid?.["#text"] : item?.guid;
-
-  return {
+  return normalizeFeedItem({
     title: firstString(item?.title),
     link: firstString(item?.link),
     pubDate: firstString(item?.pubDate, item?.published, item?.updated),
@@ -47,16 +48,15 @@ function normalizeItem(item) {
       .map((value) => (typeof value === "string" ? value.trim() : ""))
       .filter(Boolean),
     image: firstString(mediaContent?.["@_url"], enclosure?.["@_url"], enclosure?.url),
-  };
+  });
 }
 
-function normalizeAtomEntry(entry) {
+function atomItemToNormalized(entry) {
   const links = Array.isArray(entry?.link) ? entry.link : entry?.link ? [entry.link] : [];
   const primaryLink =
     links.find((link) => link?.["@_rel"] === "alternate" && typeof link?.["@_href"] === "string") ||
     links.find((link) => typeof link?.["@_href"] === "string");
-
-  return {
+  return normalizeFeedItem({
     title: firstString(entry?.title?.["#text"], entry?.title),
     link: firstString(primaryLink?.["@_href"]),
     pubDate: firstString(entry?.published, entry?.updated),
@@ -68,7 +68,7 @@ function normalizeAtomEntry(entry) {
       .map((value) => firstString(value?.["@_term"], value?.term, value))
       .filter(Boolean),
     image: "",
-  };
+  });
 }
 
 async function fetchWithTimeout(url, timeoutMs = 10000) {
@@ -78,7 +78,7 @@ async function fetchWithTimeout(url, timeoutMs = 10000) {
     return await fetch(url, {
       signal: controller.signal,
       headers: {
-        "user-agent": "rachelmariehannon-rss2json/1.0",
+        "user-agent": "rachelmariehannon-feed-service/1.0",
       },
     });
   } finally {
@@ -86,37 +86,30 @@ async function fetchWithTimeout(url, timeoutMs = 10000) {
   }
 }
 
-async function handleRssJson(request) {
-  if (request.method !== "GET") {
-    return json({ error: "Method not allowed" }, 405);
-  }
-
+async function getFeedPayload() {
   let rssResponse;
   try {
     rssResponse = await fetchWithTimeout(FIXED_RSS_FEED_URL, 10000);
   } catch (_) {
-    return json({ error: "Failed to fetch RSS feed" }, 502);
+    throw new Error("Failed to fetch RSS feed");
   }
 
   if (!rssResponse.ok) {
-    return json(
-      { error: "Upstream RSS feed request failed", status: rssResponse.status },
-      502
-    );
+    throw new Error(`Upstream RSS feed request failed (${rssResponse.status})`);
   }
 
   let xmlText;
   try {
     xmlText = await rssResponse.text();
   } catch (_) {
-    return json({ error: "Failed to read upstream RSS response" }, 502);
+    throw new Error("Failed to read upstream RSS response");
   }
 
   let parsed;
   try {
     parsed = XML_PARSER.parse(xmlText);
   } catch (_) {
-    return json({ error: "Failed to parse RSS feed XML" }, 502);
+    throw new Error("Failed to parse RSS feed XML");
   }
 
   const channel = parsed?.rss?.channel;
@@ -130,26 +123,126 @@ async function handleRssJson(request) {
       ? [atomEntriesRaw]
       : [];
 
-  const items = rssItems.length
-    ? rssItems.map(normalizeItem)
-    : atomEntries.map(normalizeAtomEntry);
+  const items = (rssItems.length
+    ? rssItems.map(rssItemToNormalized)
+    : atomEntries.map(atomItemToNormalized)).filter(Boolean);
+
+  return {
+    source: FIXED_RSS_FEED_URL,
+    title: firstString(channel?.title, feed?.title?.["#text"], feed?.title),
+    link: firstString(channel?.link, feed?.link?.["@_href"]),
+    description: firstString(channel?.description, feed?.subtitle?.["#text"], feed?.subtitle),
+    generator: firstString(channel?.generator, feed?.generator),
+    lastBuildDate: firstString(channel?.lastBuildDate, feed?.updated),
+    itemCount: items.length,
+    items,
+  };
+}
+
+function isHtmlNavigationRequest(request, url) {
+  if (request.method !== "GET") return false;
+  if (url.pathname.startsWith("/api/")) return false;
+  const accept = request.headers.get("accept") || "";
+  return accept.includes("text/html");
+}
+
+function injectSectionsIntoIndex(html, sectionsHtml, bootstrapScript) {
+  const sectionsReplaced = html.replace(
+    /<div id="sections-container" aria-live="polite">[\s\S]*?<\/div>/,
+    `<div id="sections-container" aria-live="polite">${sectionsHtml}</div>`
+  );
+  return sectionsReplaced.replace("</body>", `${bootstrapScript}</body>`);
+}
+
+async function handleSsrPage(request, env) {
+  const [shellResponse, siteResponse, feedPayloadResult] = await Promise.all([
+    env.ASSETS.fetch(new Request(new URL("/index.html", request.url))),
+    env.ASSETS.fetch(new Request(new URL("/content/site.json", request.url))),
+    getFeedPayload().catch(() => null),
+  ]);
+
+  if (!shellResponse.ok || !siteResponse.ok) {
+    return env.ASSETS.fetch(request);
+  }
+
+  const [shellHtml, siteData] = await Promise.all([shellResponse.text(), siteResponse.json()]);
+  const feedItems = Array.isArray(feedPayloadResult?.items) ? feedPayloadResult.items : [];
+  const sectionsHtml = renderSectionsHtml(siteData, { feedItems });
+  const bootstrapScript = `<script>window.__SSR_RENDERED__=true;window.__SITE_DATA__=${JSON.stringify(siteData)};window.__SUBSTACK_FEED_ITEMS__=${JSON.stringify(feedItems)};</script>`;
+  const finalHtml = injectSectionsIntoIndex(shellHtml, sectionsHtml, bootstrapScript);
+
+  return new Response(finalHtml, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "public, max-age=300, s-maxage=300",
+    },
+  });
+}
+
+async function handleRssJson(request) {
+  if (request.method !== "GET") {
+    return json({ error: "Method not allowed" }, 405);
+  }
+
+  let payload;
+  try {
+    payload = await getFeedPayload();
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Feed request failed" }, 502);
+  }
 
   return json(
-    {
-      source: FIXED_RSS_FEED_URL,
-      title: firstString(channel?.title, feed?.title?.["#text"], feed?.title),
-      link: firstString(channel?.link, feed?.link?.["@_href"]),
-      description: firstString(channel?.description, feed?.subtitle?.["#text"], feed?.subtitle),
-      generator: firstString(channel?.generator, feed?.generator),
-      lastBuildDate: firstString(channel?.lastBuildDate, feed?.updated),
-      itemCount: items.length,
-      items,
-    },
+    payload,
     200,
     {
-      "cache-control": "public, max-age=60, s-maxage=120",
+      "cache-control": "public, max-age=300, s-maxage=300",
     }
   );
+}
+
+function isAllowedFeedImageUrl(imageUrl) {
+  if (!imageUrl) return false;
+  try {
+    const parsed = new URL(imageUrl);
+    if (parsed.protocol !== "https:") return false;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function handleFeedImage(request) {
+  if (request.method !== "GET") {
+    return new Response("Method not allowed", { status: 405 });
+  }
+  const url = new URL(request.url);
+  const source = url.searchParams.get("u") || "";
+  if (!isAllowedFeedImageUrl(source)) {
+    return new Response("Invalid image URL", { status: 400 });
+  }
+
+  let upstream;
+  try {
+    upstream = await fetch(source, {
+      cf: { cacheEverything: true, cacheTtl: 86400 },
+      headers: { "user-agent": "rachelmariehannon-feed-service/1.0" },
+    });
+  } catch (_) {
+    return new Response("Image unavailable", { status: 502 });
+  }
+
+  if (!upstream.ok || !upstream.body) {
+    return new Response("Image unavailable", { status: 502 });
+  }
+
+  return new Response(upstream.body, {
+    status: 200,
+    headers: {
+      "content-type": upstream.headers.get("content-type") || "image/jpeg",
+      "cache-control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+    },
+  });
 }
 
 function isValidId(value) {
@@ -329,8 +422,15 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (isHtmlNavigationRequest(request, url) && (url.pathname === "/" || url.pathname === "/index.html")) {
+      return handleSsrPage(request, env);
+    }
+
     if (url.pathname === "/api/rss-json") {
       return handleRssJson(request);
+    }
+    if (url.pathname === "/api/feed-image") {
+      return handleFeedImage(request);
     }
 
     if (url.pathname === "/api/place-details") {
