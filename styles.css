@@ -1296,12 +1296,14 @@ blockquote p {
         padding-right: var(--row-bleed-mobile);
     }
 
-    .events-list {
+    .events-list,
+    .substack-feed-cards {
         margin-left: 0;
         margin-right: 0;
     }
 
-    .events-load-more-row {
+    .events-load-more-row,
+    .substack-feed-load-more-row {
         padding-left: var(--row-bleed-mobile);
         padding-right: var(--row-bleed-mobile);
     }
@@ -1365,26 +1367,12 @@ blockquote p {
         padding-right: var(--row-bleed-mobile);
     }
 
-    .section-events [data-events-month-loader] {
-        margin-left: calc(-1 * var(--row-bleed-mobile));
-        margin-right: calc(-1 * var(--row-bleed-mobile));
-    }
-
     /* Mobile full-bleed row pattern:
        rows can extend to viewport edges while content stays aligned to the page gutter. */
+    .section-events [data-events-month-loader],
     .section-substack .substack-feed-shell {
         margin-left: calc(-1 * var(--row-bleed-mobile));
         margin-right: calc(-1 * var(--row-bleed-mobile));
-    }
-
-    .substack-feed-load-more-row {
-        margin: 0;
-        padding-top: var(--space-sm);
-        padding-bottom: var(--space-md);
-        padding-left: var(--row-bleed-mobile);
-        padding-right: var(--row-bleed-mobile);
-        border-top-width: 1px;
-        border-top-color: var(--color-divider-secondary);
     }
 
     .substack-feed-card {
@@ -1471,8 +1459,8 @@ blockquote p {
                 transparent 100%
             ),
             color-mix(in oklab, var(--color-bg) 42%, transparent);
-        backdrop-filter: blur(18px) saturate(1.9) contrast(1.05);
-        -webkit-backdrop-filter: blur(18px) saturate(1.9) contrast(1.05);
+        backdrop-filter: blur(24px) saturate(1.9) contrast(1.05);
+        -webkit-backdrop-filter: blur(24px) saturate(1.9) contrast(1.05);
         gap: var(--space-2xs);
     }
 

@@ -4,7 +4,7 @@ import { renderFeedCollection, renderFeedItemCard } from "./shared/feed-render.j
 const DEFAULT_SUBSTACK_URL = "https://imightbeanidiot.substack.com";
 const NATIVE_FEED_API_URL = "/api/rss-json";
 const INITIAL_COUNT = 4;
-const BATCH_SIZE = 4;
+const BATCH_SIZE = 8;
 
 function escapeHtml(text) {
   const div = document.createElement("div");
@@ -35,7 +35,7 @@ function applyFeedDataToElement(el, allItems) {
 
   if (!loadMoreBtn || !loadMoreRow) {
     loadMoreRow = document.createElement("div");
-    loadMoreRow.className = "substack-feed-load-more-row";
+    loadMoreRow.className = "substack-feed-load-more-row events-load-more-row";
     loadMoreBtn = document.createElement("button");
     loadMoreBtn.type = "button";
     loadMoreBtn.className = "button secondary-button substack-load-more";
