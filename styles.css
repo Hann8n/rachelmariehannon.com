@@ -901,7 +901,7 @@ blockquote p {
 .directions-picker-backdrop {
     position: absolute;
     inset: 0;
-    background: hsl(var(--hue-ink) 20% 5% / 0.56);
+    background: var(--color-backdrop-modal);
     backdrop-filter: blur(2px);
 }
 
@@ -1352,8 +1352,13 @@ blockquote p {
     }
 
     .substack-feed-load-more-row {
+        margin: 0;
+        padding-top: var(--space-sm);
+        padding-bottom: var(--space-md);
         padding-left: var(--row-bleed-mobile);
         padding-right: var(--row-bleed-mobile);
+        border-top-width: 1px;
+        border-top-color: var(--color-divider-secondary);
     }
 
     .substack-feed-card {
@@ -1365,6 +1370,13 @@ blockquote p {
         padding: var(--space-lg) var(--row-bleed-mobile);
         min-height: 0;
         margin: 0;
+        border-top-width: 1px;
+        border-top-color: var(--color-divider-secondary);
+    }
+
+    .substack-feed-card--with-image + .substack-feed-card--with-image {
+        border-top-width: 2px;
+        border-top-color: var(--color-bg);
     }
 
     .substack-feed-card:not(.substack-feed-card--with-image) {
@@ -1409,7 +1421,7 @@ blockquote p {
         z-index: 1;
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        object-fit: cover;
         object-position: center;
     }
 
@@ -1423,9 +1435,18 @@ blockquote p {
         border: 0;
         border-radius: 0;
         box-shadow: none;
-        background: color-mix(in oklab, var(--color-bg) 82%, transparent);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        /* CSS-only approximation of extracted image color:
+           let the underlying image tint come through a soft, saturated glass layer. */
+        background:
+            linear-gradient(
+                to top,
+                var(--color-backdrop-glass-strong) 0%,
+                var(--color-backdrop-glass-soft) 48%,
+                transparent 100%
+            ),
+            color-mix(in oklab, var(--color-bg) 42%, transparent);
+        backdrop-filter: blur(12px) saturate(1.9) contrast(1.05);
+        -webkit-backdrop-filter: blur(12px) saturate(1.9) contrast(1.05);
         gap: var(--space-2xs);
     }
 

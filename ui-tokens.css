@@ -61,6 +61,9 @@
     --color-divider-secondary: hsl(var(--hue-ink) 20% 5% / 0.08);
     --color-item-alt: hsl(var(--hue-ink) 20% 5% / 0.03);
     --color-item-alt-strong: hsl(var(--hue-ink) 20% 5% / 0.05);
+    --color-backdrop-modal: hsl(var(--hue-charcoal) 20% 96% / 0.72);
+    --color-backdrop-glass-strong: hsl(var(--hue-charcoal) 22% 98% / 0.36);
+    --color-backdrop-glass-soft: hsl(var(--hue-charcoal) 22% 98% / 0.18);
     --color-interactive-primary: var(--color-sepia);
     --color-interactive-emphasis: hsl(var(--hue-teal) 68% 28%);
     --color-focus-ring: var(--color-sage);
@@ -137,6 +140,9 @@
         --color-divider-secondary: hsl(var(--hue-charcoal) 20% 88% / 0.14);
         --color-item-alt: hsl(var(--hue-charcoal) 20% 88% / 0.04);
         --color-item-alt-strong: hsl(var(--hue-charcoal) 20% 88% / 0.08);
+        --color-backdrop-modal: hsl(var(--hue-ink) 22% 5% / 0.82);
+        --color-backdrop-glass-strong: hsl(var(--hue-ink) 22% 5% / 0.5);
+        --color-backdrop-glass-soft: hsl(var(--hue-ink) 22% 5% / 0.22);
         --color-interactive-primary: var(--color-sepia);
         --color-interactive-emphasis: var(--color-ink);
         --button-primary-fg: var(--color-surface-page);
