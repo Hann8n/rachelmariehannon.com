@@ -105,6 +105,19 @@ function parseEventStart(eventEntry) {
   return applyLegacyTime(legacyDate, eventEntry.time);
 }
 
+function hasRenderableEventContent(eventEntry) {
+  if (!eventEntry || typeof eventEntry !== "object") return false;
+  const textFields = [
+    eventEntry.venue,
+    eventEntry.city,
+    eventEntry.details,
+    eventEntry.time,
+    eventEntry.link,
+    eventEntry.google_maps_url,
+  ];
+  return textFields.some((value) => typeof value === "string" && value.trim());
+}
+
 function formatEventMonthKey(date) {
   if (!date || Number.isNaN(date.getTime())) return "";
   const year = date.getFullYear();
@@ -335,7 +348,7 @@ export function renderSectionsHtml(siteData, { feedItems = [], skeletonHtml = ""
             const parsedStart = parseEventStart(entry);
             return { ...entry, _parsedStart: parsedStart, _idx: idx };
           })
-          .filter((entry) => entry._parsedStart && entry._parsedStart >= today)
+          .filter((entry) => entry._parsedStart && entry._parsedStart >= today && hasRenderableEventContent(entry))
           .sort((a, b) => a._parsedStart - b._parsedStart || a._idx - b._idx);
 
         if (!upcomingEvents.length) {
@@ -385,7 +398,9 @@ export function renderSectionsHtml(siteData, { feedItems = [], skeletonHtml = ""
           renderedEventIndex += monthEvents.length;
           content += `<template data-events-month-template data-month-key="${escapeHtml(monthKey)}" data-event-count="${monthEvents.length}">${monthHtml}</template>`;
         });
-        content += '<div class="events-load-more-row"><button class="button secondary-button substack-load-more" type="button" data-events-load-more>Show more events</button></div>';
+        if (remainingMonthKeys.length > 0) {
+          content += '<div class="events-load-more-row"><button class="button secondary-button substack-load-more" type="button" data-events-load-more>Show more events</button></div>';
+        }
         content += "</div></div>";
       }
 

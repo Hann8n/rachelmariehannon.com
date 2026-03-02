@@ -406,9 +406,15 @@
 
                 const updateButtonVisibility = () => {
                     const hasRemainingMonths = getMonthTemplates().length > 0;
-                    loadMoreBtn.hidden = !hasRemainingMonths;
-                    loadMoreBtn.style.display = hasRemainingMonths ? '' : 'none';
-                    if (hasRemainingMonths) loadMoreBtn.textContent = 'Show more events';
+                    if (!hasRemainingMonths) {
+                        loadMoreRow.remove();
+                        return;
+                    }
+                    loadMoreRow.hidden = false;
+                    loadMoreRow.style.display = '';
+                    loadMoreBtn.hidden = false;
+                    loadMoreBtn.style.display = '';
+                    loadMoreBtn.textContent = 'Show more events';
                 };
                 let isLoadingMoreEvents = false;
 

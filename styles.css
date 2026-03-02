@@ -319,6 +319,26 @@ blockquote p {
     font-style: normal;
 }
 
+/* Shared card-grid tokens for feed-like sections */
+.section-substack,
+.section-events {
+    --collection-card-gap: var(--space-lg);
+    --collection-card-padding-y: var(--space-md);
+    --collection-card-padding-x: var(--space-lg);
+    --collection-card-columns: minmax(0, 1fr) clamp(8rem, 20vw, 12rem);
+    --collection-card-min-height: clamp(8rem, 13vw, 10rem);
+}
+
+.section-substack {
+    --collection-card-columns: minmax(0, 1fr) clamp(7.5rem, 16vw, 9.5rem);
+    --collection-card-min-height: clamp(7rem, 11vw, 8.5rem);
+}
+
+.section-events {
+    --collection-card-columns: minmax(0, 1.45fr) clamp(9rem, 24vw, 14rem);
+    --collection-card-min-height: clamp(9.5rem, 16vw, 12rem);
+}
+
 /* Substack section */
 .section-substack .section-header {
     margin-top: 0;
@@ -539,14 +559,20 @@ blockquote p {
     margin-top: 0;
 }
 
+/* These lists intentionally manage spacing with borders/padding, not ui-stack margins. */
+.substack-feed-cards.ui-stack > * + *,
+.events-list.ui-stack > * + * {
+    margin-top: 0;
+}
+
 .substack-feed-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(7.5rem, 16vw, 9.5rem);
+    grid-template-columns: var(--collection-card-columns);
     grid-template-areas: "content media";
     align-items: start;
-    gap: var(--space-lg);
-    padding: var(--space-md) var(--space-lg);
-    min-height: clamp(7rem, 11vw, 8.5rem);
+    gap: var(--collection-card-gap);
+    padding: var(--collection-card-padding-y) var(--collection-card-padding-x);
+    min-height: var(--collection-card-min-height);
     margin: 0;
     border-top: 1px solid var(--color-divider-secondary);
     border-radius: 0;
@@ -713,8 +739,8 @@ blockquote p {
     border-bottom: none;
     border-radius: 0;
     background: transparent;
-    padding: var(--space-md) var(--space-lg);
-    min-height: clamp(9.5rem, 16vw, 12rem);
+    padding: var(--collection-card-padding-y) var(--collection-card-padding-x);
+    min-height: var(--collection-card-min-height);
     margin: 0;
     transition: background var(--transition);
 }
@@ -725,9 +751,9 @@ blockquote p {
 
 .event-card-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.45fr) clamp(9rem, 24vw, 14rem);
+    grid-template-columns: var(--collection-card-columns);
     grid-template-areas: "main media";
-    gap: var(--space-lg);
+    gap: var(--collection-card-gap);
     align-items: stretch;
 }
 
@@ -1486,3 +1512,4 @@ blockquote p {
     }
 
 }
+

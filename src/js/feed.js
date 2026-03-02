@@ -47,9 +47,13 @@ function applyFeedDataToElement(el, allItems) {
   const updateLoadMoreVisibility = () => {
     const remaining = normalizedItems.length - displayedCount;
     const hasRemaining = remaining > 0;
-    loadMoreBtn.style.display = hasRemaining ? "" : "none";
-    loadMoreRow.style.display = hasRemaining ? "" : "none";
-    if (hasRemaining) loadMoreBtn.textContent = "Show more articles";
+    if (!hasRemaining) {
+      loadMoreRow.remove();
+      return;
+    }
+    loadMoreBtn.style.display = "";
+    loadMoreRow.style.display = "";
+    loadMoreBtn.textContent = "Show more articles";
   };
 
   updateLoadMoreVisibility();

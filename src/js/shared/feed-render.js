@@ -113,7 +113,9 @@ export function renderFeedCollection(items, displayedCount) {
   const count = Math.max(0, Math.min(displayedCount, safeItems.length));
   const cards = safeItems.slice(0, count).map(renderFeedItemCard).join("");
   const showMore = safeItems.length > count;
-  const loadMoreRow = `<div class="substack-feed-load-more-row"><button class="button secondary-button substack-load-more" type="button"${showMore ? "" : ' style="display:none"'}>Show more articles</button></div>`;
+  const loadMoreRow = showMore
+    ? '<div class="substack-feed-load-more-row"><button class="button secondary-button substack-load-more" type="button">Show more articles</button></div>'
+    : "";
 
   return {
     html: `<div class="substack-feed-cards ui-stack">${cards}${loadMoreRow}</div>`,
