@@ -824,7 +824,7 @@
                 if (section.button_url) {
                     parts.push('<div class="substack-feed-shell">');
                     const skeleton = (typeof window !== 'undefined' && window.SUBSTACK_SKELETON_HTML) ? window.SUBSTACK_SKELETON_HTML : '';
-                    parts.push(`<div class="substack-feed-list" data-substack-feed data-substack-url="${escapeHtml(section.button_url)}">${skeleton}</div>`);
+                    parts.push(`<div class="substack-feed-list" data-substack-feed>${skeleton}</div>`);
                     parts.push('</div>');
                 }
                 return parts.join('');

@@ -1,3 +1,13 @@
+import { XMLParser } from "fast-xml-parser";
+
+const FIXED_RSS_FEED_URL = "https://imightbeanidiot.substack.com/feed";
+const XML_PARSER = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+  textNodeName: "#text",
+  trimValues: true,
+});
+
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -7,6 +17,139 @@ function json(data, status = 200, extraHeaders = {}) {
       ...extraHeaders,
     },
   });
+}
+
+function firstString(...values) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+  return "";
+}
+
+function normalizeItem(item) {
+  const mediaContent = Array.isArray(item?.["media:content"])
+    ? item["media:content"][0]
+    : item?.["media:content"];
+  const enclosure = Array.isArray(item?.enclosure) ? item.enclosure[0] : item?.enclosure;
+  const guidValue = typeof item?.guid === "object" ? item.guid?.["#text"] : item?.guid;
+
+  return {
+    title: firstString(item?.title),
+    link: firstString(item?.link),
+    pubDate: firstString(item?.pubDate, item?.published, item?.updated),
+    description: firstString(item?.description, item?.summary),
+    content: firstString(item?.["content:encoded"], item?.content),
+    id: firstString(guidValue),
+    author: firstString(item?.["dc:creator"], item?.author),
+    categories: (Array.isArray(item?.category) ? item.category : item?.category ? [item.category] : [])
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean),
+    image: firstString(mediaContent?.["@_url"], enclosure?.["@_url"], enclosure?.url),
+  };
+}
+
+function normalizeAtomEntry(entry) {
+  const links = Array.isArray(entry?.link) ? entry.link : entry?.link ? [entry.link] : [];
+  const primaryLink =
+    links.find((link) => link?.["@_rel"] === "alternate" && typeof link?.["@_href"] === "string") ||
+    links.find((link) => typeof link?.["@_href"] === "string");
+
+  return {
+    title: firstString(entry?.title?.["#text"], entry?.title),
+    link: firstString(primaryLink?.["@_href"]),
+    pubDate: firstString(entry?.published, entry?.updated),
+    description: firstString(entry?.summary?.["#text"], entry?.summary),
+    content: firstString(entry?.content?.["#text"], entry?.content),
+    id: firstString(entry?.id),
+    author: firstString(entry?.author?.name?.["#text"], entry?.author?.name, entry?.author),
+    categories: (Array.isArray(entry?.category) ? entry.category : entry?.category ? [entry.category] : [])
+      .map((value) => firstString(value?.["@_term"], value?.term, value))
+      .filter(Boolean),
+    image: "",
+  };
+}
+
+async function fetchWithTimeout(url, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort("rss-fetch-timeout"), timeoutMs);
+  try {
+    return await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "user-agent": "rachelmariehannon-rss2json/1.0",
+      },
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function handleRssJson(request) {
+  if (request.method !== "GET") {
+    return json({ error: "Method not allowed" }, 405);
+  }
+
+  let rssResponse;
+  try {
+    rssResponse = await fetchWithTimeout(FIXED_RSS_FEED_URL, 10000);
+  } catch (_) {
+    return json({ error: "Failed to fetch RSS feed" }, 502);
+  }
+
+  if (!rssResponse.ok) {
+    return json(
+      { error: "Upstream RSS feed request failed", status: rssResponse.status },
+      502
+    );
+  }
+
+  let xmlText;
+  try {
+    xmlText = await rssResponse.text();
+  } catch (_) {
+    return json({ error: "Failed to read upstream RSS response" }, 502);
+  }
+
+  let parsed;
+  try {
+    parsed = XML_PARSER.parse(xmlText);
+  } catch (_) {
+    return json({ error: "Failed to parse RSS feed XML" }, 502);
+  }
+
+  const channel = parsed?.rss?.channel;
+  const rssItemsRaw = channel?.item;
+  const feed = parsed?.feed;
+  const atomEntriesRaw = feed?.entry;
+  const rssItems = Array.isArray(rssItemsRaw) ? rssItemsRaw : rssItemsRaw ? [rssItemsRaw] : [];
+  const atomEntries = Array.isArray(atomEntriesRaw)
+    ? atomEntriesRaw
+    : atomEntriesRaw
+      ? [atomEntriesRaw]
+      : [];
+
+  const items = rssItems.length
+    ? rssItems.map(normalizeItem)
+    : atomEntries.map(normalizeAtomEntry);
+
+  return json(
+    {
+      source: FIXED_RSS_FEED_URL,
+      title: firstString(channel?.title, feed?.title?.["#text"], feed?.title),
+      link: firstString(channel?.link, feed?.link?.["@_href"]),
+      description: firstString(channel?.description, feed?.subtitle?.["#text"], feed?.subtitle),
+      generator: firstString(channel?.generator, feed?.generator),
+      lastBuildDate: firstString(channel?.lastBuildDate, feed?.updated),
+      itemCount: items.length,
+      items,
+    },
+    200,
+    {
+      "cache-control": "public, max-age=60, s-maxage=120",
+    }
+  );
 }
 
 function isValidId(value) {
@@ -185,6 +328,10 @@ async function handlePlacePhoto(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/rss-json") {
+      return handleRssJson(request);
+    }
 
     if (url.pathname === "/api/place-details") {
       return handlePlaceDetails(request, env);

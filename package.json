@@ -15,5 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "wrangler": "^4"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.4.1"
   }
 }
