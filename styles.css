@@ -689,6 +689,14 @@ blockquote p {
     margin: 0;
 }
 
+.section-substack .substack-feed-shell,
+.section-events [data-events-month-loader] {
+    border: 1px solid var(--color-divider-secondary);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-card);
+    overflow: hidden;
+}
+
 .events-empty {
     color: var(--color-text-soft);
     font-size: var(--text-body);
@@ -1188,8 +1196,14 @@ blockquote p {
         margin-bottom: var(--space-md);
     }
 
+    .section-substack .substack-feed-shell,
+    .section-events [data-events-month-loader] {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
     .event-card {
-        padding-top: var(--space-md);
+        padding-top: 0;
         padding-bottom: var(--space-md);
         min-height: 0;
         margin: 0;
@@ -1222,11 +1236,18 @@ blockquote p {
     .event-card-media {
         grid-area: media;
         max-width: none;
-        width: 100%;
+        width: calc(100% + (var(--row-bleed-mobile) * 2));
+        margin-left: calc(-1 * var(--row-bleed-mobile));
+        margin-right: calc(-1 * var(--row-bleed-mobile));
+    }
+
+    .event-map {
+        border-radius: 0;
     }
 
     .event-card-main {
         grid-area: main;
+        padding-top: 0;
     }
 
     .event-venue {
@@ -1250,8 +1271,8 @@ blockquote p {
     }
 
     .events-list {
-        margin-left: calc(-1 * var(--row-bleed-mobile));
-        margin-right: calc(-1 * var(--row-bleed-mobile));
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .events-load-more-row {
@@ -1318,9 +1339,14 @@ blockquote p {
         padding-right: var(--row-bleed-mobile);
     }
 
+    .section-events [data-events-month-loader] {
+        margin-left: calc(-1 * var(--row-bleed-mobile));
+        margin-right: calc(-1 * var(--row-bleed-mobile));
+    }
+
     /* Mobile full-bleed row pattern:
        rows can extend to viewport edges while content stays aligned to the page gutter. */
-    .substack-feed-shell {
+    .section-substack .substack-feed-shell {
         margin-left: calc(-1 * var(--row-bleed-mobile));
         margin-right: calc(-1 * var(--row-bleed-mobile));
     }
