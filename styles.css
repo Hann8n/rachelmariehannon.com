@@ -561,21 +561,6 @@ blockquote p {
 .substack-feed-card:not(.substack-feed-card--with-image) {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "content";
-    gap: 0;
-    min-height: clamp(6.5rem, 9vw, 7.5rem);
-    border-left: 2px solid var(--color-border);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    padding-left: calc(var(--space-lg) + var(--space-sm));
-}
-
-.substack-feed-card:not(.substack-feed-card--with-image) .substack-feed-card-title {
-    font-size: clamp(var(--text-lead), 1rem + 0.45vw, var(--text-h3));
-    -webkit-line-clamp: 3;
-}
-
-.substack-feed-card:not(.substack-feed-card--with-image) .substack-feed-card-description {
-    -webkit-line-clamp: 3;
 }
 
 .substack-feed-card:first-child {

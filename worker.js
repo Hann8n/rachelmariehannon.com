@@ -30,6 +30,24 @@ function firstString(...values) {
   return "";
 }
 
+function isLikelySubstackAvatarImage(urlText) {
+  if (typeof urlText !== "string" || !urlText) return false;
+  const lower = urlText.toLowerCase();
+  if (!lower.includes("substackcdn.com/image/fetch/")) return false;
+  // Substack uses this small square transform for profile/avatar fallback enclosures.
+  return lower.includes("w_256,c_limit") && lower.includes("_640x640.");
+}
+
+function pickFeedImageUrl(...candidates) {
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" || !candidate.trim()) continue;
+    const imageUrl = candidate.trim();
+    if (isLikelySubstackAvatarImage(imageUrl)) continue;
+    return imageUrl;
+  }
+  return "";
+}
+
 function rssItemToNormalized(item) {
   const mediaContent = Array.isArray(item?.["media:content"])
     ? item["media:content"][0]
@@ -47,7 +65,7 @@ function rssItemToNormalized(item) {
     categories: (Array.isArray(item?.category) ? item.category : item?.category ? [item.category] : [])
       .map((value) => (typeof value === "string" ? value.trim() : ""))
       .filter(Boolean),
-    image: firstString(mediaContent?.["@_url"], enclosure?.["@_url"], enclosure?.url),
+    image: pickFeedImageUrl(mediaContent?.["@_url"], enclosure?.["@_url"], enclosure?.url),
   });
 }
 
