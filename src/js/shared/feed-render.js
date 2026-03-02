@@ -1,3 +1,5 @@
+import { normalizeFeedItem } from "./feed-normalize.js";
+
 function escapeHtml(text) {
   return String(text || "")
     .replaceAll("&", "&amp;")
@@ -50,23 +52,6 @@ function formatRelativeDate(pubDateText) {
   } catch (_) {
     return "";
   }
-}
-
-export function normalizeFeedItem(item) {
-  if (!item || typeof item !== "object") return null;
-  return {
-    title: typeof item.title === "string" ? item.title : "",
-    link: typeof item.link === "string" ? item.link : "",
-    pubDate: typeof item.pubDate === "string" ? item.pubDate : "",
-    description: typeof item.description === "string" ? item.description : "",
-    content: typeof item.content === "string" ? item.content : "",
-    id: typeof item.id === "string" ? item.id : "",
-    author: typeof item.author === "string" ? item.author : "",
-    categories: Array.isArray(item.categories)
-      ? item.categories.filter((cat) => typeof cat === "string")
-      : [],
-    image: typeof item.image === "string" ? item.image : "",
-  };
 }
 
 export function renderFeedItemCard(item) {

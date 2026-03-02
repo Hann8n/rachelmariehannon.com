@@ -1,4 +1,5 @@
-import { normalizeFeedItem, renderFeedCollection, renderFeedItemCard } from "./shared/feed-render.js";
+import { normalizeFeedItem } from "./shared/feed-normalize.js";
+import { renderFeedCollection, renderFeedItemCard } from "./shared/feed-render.js";
 
 const DEFAULT_SUBSTACK_URL = "https://imightbeanidiot.substack.com";
 const NATIVE_FEED_API_URL = "/api/rss-json";

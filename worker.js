@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { normalizeFeedItem } from "./src/js/shared/feed-render.js";
+import { normalizeFeedItem } from "./src/js/shared/feed-normalize.js";
 import { renderSectionsHtml } from "./src/js/shared/section-renderer.js";
 
 const FIXED_RSS_FEED_URL = "https://imightbeanidiot.substack.com/feed";
