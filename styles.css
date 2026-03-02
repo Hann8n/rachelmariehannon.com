@@ -613,6 +613,18 @@ blockquote p {
     display: block;
 }
 
+@media (min-width: 521px) {
+    .substack-feed-card-image {
+        aspect-ratio: 4 / 3;
+    }
+
+    .substack-feed-card-image img {
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
 .substack-feed-card-content {
     grid-area: content;
     display: flex;
