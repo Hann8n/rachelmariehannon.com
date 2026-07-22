@@ -26,15 +26,6 @@
   ],
   "sections": [
     {
-      "type": "substack",
-      "title": "Articles",
-      "id": "substack",
-      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
-      "button_text": "Read more",
-      "button_url": "https://substack.com/@imightbeanidiot",
-      "embed_id": "588945971728"
-    },
-    {
       "type": "text",
       "title": "About",
       "id": "about",
@@ -44,6 +35,15 @@
       "type": "text",
       "title": "Bio",
       "content": "Rachel Marie Hannon started writing the day after her first kiss, she was a whore. In college, Rachel made sure she had a class each semester where she could write about trees and her feelings. Now that Rachel is in her thirties, I Might Be An Idiot feels like a really natural extension of the work she began back then. "
+    },
+    {
+      "type": "substack",
+      "title": "Articles",
+      "id": "substack",
+      "description": "For samples from I Might Be An Idiot, behind-the-scenes stories, and new writing, you can read and subscribe to the Substack:",
+      "button_text": "Read more",
+      "button_url": "https://substack.com/@imightbeanidiot",
+      "embed_id": "588945971728"
     },
     {
       "type": "events",
