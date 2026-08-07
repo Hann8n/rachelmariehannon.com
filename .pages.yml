@@ -180,4 +180,6 @@ content:
                     pattern:
                       regex: "^$|^[A-Za-z0-9_-]{10,}$"
                       message: "Optional field. If provided, enter a valid Place ID (letters, numbers, underscores, or hyphens)."
-
+<a href="https://querycraft-literary-agent-pitch-event-matcher.ai.studio/" target="_blank" rel="noopener noreferrer">
+  Launch QueryCraft Pitch Matcher
+</a>
